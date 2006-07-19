@@ -413,13 +413,13 @@ void GApplet::beginRun() {
     // Move the controller to the camera's location
     app->debugController.setFrame(app->debugCamera.getCoordinateFrame());
 
-    now = System::getTick() - 0.001;
+    now = System::time() - 0.001;
 }
 
 
 void GApplet::oneFrame() {
     lastTime = now;
-    now = System::getTick();
+    now = System::time();
     RealTime timeStep = now - lastTime;
 
     // User input

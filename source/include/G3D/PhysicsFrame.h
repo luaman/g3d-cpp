@@ -63,26 +63,10 @@ public:
         const PhysicsFrame&     other,
         float                   alpha) const;
 
-    /** 
-     this + t * dx
-     @deprecated
-     */
-    PhysicsFrame integrate(
-        float                   t,
-        const PhysicsFrame&     dx);
-
-    /** 
-     this + t * dx + t*t * ddx
-     @deprecated
-     */
-    PhysicsFrame integrate(
-        float                   t,
-        const PhysicsFrame&     dx,
-        const PhysicsFrame&     ddx);
-
-
     void deserialize(class BinaryInput& b);
+
     void serialize(class BinaryOutput& b) const;
+
 };
 
 } // namespace

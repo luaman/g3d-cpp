@@ -151,7 +151,7 @@ void FirstPersonManipulator::doSimulation(
 
 
 void FirstPersonManipulator::setFrame(const CoordinateFrame& c) {
-    Vector3 look = c.getLookVector();
+    Vector3 look = c.lookVector();
 
     setPosition(c.translation);
 

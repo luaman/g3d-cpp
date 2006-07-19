@@ -63,7 +63,7 @@ void Browse::doSimulation(SimTime dt) {
 
 
 void Browse::doGraphics() {
-    app->renderDevice->setColorClearValue(Color3::WHITE);
+    app->renderDevice->setColorClearValue(Color3::white());
     app->renderDevice->clear(true, true, true);
 
     app->renderDevice->push2D();
@@ -71,10 +71,10 @@ void Browse::doGraphics() {
         double height           = app->renderDevice->height();
         double titleFontSize    = 30 * width / 800;
         double optionFontSize   = 25 * width / 800;
-        Color4 titleFontColor   = Color3::BLACK;
-        Color4 titleFontBorder  = Color4::CLEAR;
-        Color4 optionFontColor  = Color3::YELLOW;
-        Color4 optionFontBorder = Color3::BLACK;
+        Color4 titleFontColor   = Color3::black();
+        Color4 titleFontBorder  = Color4::clear();
+        Color4 optionFontColor  = Color3::yellow();
+        Color4 optionFontBorder = Color3::black();
 
         double y = 10;
         app->font->draw2D(app->renderDevice, "Choose A Network Demo Server", Vector2(width / 2, y),

@@ -176,11 +176,6 @@ public:
                    (faceIndex[1] == Face::NONE);
         }
 
-        /** @deprecated Use Edge::boundary */
-        inline bool broken() const {
-            return boundary();
-        }
-
         /**
          Returns the reversed edge.
          */

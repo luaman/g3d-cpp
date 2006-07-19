@@ -566,7 +566,7 @@ void Sky::renderLensFlare(
         // Compute the sun's position using the 3D transformation
         Vector4 pos = renderDevice->project(Vector4(sunPosition, 0));
 
-        if (sunPosition.dot(camera.getLookVector()) > 0) {
+        if (sunPosition.dot(camera.lookVector()) > 0) {
 
             // Number of visible points on the sun
             int visible = 0;
@@ -621,7 +621,7 @@ void Sky::renderLensFlare(
                                     lighting.emissiveScale * fractionOfSunVisible * .5f);
 
                 // Lens flare
-                Vector4 C(camera.getLookVector(), 0);
+                Vector4 C(camera.lookVector(), 0);
                 static const double position[] = { .5,                    .5,                    -.25,                     -.75,                .45,                      .6,                    -.5,                   -.1,                   .55,                     -1.5,                       -2,                         1};
                 static const double size[]     = { .12,                   .05,                    .02,                      .02,                .02,                      .02,                    .01,                  .01,                   .01,                     .01,                        .01,                        0.05}; 
                 static const Color3 color[]    = {Color3(6, 4, 0) / 255, Color3(6, 4, 0) / 255, Color3(0, 12, 0) / 255, Color3(0, 12, 0) / 255, Color3(0, 12, 0) / 255, Color3(0, 12, 0) / 255, Color3(10, 0, 0) /255,  Color3(0, 12, 0) / 255, Color3(10,0,0) / 255, Color3::fromARGB(0x192125)/10,   Color3::fromARGB(0x1F2B1D)/10, Color3::fromARGB(0x1F2B1D)/10};

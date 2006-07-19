@@ -41,8 +41,8 @@ void Helicopter::render(
 
     positionShader->material.color = Color3::black();
 
-    Matrix3 rot1 = Matrix3::fromAxisAngle(Vector3::UNIT_Z, pose.rotorAngle);
-    Matrix3 rot2 = Matrix3::fromAxisAngle(Vector3::UNIT_X, toRadians(-90));
+    Matrix3 rot1 = Matrix3::fromAxisAngle(Vector3::unitZ(), pose.rotorAngle);
+    Matrix3 rot2 = Matrix3::fromAxisAngle(Vector3::unitX(), toRadians(-90));
 
     positionShader->cframe.rotation = positionShader->cframe.rotation * rot2 * rot1;
     positionShader->cframe.translation += 

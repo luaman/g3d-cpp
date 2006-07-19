@@ -537,9 +537,9 @@ ReliableConduit::ReliableConduit(
                       sizeof(addr.addr));
 
     if (ret == WSAEWOULDBLOCK) {
-        RealTime t = System::getTick() + 5;
+        RealTime t = System::time() + 5.0;
         // Non-blocking; we must wait until select returns non-zero
-        while ((selectOneWriteSocket(sock) == 0) && (System::getTick() < t)) {
+        while ((selectOneWriteSocket(sock) == 0) && (System::time() < t)) {
             System::sleep(0.02);
         }
 
@@ -717,15 +717,6 @@ void ReliableConduit::sendBuffer(const BinaryOutput& b) {
 }
 
 
-void ReliableConduit::send(const NetMessage* m) {
-    if (m == NULL) {
-        send((uint32)-1);
-    } else {
-        send(m->type(), *m);
-    }
-}
-
-
 /** Null serializer.  Used by reliable conduit::send(type) */
 class Dummy {
 public:
@@ -739,25 +730,9 @@ void ReliableConduit::send(uint32 type) {
 }
 
 
-void ReliableConduit::multisend(const Array<ReliableConduitRef>& array, 
-                                const NetMessage* m) {
-    debugAssert(m != NULL);
-    multisend(array, m->type(), *m);
-}
-
 
 NetAddress ReliableConduit::address() const {
     return addr;
-}
-
-
-bool ReliableConduit::receive(NetMessage* m) {
-    if (m == NULL) {
-        receive();
-        return true;
-    } else {
-        return receive(*m);
-    }
 }
 
 
@@ -936,29 +911,24 @@ LightweightConduit::~LightweightConduit() {
 }
 
 
-void LightweightConduit::serializeMessage(const NetMessage* m, 
-                                          BinaryOutput& b) const {
-
-    if (m != NULL) {
-        debugAssert(m->type() != 0);
-        b.writeUInt32(m->type());
-        m->serialize(b);
-        b.writeUInt32(1);
+bool LightweightConduit::receive(NetAddress& sender) {
+    // This both checks to ensure that a message was waiting and
+    // actively consumes the message from the network stream if
+    // it has not been read yet.
+    uint32 t = waitingMessageType();
+    if (t == 0) {
+        return false;
     }
-    
-    debugAssertM(b.size() < MTU, 
-                format("This LightweightConduit is limited to messages of "
-                       "%d bytes (Ethernet hardware limit; this is the "
-                       "'UDP MTU')", maxMessageSize()));
 
-    if (b.size() >= MTU) {
-        throw LightweightConduit::PacketSizeException(
-                format("This LightweightConduit is limited to messages of "
-                       "%d bytes (Ethernet hardware limit; this is the "
-                       "'UDP MTU')", maxMessageSize()),
-                       b.size() - 4, // Don't count the type header
-                       maxMessageSize());
+    sender = messageSender;
+    alreadyReadMessage = false;
+
+    if (messageBuffer.size() < 4) {
+        // Something went wrong
+        return false;
     }
+
+    return true;
 }
 
 
@@ -975,24 +945,6 @@ void LightweightConduit::sendBuffer(const NetAddress& a, BinaryOutput& b) {
         ++mSent;
         bSent += b.size();
     }
-}
-
-
-void LightweightConduit::send(const Array<NetAddress>& array, 
-                              const NetMessage* m) {
-    binaryOutput.reset();
-    serializeMessage(m, binaryOutput);
-
-    for (int i = 0; i < array.size(); ++i) {
-        sendBuffer(array[i], binaryOutput);
-    }
-}
-
-
-void LightweightConduit::send(const NetAddress& a, const NetMessage* m) {
-    binaryOutput.reset();
-    serializeMessage(m, binaryOutput);
-    sendBuffer(a, binaryOutput);
 }
 
 
@@ -1051,39 +1003,6 @@ uint32 LightweightConduit::waitingMessageType() {
     }
 
     return messageType;
-}
-
-
-bool LightweightConduit::receive(NetAddress& sender, NetMessage* m) {
-
-    // This both checks to ensure that a message was waiting and
-    // actively consumes the message from the network stream if
-    // it has not been read yet.
-    uint32 t = waitingMessageType();
-    if (t == 0) {
-        return false;
-    }
-
-    if (m != NULL) {
-        debugAssert(m->type() == t);
-    }
-
-    sender = messageSender;
-    alreadyReadMessage = false;
-
-    if (messageBuffer.size() < 4) {
-        // Something went wrong
-        return false;
-    }
-
-    if (m != NULL) {
-        BinaryInput b((messageBuffer.getCArray() + 4), 
-                      messageBuffer.size() - 4, 
-                      G3D_LITTLE_ENDIAN, BinaryInput::NO_COPY);
-        m->deserialize(b);
-    }
-
-    return true;
 }
 
 

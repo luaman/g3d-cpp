@@ -170,6 +170,9 @@
 		<File
 			RelativePath="..\readme.html">
 		</File>
+		<File
+			RelativePath="docsource\upgrade.dox">
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

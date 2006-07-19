@@ -14,7 +14,7 @@ extern App* app;
 
 const RealTime Entity::networkLerpTime = 0.2;
 
-Entity::Entity() : id(NO_ID), oldFrameTime(-inf()), velocity(Vector3::ZERO), oldDesiredVelocityTime(-100), tip(Matrix3::identity()) {
+Entity::Entity() : id(NO_ID), oldFrameTime(-inf()), velocity(Vector3::zero()), oldDesiredVelocityTime(-100), tip(Matrix3::identity()) {
 }
 
 
@@ -55,7 +55,7 @@ void Entity::clientUpdateFromStateMessage(class EntityStateMessage& msg, Entity:
     // oldDeltaFrame = correct - estimated
     oldDeltaFrame.translation = frame.translation - msg.frame.translation;
     oldDeltaFrame.rotation = frame.rotation * msg.frame.rotation.inverse();
-    oldFrameTime = System::getTick();
+    oldFrameTime = System::time();
     frame        = msg.frame;
     velocity     = msg.velocity;
     

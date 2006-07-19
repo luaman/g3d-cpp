@@ -31,8 +31,8 @@ void Client::onInit()  {
     // Connect
     serverProxy.connect(selectedServer.address);
 
-    camera.setPosition(Vector3::ZERO);
-    camera.lookAt(-Vector3::UNIT_Z);
+    camera.setPosition(Vector3::zero());
+    camera.lookAt(-Vector3::unitZ());
     Log::common()->printf("Client::init\n");
 
     setDesiredFrameRate(40);
@@ -114,9 +114,9 @@ void Client::simulateCamera(SimTime dt) {
         
         camera.setPosition(cframe.translation 
                 + cframe.rotation.getColumn(2) * FOLLOW_DISTANCE
-                + Vector3::UNIT_Y * FOLLOW_HEIGHT);
+                + Vector3::unitY() * FOLLOW_HEIGHT);
 
-        camera.lookAt(cframe.translation + Vector3::UNIT_Y * FOLLOW_HEIGHT / 2);
+        camera.lookAt(cframe.translation + Vector3::unitY() * FOLLOW_HEIGHT / 2);
     }
 }
 
@@ -259,7 +259,7 @@ void Client::onGraphics(RenderDevice* rd) {
         for (int x = -10; x < 10; x+=4) {
             for (int z = -10; z < 10; z+=4) {
                 Vector3 v(x * 20, -10, z * 20); 
-                Draw::box(AABox(v, v + Vector3(2,.2f,2)), app->renderDevice, Color3::RED, Color3::BLACK);
+                Draw::box(AABox(v, v + Vector3(2,.2f,2)), app->renderDevice, Color3::red(), Color3::black());
             }
         }
 
@@ -282,7 +282,7 @@ void Client::onGraphics(RenderDevice* rd) {
                     app->renderDevice->getViewport());
 
                 if (pos.isFinite()) {
-                    app->font->draw2D(app->renderDevice, entity.name, pos.xy(), 16, Color3::WHITE, Color3::BLACK,
+                    app->font->draw2D(app->renderDevice, entity.name, pos.xy(), 16, Color3::white(), Color3::black(),
                         GFont::XALIGN_CENTER);
                 }
             }
@@ -291,12 +291,12 @@ void Client::onGraphics(RenderDevice* rd) {
         // Server crash messages
         if (! serverProxy.ok()) {
             app->font->draw2D(app->renderDevice, "Lost connection to server.", Vector2(5, 5), 14,
-                Color3(1.0f, 0.4f, 0.4f), Color3::BLACK);
+                Color3(1.0f, 0.4f, 0.4f), Color3::black());
         }
 
         if (app->hostingServer && ! app->hostingServer->ok()) {
             app->font->draw2D(app->renderDevice, "(Local Server Crashed)", Vector2(5, 25), 14,
-                Color3(1.0f, 0.4f, 0.4f), Color3::BLACK);
+                Color3(1.0f, 0.4f, 0.4f), Color3::black());
         }
     app->renderDevice->pop2D();
 

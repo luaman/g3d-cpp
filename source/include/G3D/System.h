@@ -50,17 +50,6 @@ enum G3DEndian {
 };
 
 /**
- Computes the CRC32 value of a byte array.  CRC32 is designed to be a hash
- function that produces different values for similar strings.
-
- This implementation is compatible with PKZIP and GZIP.
-
- Based on http://www.gamedev.net/reference/programming/features/crc32/
- @deprecated Use Crypto::crc32
-*/
-uint32 G3D_DEPRECATED crc32(const void* bytes, size_t numBytes);
-
-/**
  OS and processor abstraction.  The first time any method is called the processor
  will be analyzed.  Future calls are then fast.
 
@@ -246,35 +235,13 @@ public:
     static int consoleReadKey();
 
     /**
-     Returns a highly accurate time in milliseconds that
-     is relative to an arbitrary per-platform baseline
-     (e.g. the time the program started)
-     
-     Use differences in two tick times to measure
-     events to a high degree of precision (e.g. for profiling,
-     frame rate counting).
-
-     This is as accurate as System::getCycleCount, but returns a time
-     in seconds instead of cycles.
-     @deprecated Call time();
-     */
-    static RealTime getTick();
-
-    /**
-     @deprecated Call time();
-     */
-    static RealTime getLocalTime();
-
-    /**
      The actual time (measured in seconds since
      Jan 1 1970 midnight).
      
      Adjusted for local timezone and daylight savings
      time.   This is as accurate and fast as getCycleCount().
     */
-    static RealTime time() {
-        return getLocalTime();
-    }
+    static RealTime time();
 
     /**
      To count the number of cycles a given operation takes:

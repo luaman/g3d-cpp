@@ -109,7 +109,7 @@ public:
 
     /** Coordinate frame interpolated between frame and oldFrame.
         @param now System::getTick*/
-    CoordinateFrame smoothCoordinateFrame(RealTime now = System::getTick()) const;
+    CoordinateFrame smoothCoordinateFrame(RealTime now = System::time()) const;
 
     /** Makes an update message that can be sent between client and server or vice versa. */
     void makeStateMessage(class EntityStateMessage& msg) const;

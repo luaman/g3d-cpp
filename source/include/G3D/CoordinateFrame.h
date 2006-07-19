@@ -260,11 +260,6 @@ public:
         const Vector3&  target,
         Vector3         up);
 
-    /** @deprecated See lookVector */
-	inline Vector3 getLookVector() const {
-		return -rotation.getColumn(2);
-	}
-
     /** The direction this camera is looking (its negative z axis)*/
 	inline Vector3 lookVector() const {
 		return -rotation.getColumn(2);

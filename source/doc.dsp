@@ -215,5 +215,9 @@ SOURCE=.\html\header.html
 
 SOURCE=..\readme.html
 # End Source File
+# Begin Source File
+
+SOURCE=.\docsource\upgrade.dox
+# End Source File
 # End Target
 # End Project

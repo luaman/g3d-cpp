@@ -61,34 +61,6 @@ PhysicsFrame PhysicsFrame::lerp(
 }
 
 
-PhysicsFrame PhysicsFrame::integrate(
-    float                   t,
-    const PhysicsFrame&     dx) {
-
-    PhysicsFrame result;
-
-    result.translation = translation + t * dx.translation;
-    result.rotation    = rotation * dx.rotation.pow(t); 
-
-    return result;
-}
-
-
-PhysicsFrame PhysicsFrame::integrate(
-    float                   t,
-    const PhysicsFrame&     dx,
-    const PhysicsFrame&     ddx) {
-
-    PhysicsFrame result;
-
-    // TODO: is this correct?
-    result.translation = translation + t * dx.translation + t * t * ddx.translation;
-    result.rotation    = rotation * dx.rotation.pow(t) * ddx.rotation.pow(t * t);
-
-    return result;
-}
-
-
 void PhysicsFrame::deserialize(class BinaryInput& b) {
     translation.deserialize(b);
     rotation.deserialize(b);

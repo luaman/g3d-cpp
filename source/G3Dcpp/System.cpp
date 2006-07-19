@@ -889,7 +889,7 @@ void System::sleep(RealTime t) {
     // Overhead of calling this function.
     static const RealTime OVERHEAD = .000006;
 
-    RealTime now = getTick();
+    RealTime now = time();
     RealTime wakeupTime = now + t - OVERHEAD;
 
     RealTime remainingTime = wakeupTime - now;
@@ -921,7 +921,7 @@ void System::sleep(RealTime t) {
             #endif
         }
 
-        now = getTick();
+        now = time();
         remainingTime = wakeupTime - now;
     }
 }
@@ -1024,14 +1024,14 @@ void initTime() {
 }
 
 
-RealTime System::getTick() { 
+RealTime System::time() { 
     init();
     #ifdef G3D_WIN32
         LARGE_INTEGER now;
         QueryPerformanceCounter(&now);
 
-        return (RealTime)(now.QuadPart - _start.QuadPart) /
-                _counterFrequency.QuadPart;
+        return ((RealTime)(now.QuadPart - _start.QuadPart) /
+                _counterFrequency.QuadPart) + realWorldGetTickTime0;
     #else
         // Linux resolution defaults to 100Hz.
         // There is no need to do a separate RDTSC call as gettimeofday
@@ -1041,13 +1041,9 @@ RealTime System::getTick() {
         gettimeofday(&now, NULL);
 
         return (now.tv_sec  - _start.tv_sec) +
-               (now.tv_usec - _start.tv_usec) / 1e6;
+               (now.tv_usec - _start.tv_usec) / 1e6
+			    + realWorldGetTickTime0;
     #endif
-}
-
-
-RealTime System::getLocalTime() {
-    return getTick() + realWorldGetTickTime0;
 }
 
 

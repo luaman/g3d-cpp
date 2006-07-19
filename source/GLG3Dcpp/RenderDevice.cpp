@@ -144,7 +144,7 @@ RenderDevice::RenderDevice() : _window(NULL), deleteWindow(false) {
     _numTextures = 0;
     _numTextureCoords = 0;
     emwaFrameRate = 0;
-    lastTime = System::getTick();
+    lastTime = System::time();
 
     for (int i = 0; i < GLCaps::G3D_MAX_TEXTURE_UNITS; ++i) {
         currentlyBoundTexture[i] = 0;
@@ -1354,7 +1354,7 @@ void RenderDevice::endFrame() {
 
     debugAssertM(stateStack.size() == 0, "Missing RenderDevice::popState or RenderDevice::pop2D.");
 
-    double now = System::getTick();
+    double now = System::time();
     double dt = now - lastTime;
     if (dt == 0) {
         dt = 0.0001;
