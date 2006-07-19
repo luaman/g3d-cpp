@@ -209,11 +209,6 @@ public:
         return m_pointer;
     }
 
-    /** @deprecated use pointer() */
-    inline T* getPointer() const {
-        return m_pointer;
-    }
-
 private:
 
     /** Nulls out the pointer and drops a reference. If the reference
@@ -532,7 +527,7 @@ public:
 
     WeakReferenceCountedPointer(
         const ReferenceCountedPointer<T>& strongPtr) : pointer(0) {
-        setPointer(strongPtr.getPointer());
+        setPointer(strongPtr.pointer());
     }
 
     ~WeakReferenceCountedPointer() {
@@ -553,7 +548,7 @@ public:
         // Threadsafe: the object cannot be collected while the other pointer exists.
 
         // I now point at other's target
-        setPointer(other.getPointer());
+        setPointer(other.pointer());
 
         return *this;
     }

@@ -64,7 +64,7 @@ public:
      */
     bool contains(const Vector3& point) const;
 
-/**
+   /**
 	 @deprecated Use culledBy(Array<Plane>&)
      */
     bool culledBy(
