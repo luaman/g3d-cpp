@@ -17,10 +17,9 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created    2002-01-01
- @edited     2003-12-07
+ @edited     2006-07-07
  */
 
-#include <windows.h>
 #include <graphics3D.h>
 #include "Window.h"
 
@@ -40,7 +39,7 @@ int WINAPI WinMain(
         G3D::GImage im("Win32_Demo/Cirrus.jpg");
 
         app.create("Win32 Sample Program", im.width, im.height);
-        G3D::RGBtoBGRA(im.byte(), (unsigned char*)app.buffer, im.width * im.height);
+        G3D::GImage::RGBtoBGRA(im.byte(), (unsigned char*)app.buffer, im.width * im.height);
 
     } catch (G3D::GImage::Error e) {
 

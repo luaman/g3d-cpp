@@ -192,7 +192,7 @@ void Demo::onGraphics(RenderDevice* rd) {
         double  t[2];
         Vector3 c[2];
 
-        t[0] = System::getTick();
+        t[0] = System::time();
         t[1] = t[0] + 0.01;
 
 		// Draw the planes

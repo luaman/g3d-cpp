@@ -118,14 +118,14 @@ void Demo::onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
     RealTime timeStep = sdt;
 
     app->debugController.doSimulation(clamp(timeStep, 0.0, 0.1));
-    Vector3 v = app->debugController.getPosition();
+    Vector3 v = app->debugController.position();
 
     // Keep the camera above the ground plane
     if (v.y < .1f) {
         app->debugController.setPosition(Vector3(v.x, .1f, v.z));
     }
 
-	app->debugCamera.setCoordinateFrame(app->debugController.getCoordinateFrame());
+	app->debugCamera.setCoordinateFrame(app->debugController.frame());
 
     if (MD2Model::animationDeath(pose.animation)) {
         if (pose.time > 2) {
@@ -187,8 +187,8 @@ void Demo::onGraphics(RenderDevice* rd) {
 
     // Some models have part of their geometry stored in the "weapon" file.
     // Darth Maul, for example, has his lower half in the weapon.
-    const double my = model->pose(CoordinateFrame(), MD2Model::Pose(MD2Model::STAND))->objectSpaceBoundingBox().getCorner(0).y;
-    const double wy = weapon->pose(CoordinateFrame(), MD2Model::Pose(MD2Model::STAND))->objectSpaceBoundingBox().getCorner(0).y;
+    const double my = model->pose(CoordinateFrame(), MD2Model::Pose(MD2Model::STAND))->objectSpaceBoundingBox().corner(0).y;
+    const double wy = weapon->pose(CoordinateFrame(), MD2Model::Pose(MD2Model::STAND))->objectSpaceBoundingBox().corner(0).y;
     const double footy = 0.98 * min(my, wy);
 
     app->renderDevice->clear(true, true, true);
@@ -206,7 +206,7 @@ void Demo::onGraphics(RenderDevice* rd) {
         // Draw a bunch of characters
         for (int z = 0; z < 5; ++z) {
             for (int x = -2; x <= 2; ++x) {
-                MD2Model::Pose pose(MD2Model::STAND, n + System::getTick());
+                MD2Model::Pose pose(MD2Model::STAND, n + System::time());
             
                 CoordinateFrame cframe(Vector3(x * 6 + (z % 2) * 2, -footy, z * 6));
                 cframe.rotation = Matrix3::fromAxisAngle(Vector3::unitY(), n * .5 + 4);

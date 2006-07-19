@@ -41,6 +41,15 @@ You must now send at least a message type; you cannot send a message with no con
 
 
 <hr noshade>
+<p><b>GApplet methods not called/compile time errors</b></p>
+<p>
+The names of the GApplet methods changed, e.g., from "doGraphics" to "onGraphics".  The old method names have been
+configured to create compile time errors to help you catch bugs.  These will appear as:
+<br>
+<code>error C2555: 'Browse::doGraphics' : overriding virtual function differs from 'G3D::GApplet::doGraphics' only by return type or calling convention</code>
+</p>
+
+<hr noshade>
 <p><b>Renamings</b></p>
 <p>
 <table>
@@ -58,6 +67,13 @@ You must now send at least a message type; you cannot send a message with no con
 <tr><td>G3D_PI</td><td>G3D::pi()</td></tr>
 <tr><td>G3D_HALF_PI</td><td>G3D::halfPi()</td></tr>
 <tr><td>G3D_TWO_PI</td><td>G3D::twoPi()</td></tr>
+<tr><td>G3D::RenderDevice::supportsTextureFormat</td><td>GLCaps::supports</td></tr>
+<tr><td>G3D::GApplet::doGraphics</td><td>G3D::GApplet::onGraphics</td></tr>
+<tr><td>G3D::GApplet::doNetwork</td><td>G3D::GApplet::onNetwork</td></tr>
+<tr><td>G3D::GApplet::doLogic</td><td>G3D::GApplet::onLogic</td></tr>
+<tr><td>G3D::GApplet::cleanup</td><td>G3D::GApplet::onCleanup</td></tr>
+<tr><td>G3D::computeNormalMap</td><td>G3D::GImage::computeNormalMap</td></tr>
+<tr><td>G3D::Box::getCorner</td><td>G3D::Box::corner</td></tr>
 </table>
 </p>
 

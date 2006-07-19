@@ -84,10 +84,10 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 
     texture = Texture::fromFile("texture.jpg");
 
-    CImage bump("bump.jpg");
-    CImage normal;
+    GImage bump("bump.jpg");
+    GImage normal;
 
-    computeNormalMap(bump, normal);
+	GImage::computeNormalMap(bump, normal);
 
     normalMap = Texture::fromGImage("Normal Map", normal);
 
@@ -137,7 +137,7 @@ void Demo::onGraphics(RenderDevice* rd) {
 
         CoordinateFrame cframe;
         // Rotate the quad
-        cframe.rotation = Matrix3::fromAxisAngle(Vector3::unitY(), System::getTick() * .1);
+        cframe.rotation = Matrix3::fromAxisAngle(Vector3::unitY(), System::time() * 0.1);
 
         rd->pushState();
             GPUProgram::ArgList vertexArgs;

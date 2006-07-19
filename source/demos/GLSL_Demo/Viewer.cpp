@@ -25,7 +25,7 @@ void Viewer::onInit()  {
 
 void Viewer::onSimulation(RealTime rdt, SimTime dt, SimTime idt) {
 
-	double t = System::getTick();
+	double t = System::time();
 	for (int e = 0; e < entityArray.size(); ++e) {
 		EntityRef& entity = entityArray[e];
 

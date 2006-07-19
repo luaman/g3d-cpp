@@ -62,8 +62,8 @@ void Demo::insertRollingContactSpheres() {
 void Demo::insertSpiralSlide() {
     int i;
     for (i = 0; i < 41; ++i) {
-        double angle = G3D_PI * i / 10.0;
-        double angle2 = G3D_PI * (i - 0.6) / 10.0;
+        double angle = pi() * i / 10.0;
+        double angle2 = pi() * (i - 0.6) / 10.0;
 
         // Outer spiral
         CoordinateFrame c;

@@ -14,10 +14,10 @@ MeshRef Mesh::quad() {
 	vertex.append(Vector3( s,  s, 0));
 	vertex.append(Vector3(-s,  s, 0));
 
-	normal.append(Vector3::UNIT_Z);
-	normal.append(Vector3::UNIT_Z);
-	normal.append(Vector3::UNIT_Z);
-	normal.append(Vector3::UNIT_Z);
+	normal.append(Vector3::unitZ());
+	normal.append(Vector3::unitZ());
+	normal.append(Vector3::unitZ());
+	normal.append(Vector3::unitZ());
 
 	tex.append(Vector2(0, 1));
 	tex.append(Vector2(1, 1));

@@ -117,7 +117,7 @@ void Demo::onInit() {
 void Demo::onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
     // Simulation
     app->debugController.doSimulation(max(0.1, min(0.0, rdt)));
-    app->debugCamera.setCoordinateFrame(app->debugController.getCoordinateFrame());
+    app->debugCamera.setCoordinateFrame(app->debugController.frame());
 }
 
 
@@ -127,7 +127,7 @@ void Demo::onGraphics(RenderDevice* rd) {
 
     rd->pushState();
         rd->setProjectionAndCameraMatrix(app->debugCamera);
-        double angle = cos(System::getTick()) / 2;
+        double angle = cos(System::time()) / 2;
         glProgramLocalParameter4fARB(GL_VERTEX_PROGRAM_ARB, 0, cos(angle), 1, sin(angle), 1);
 
         rd->setVertexProgram(distort);

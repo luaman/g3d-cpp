@@ -24,7 +24,7 @@ App::App(const GAppSettings& settings) : GApp(settings) {
 
 static TextureRef loadBumpAsNormalMap(const std::string& filename) {
 	GImage normal;
-	computeNormalMap(GImage(filename), normal, true, true);
+	GImage::computeNormalMap(GImage(filename), normal, true, true);
 	return Texture::fromGImage(filename, normal);
 }
 
