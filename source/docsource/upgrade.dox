@@ -55,6 +55,9 @@ You must now send at least a message type; you cannot send a message with no con
 <tr><td>G3D::Vector3::ZERO</td><td>G3D::Vector3::zero</td></tr>
 <tr><td>G3D::Vector3::UNIT_Y</td><td>G3D::Vector3::unitY</td></tr>
 <tr><td>G3D::random</td><td>G3D::uniformRandom()</td></tr>
+<tr><td>G3D_PI</td><td>G3D::pi()</td></tr>
+<tr><td>G3D_HALF_PI</td><td>G3D::halfPi()</td></tr>
+<tr><td>G3D_TWO_PI</td><td>G3D::twoPi()</td></tr>
 </table>
 </p>
 

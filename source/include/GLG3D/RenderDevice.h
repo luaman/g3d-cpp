@@ -1457,12 +1457,6 @@ public:
      */
     bool supportsOpenGLExtension(const std::string& extension) const;
 
-    /** Returns true if the given texture format is supported on this device.
-        Cannot be called between beginPrimitive and endPrimitive.
-        @deprecated
-        Use GLCaps::supports.*/
-    bool supportsTextureFormat(const TextureFormat* fmt);
-
     /**
       When true, the 6-argument version of RenderDevice::setStencilOp
       can set the front and back operations to different values.

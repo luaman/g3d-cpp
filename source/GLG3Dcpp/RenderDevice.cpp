@@ -2868,13 +2868,6 @@ std::string RenderDevice::screenshot(const std::string& filepath) const {
 }
 
 
-bool RenderDevice::supportsTextureFormat(const TextureFormat* fmt) {
-    debugAssertM(! inPrimitive, 
-        "Cannot call supportsTextureFormat between beginPrimitive and endPrimitive.");
-    return GLCaps::supports(fmt);
-}
-
-
 double RenderDevice::getFrameRate() const {
     return emwaFrameRate;
 }
