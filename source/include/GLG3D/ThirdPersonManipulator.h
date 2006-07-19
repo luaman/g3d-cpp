@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2006-06-09
-  @edited  2006-06-09
+  @edited  2006-07-18
 */
 
 #ifndef G3D_THIRDPERSONMANIPULATOR_H
@@ -60,15 +60,15 @@ public:
         if (m_segment.size() == 0) {
             return false;
         } else {
-            return m_segment[0].endPoint(0) == m_segment.last().endPoint(1);
+            return m_segment[0].point(0) == m_segment.last().point(1);
         }
     }
 
     VertexType vertex(int i) const {
         if ((i < m_segment.size()) && (i >= 0)) {
-            return m_segment[i].endPoint(0);
+            return m_segment[i].point(0);
         } else if (i == m_segment.size()) {
-            return m_segment.last().endPoint(1);
+            return m_segment.last().point(1);
         } else {
             debugAssertM(false, "Index out of bounds");
             return VertexType();

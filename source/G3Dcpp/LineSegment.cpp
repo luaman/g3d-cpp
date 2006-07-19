@@ -74,11 +74,6 @@ Vector3 LineSegment::point(int i) const {
 }
 
 
-Vector3 LineSegment::endPoint(int i) const {
-    return point(i);
-}
-
-
 bool LineSegment::intersectsSolidSphere(const class Sphere& s) const {
     return distanceSquared(s.center) <= square(s.radius);
 }

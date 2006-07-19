@@ -111,7 +111,7 @@ GApp::GApp(const Settings& settings, GWindow* window) {
     debugController.setPosition(Vector3(0, 0, 4));
     debugController.lookAt(Vector3::zero());
     debugController.setActive(true);
-    debugCamera.setPosition(debugController.getPosition());
+    debugCamera.setPosition(debugController.position());
     debugCamera.lookAt(Vector3::zero());
 
     autoResize                  = true;
@@ -411,8 +411,7 @@ void GApplet::beginRun() {
     onInit();
 
     // Move the controller to the camera's location
-    app->debugController.setCoordinateFrame
-        (app->debugCamera.getCoordinateFrame());
+    app->debugController.setFrame(app->debugCamera.getCoordinateFrame());
 
     now = System::getTick() - 0.001;
 }
@@ -441,8 +440,7 @@ void GApplet::oneFrame() {
     // Simulation
     app->m_simulationWatch.tick();
 		app->debugController.doSimulation(clamp(timeStep, 0.0, 0.1));
-		app->debugCamera.setCoordinateFrame
-			(app->debugController.getCoordinateFrame());
+		app->debugCamera.setCoordinateFrame(app->debugController.frame());
 
 		double rate = simTimeRate();    
         RealTime rdt = timeStep;

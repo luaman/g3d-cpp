@@ -278,16 +278,7 @@ public:
         return rotation.getColumn(1);
     }
 
-    /**
-     If a viewer looks along the look vector, this is the viewer's "left"
-     @deprecated leftVector
-     */
-    inline Vector3 getLeftVector() const {
-		return -rotation.getColumn(0);
-	}
-
-    /** @deprecated See rightVector */
-    inline Vector3 getRightVector() const {
+    inline Vector3 rightVector() const {
 		return rotation.getColumn(0);
 	}
 
@@ -297,10 +288,6 @@ public:
      */
     inline Vector3 leftVector() const {
 		return -rotation.getColumn(0);
-    }
-
-    inline Vector3 rightVector() const {
-		return rotation.getColumn(0);
     }
 
     /**

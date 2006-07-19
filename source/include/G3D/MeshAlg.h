@@ -485,11 +485,6 @@ public:
      */
     static int countBoundaryEdges(const Array<Edge>& edgeArray);
 
-    /** @deprecated Use countBoundaryEdges */
-    inline static int countBrokenEdges(const Array<Edge>& edgeArray) {
-        return countBoundaryEdges(edgeArray);
-    }
-
 
     /**
      Generates an array of integers from start to start + n - 1 that have run numbers

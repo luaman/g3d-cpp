@@ -20,8 +20,8 @@ namespace G3D {
 namespace _internal {
 
 Vector3 UIGeom::segmentNormal(const LineSegment& seg, const Vector3& eye) {
-    Vector3 E = eye - seg.endPoint(0);
-    Vector3 V = seg.endPoint(1) - seg.endPoint(0);
+    Vector3 E = eye - seg.point(0);
+    Vector3 V = seg.point(1) - seg.point(0);
     Vector3 U = E.cross(V);
     Vector3 N = V.cross(U).direction();
     return N;

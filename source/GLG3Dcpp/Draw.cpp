@@ -697,8 +697,8 @@ void Draw::lineSegment(
         renderDevice->setColor(color);
         
         // Compute perspective line width
-        Vector3 v0 = lineSegment.endPoint(0);
-        Vector3 v1 = lineSegment.endPoint(1);
+        Vector3 v0 = lineSegment.point(0);
+        Vector3 v1 = lineSegment.point(1);
 
         Vector4 s0 = renderDevice->project(v0);
         Vector4 s1 = renderDevice->project(v1);

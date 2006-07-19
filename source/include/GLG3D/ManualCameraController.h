@@ -139,37 +139,20 @@ public:
 
     void lookAt(const Vector3& position);
 
+	/** @deprecated Rename to yaw() */
     double getYaw() const {
         return yaw;
     }
 
+	/** @deprecated Rename to pitch() */
     double getPitch() const {
         return pitch;
     }
 
-	const Vector3& getPosition() const {
+	/** @deprecated Rename to translation() */
+	const Vector3& position() const {
 		return translation;
 	}
-
-	Vector3 getLookVector() const {
-		return getCoordinateFrame().getLookVector();
-	}
-
-    /** Right vector */
-	Vector3 getStrafeVector() const {
-		return getCoordinateFrame().getRightVector();
-	}
-
-    /** @deprecated Use frame */
-	CoordinateFrame G3D_DEPRECATED getCoordinateFrame() const;
-
-    /** @deprecated Use getFrame.
-      */
-	void G3D_DEPRECATED getCoordinateFrame(CoordinateFrame& c) const;
-
-
-    /** @deprecated Use setFrame */
-    void G3D_DEPRECATED setCoordinateFrame(const CoordinateFrame& c);
 
     /**
       Sets to the closest legal controller orientation to the coordinate frame.
@@ -187,15 +170,11 @@ public:
     virtual void onSimulation(RealTime rdt, SimTime sdt, SimTime idt);
     virtual void onUserInput(UserInput* ui);
     virtual bool onEvent(const GEvent& event);
+
+	Vector3 lookVector() const {
+		return frame().lookVector();
+	}
 };
-
-/** Use FirstPersonManipulator instead 
-    @deprecated */
-typedef FirstPersonManipulator FPCameraController;
-
-/** Use FirstPersonManipulator instead 
-    @deprecated */
-typedef FirstPersonManipulator ManualCameraController;
 
 }
 #endif

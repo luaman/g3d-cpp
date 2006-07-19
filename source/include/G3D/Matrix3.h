@@ -267,13 +267,8 @@ public:
     static const Matrix3& zero();
     static const Matrix3& identity(); 
 
-    // Deprecated. 
-    /** @deprecated Use Matrix3::zero() */
-    static const Matrix3 ZERO;
-    /** @deprecated Use Matrix3::identity() */
-    static const Matrix3 IDENTITY;
-
 protected:
+
     // support for eigensolver
     void tridiagonal (float afDiag[3], float afSubDiag[3]);
     bool qLAlgorithm (float afDiag[3], float afSubDiag[3]);

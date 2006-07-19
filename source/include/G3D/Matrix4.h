@@ -73,12 +73,6 @@ public:
     static const Matrix4& identity();
     static const Matrix4& zero();
 
-    // Deprecated. See Matrix3::identity() for details.
-    /** @deprecated Use Matrix4::identity() */
-    static const Matrix4 IDENTITY;
-    /** @deprecated Use Matrix4::zero() */
-    static const Matrix4 ZERO;
-
     inline float* operator[](int r) {
         debugAssert(r >= 0);
         debugAssert(r < 4);

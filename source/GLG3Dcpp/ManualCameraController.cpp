@@ -29,16 +29,6 @@ FirstPersonManipulator::FirstPersonManipulator(
 }
 
 
-CoordinateFrame FirstPersonManipulator::getCoordinateFrame() const {
-    return frame();
-}
-
-
-void FirstPersonManipulator::getCoordinateFrame(CoordinateFrame& c) const {
-    getFrame(c);
-}
-
-
 void FirstPersonManipulator::getFrame(CoordinateFrame& c) const {
 	c.translation = translation;
     c.rotation = Matrix3::fromEulerAnglesZYX(0, -yaw, -pitch);
@@ -182,11 +172,6 @@ void FirstPersonManipulator::setFrame(const CoordinateFrame& c) {
 }
 
 
-void FirstPersonManipulator::setCoordinateFrame(const CoordinateFrame& c) {
-    setFrame(c);
-}
-
-
 void FirstPersonManipulator::getPosedModel(Array<PosedModelRef>& p3d, Array<PosedModel2DRef>& p2d) {
 }
 
@@ -216,8 +201,8 @@ void FirstPersonManipulator::onSimulation(RealTime rdt, SimTime sdt, SimTime idt
         direction.unitize();
 
         // Translate forward
-        translation += (getLookVector() * direction.y + 
-            getStrafeVector() * direction.x) * elapsedTime * maxMoveRate;
+        translation += (lookVector() * direction.y + 
+            frame().rightVector() * direction.x) * elapsedTime * maxMoveRate;
     }
     
     // Desired change in yaw and pitch

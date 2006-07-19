@@ -48,11 +48,7 @@ public:
         return LineSegment(point1, point2 - point1);
     }
 
-
-    /** Returns end point 0 or 1.
-        @deprecated Use point. */
-    Vector3 G3D_DEPRECATED endPoint(int i) const;
-
+	/** Call with 0 or 1 */
     Vector3 point(int i) const;
 
     inline float length() const {

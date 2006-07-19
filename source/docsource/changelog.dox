@@ -28,6 +28,16 @@
    </TD></TR></TABLE>
 
    <P>
+   Changes in 7.00:
+   <ul>
+     <li> Removed CoordinateFrame::zLookDirection (use -1)
+	 <li> Removed Capsule::endPoint (use point)
+	 <li> Removed CoordinateFrame::getStrafeVector (use rightVector)
+	 <li> Removed static constants (use equivalent lower-case methods)
+	 <li> Removed Cylinder::getPoint1 (use point)
+   </ul>
+
+   <P>
    Changes in 6.10:
     <UL>
      <LI> Optimized G3D::CoordinateFrame::pointToObjectSpace to be fully inlined via left-multiplication

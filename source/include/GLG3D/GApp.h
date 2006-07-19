@@ -167,7 +167,7 @@ public:
      using the arrow keys or W,A,S,D and the mouse.
      @deprecated Will become a FirstPersonManipulatorRef in 7.00
      */
-    ManualCameraController  debugController;
+    FirstPersonManipulator  debugController;
 
     /**
      Strings that have been printed with debugPrint.
