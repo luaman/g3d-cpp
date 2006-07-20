@@ -30,6 +30,7 @@
    <P>
    Changes in 7.00:
    <ul>
+     <li> Removed an assertion in BinaryInput requiring that compressed buffers be copied on construction [Nick Bray]
      <li> Removed CoordinateFrame::zLookDirection (use -1)
 	 <li> Removed Capsule::endPoint (use point)
 	 <li> Removed CoordinateFrame::getStrafeVector (use rightVector)

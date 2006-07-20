@@ -193,7 +193,6 @@ BinaryInput::BinaryInput(
     bool                compressed,
     bool                copyMemory) {
 
-    debugAssert(! (compressed && !copyMemory));
     beginEndBits = 0;
     bitPos = 0;
     alreadyRead = 0;
