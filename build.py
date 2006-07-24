@@ -4,15 +4,16 @@
 # @maintainer Morgan McGuire, matrix@graphics3d.com
 #
 # @created 2001-01-01
-# @edited  2006-05-29
+# @edited  2007-06-29
 #
 # Each build target is a procedure.
 #
 
 from buildlib import *
+from socket import gethostname
 
 # The library version number
-version = "6_10"
+version = "7_00"
 
 # Setup versions for supporting programs
 aclocal    = "aclocal"
@@ -34,6 +35,17 @@ else:
     platform = {'FreeBSD' : 'linux', \
                 'Linux' : 'linux', \
                 'Darwin' : 'osx'}[os.uname()[0]]
+
+# Williams environment customization
+if (gethostname().endswith('.cs.williams.edu')):
+    aclocal    = "aclocal19"
+    autoconf   = "autoconf259"
+    autoheader = "autoheader259"
+    automake   = "automake19"
+    doxygen    = "doxygen"
+    python     = "python"
+    sdlconfig  = "/usr/ports/devel/sdl12/work/SDL-1.2.9/sdl-config"
+
 
 ###############################################################################
 #                                                                             #
@@ -116,8 +128,12 @@ def linuxCheckVersion():
         compiler = 'gcc'
  
     try:
-        checkVersion(compiler + ' --version', '3.1', 'Requires g++ 3.1 or later.')
-
+       
+        # Fails on Williams machines:
+        #checkVersion(python + ' -V', '2.0', 'Requires Python 2.0 or later.', 1)
+        checkVersion(compiler + ' --version', '3.1', 'Requires g++ 3.1 or later.')          
+       
+        # Make two tries on automake
         try:
             checkVersion(automake + ' --version', '1.6', 'Requires automake 1.6 or later.')
         except:
@@ -133,8 +149,6 @@ def linuxCheckVersion():
             
 
         checkVersion(doxygen + ' --version', '1.3', 'Requires doxygen 1.3 or later.')
-        checkVersion(python + ' -V', '2.0', 'Requires Python 2.0 or later.', 1)
-
         checkVersion(sdlconfig + ' --version', '1.2', 'Requires SDL 1.2 or later.')
 
     except Error, e:

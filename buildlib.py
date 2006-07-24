@@ -466,12 +466,14 @@ class Error(Exception):
 """
 def checkVersion(verCmdString, minVerString, errString, stderr = 0):
 
+    print '--------------------------------'
     actualVerString = shell(verCmdString, stderr)
-    print
+    print '--------------------------------'
     print actualVerString
 
     actualVer = findVersion(actualVerString)
     minVer    = findVersion(minVerString)
+
 
     # Make the lengths match
 
@@ -507,6 +509,7 @@ def shell(cmd, stderr = 0):
         os.system(cmd + ' >& temp/system.tmp')
     else:
         os.system(cmd + ' > temp/system.tmp')
+
     result = ''
     for line in fileinput.input('temp/system.tmp'):
         result = result + line
