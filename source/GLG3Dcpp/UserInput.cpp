@@ -12,35 +12,10 @@
 
 namespace G3D {
 
-UserInput::UserInput(
-    Table<KeyCode, UIFunction>* keyMapping) {
-
-    alwaysAssertM(RenderDevice::lastRenderDeviceCreated != NULL, 
-        "Must create a RenderDevice before a UserInput");
-
-    alwaysAssertM(RenderDevice::lastRenderDeviceCreated->window() != NULL, 
-        "Must initialize a RenderDevice before creating a UserInput");
-
-    init(RenderDevice::lastRenderDeviceCreated->window(), keyMapping);
-}
-
-
-UserInput::UserInput() {
-
-    alwaysAssertM(RenderDevice::lastRenderDeviceCreated != NULL, 
-        "Must create a RenderDevice before a UserInput");
-
-    alwaysAssertM(RenderDevice::lastRenderDeviceCreated->window() != NULL, 
-        "Must initialize a RenderDevice before creating a UserInput");
-
-    init(RenderDevice::lastRenderDeviceCreated->window(), NULL);
-}
-
 
 UserInput::UserInput(
-    GWindow*                          window,
-    Table<KeyCode, UIFunction>* keyMapping) {
-    init(window, keyMapping);
+    GWindow*                          window) {
+    init(window, NULL);
 }
 
 
@@ -90,12 +65,7 @@ void UserInput::init(
     _window->getRelativeMouseState(mouse, mouseButtons);
     guiMouse = mouse;
 
-    appHadFocus = appHasFocus();
-}
-
-
-bool UserInput::appHasFocus() const {
-    return _window->hasFocus();
+    appHadFocus = _window->hasFocus();
 }
 
 
@@ -184,7 +154,7 @@ void UserInput::endEvents() {
 
     deltaMouse = mouse - oldMouse;
 
-    bool focus = appHasFocus();
+    bool focus = _window->hasFocus();
 
     if (_pureDeltaMouse) {
 

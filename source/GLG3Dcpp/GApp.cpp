@@ -104,7 +104,7 @@ GApp::GApp(const Settings& settings, GWindow* window) {
     loadFont(settings.debugFontName);
     debugAssertGLOk();
 
-    userInput = new UserInput();
+    userInput = new UserInput(_window);
 
     debugController.init(renderDevice, userInput);
     debugController.setMoveRate(10);

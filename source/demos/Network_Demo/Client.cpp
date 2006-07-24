@@ -138,7 +138,7 @@ void Client::onUserInput(UserInput* ui) {
     }
 
 
-    if (entityTable.containsKey(localID) && ! app->debugController.active() && app->userInput->appHasFocus()) {
+    if (entityTable.containsKey(localID) && ! app->debugController.active() && app->window()->hasFocus()) {
         Entity& entity = entityTable[localID];
         Controls newControls = entity.controls;
 

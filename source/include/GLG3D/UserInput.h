@@ -164,6 +164,7 @@ private:
 	void processKey(KeyCode code, int event);
 
 public:
+
     /**
      Turns a UserInput key code into a human readable string
      describing the key.
@@ -178,39 +179,8 @@ public:
 	bool                    useJoystick;
     
 	/**
-     @param keyMapping Mapping of various key codes to UI functions.
-     If no mapping is provided, the arrow keys and WASD are mapped
-     as the keys controlling getX() and getY().
-
-     Example:
-      <PRE>
-      Table<int, UIFunction> map;
-      map.set(SDLK_RIGHT, UserInput::RIGHT);
-      map.set(SDLK_LEFT,  UserInput::LEFT);
-      UserInput ui(&map);
-      </PRE>
-
-      @deprecated The keyMapping argument is deprecated
 	 */
-    UserInput(GWindow* window, Table<KeyCode, UIFunction>* keyMapping = NULL);
-
-    /**
-     Provided for 6.00 compatibility.  Finds the last RenderDevice created
-     and uses the window from it.
-
-	 Do not call until after G3D::RenderDevice::init has been invoked.
-     @deprecated
-     */
-    UserInput(Table<KeyCode, UIFunction>* keyMapping);
-
-    /**
-     Provided for 6.00 compatibility.  Finds the last RenderDevice created
-     and uses the window from it.
-
-	 Do not call until after G3D::RenderDevice::init has been invoked.
-     @deprecated
-     */
-    UserInput();
+    UserInput(GWindow* window);
 
     /**
      Return the window used internally by the UserInput
@@ -231,12 +201,12 @@ public:
     void processEvent(const ::SDL_Event& event);
 
 	/**
-     Call after your SDL event polling loop.
+     Call after your GWindow event polling loop.  If you are using G3D::GApplet, this is handled for you.
 	 */
 	void endEvents();
 
     /**
-     Call before your SDL event polling loop.
+     Call before your GWindow event polling loop.If you are using G3D::GApplet, this is handled for you.
      */
 	void beginEvents();
 
@@ -279,21 +249,6 @@ public:
         return guiMouse;
     }
 
-    /** @deprecated */
-    inline Vector2 G3D_DEPRECATED getMouseXY() const {
-        return guiMouse;
-    }
-
-    /** @deprecated */
-	inline float G3D_DEPRECATED getMouseX() const {
-		return guiMouse.x;
-	}
-
-    /** @deprecated */
-	inline float G3D_DEPRECATED getMouseY() const {
-		return guiMouse.y;
-	}
-
     /**
      Returns true iff the given key is currently held down.
      The SDL key codes are used, plus
@@ -326,12 +281,6 @@ public:
     void pressedKeys(Array<KeyCode>& code) const;
     void releasedKeys(Array<KeyCode>& code) const;
 
-    /** Returns true when this app is in the "foreground" 
-        (shortcut for window()->hasFocus()).
-        @deprecated*/
-    bool appHasFocus() const;
-
-
     Vector2 mouseDXY() const;
     float mouseDX() const;
     float mouseDY() const;
@@ -355,6 +304,5 @@ public:
 };
 
 }
-
 
 #endif
