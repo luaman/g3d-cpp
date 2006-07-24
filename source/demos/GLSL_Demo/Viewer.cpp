@@ -2,7 +2,7 @@
  @file GLSL_Demo/Viewer.cpp
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2004-06-25
- @edited  2004-09-25
+ @edited  2006-07-25
  */
 
 
@@ -67,7 +67,7 @@ void Viewer::onGraphics(RenderDevice* rd) {
 
     rd->clear(app->sky.isNull(), true, true);
     if (app->sky.notNull()) {
-        app->sky->render(lighting);
+        app->sky->render(rd, lighting);
     }
 
     rd->enableLighting();
@@ -96,7 +96,7 @@ void Viewer::onGraphics(RenderDevice* rd) {
     rd->disableLighting();
 
     if (app->sky.notNull()) {
-        app->sky->renderLensFlare(lighting);
+        app->sky->renderLensFlare(rd, lighting);
     }
 }
 

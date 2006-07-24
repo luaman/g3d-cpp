@@ -126,7 +126,7 @@ void Demo::onInit()  {
     gameTime     = G3D::toSeconds(8, 00, 00, AM);
     renderMethod = VARSTATIC;
 
-    sky          = Sky::create(app->renderDevice, app->dataDir + "sky/");
+    sky          = Sky::fromFile(app->dataDir + "sky/");
 
     app->debugController.setPosition(Vector3(-25, 2, 0));
     app->debugController.lookAt(Vector3(-20, 2.5, 1));
@@ -168,25 +168,25 @@ void Demo::onUserInput(UserInput* ui) {
 
 void Demo::onGraphics(RenderDevice* rd) {
 
-    app->renderDevice->clear(sky == NULL, true, false);
-    app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
+    rd->clear(sky == NULL, true, false);
+    rd->setProjectionAndCameraMatrix(app->debugCamera);
     LightingParameters lighting(gameTime, false);
 
     if (sky.notNull()) {
-       sky->render(lighting);
+       sky->render(rd, lighting);
     }
                     
-    app->renderDevice->pushState();
+    rd->pushState();
         // Setup lighting
-        app->renderDevice->setSpecularCoefficient(1);
-        app->renderDevice->setShininess(64);
+        rd->setSpecularCoefficient(1);
+        rd->setShininess(64);
         debugAssertGLOk();
-        app->renderDevice->enableLighting();
-        app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
-        app->renderDevice->setLight(1, GLight::directional(-lighting.lightDirection, Color3::white() * .25, false));
-        app->renderDevice->setAmbientLightColor(lighting.ambient);
+        rd->enableLighting();
+        rd->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
+        rd->setLight(1, GLight::directional(-lighting.lightDirection, Color3::white() * .25, false));
+        rd->setAmbientLightColor(lighting.ambient);
 
-        app->renderDevice->setShadeMode(RenderDevice::SHADE_SMOOTH);
+        rd->setShadeMode(RenderDevice::SHADE_SMOOTH);
 
         static const Color3 color[] = {Color3::black(), Color3::white(), Color3::orange(), Color3::blue()};
         double  t[2];
@@ -210,17 +210,17 @@ void Demo::onGraphics(RenderDevice* rd) {
             cframe.lookAt(c[1], Vector3(cos(a), 3, sin(a)).direction());
 
 
-            app->renderDevice->setColor(color[x % 4]);
-            model->render(app->renderDevice, cframe, lighting, varStream);
+            rd->setColor(color[x % 4]);
+            model->render(rd, cframe, lighting, varStream);
         }
-    app->renderDevice->popState();
+    rd->popState();
 
 
     if (sky.notNull()) {
-        sky->renderLensFlare(lighting);
+        sky->renderLensFlare(rd, lighting);
     }
     
-    app->renderDevice->push2D();
+    rd->push2D();
         char* str = NULL;
         switch (renderMethod) {
         case TRIANGLES:
@@ -238,9 +238,9 @@ void Demo::onGraphics(RenderDevice* rd) {
         default:;
         }
 
-       app->debugFont->draw2D(str, Vector2(10, app->renderDevice->getHeight() - 40), 20, Color3::yellow(), Color3::black());
+       app->debugFont->draw2D(rd, str, Vector2(10, rd->height() - 40), 20, Color3::yellow(), Color3::black());
 
-    app->renderDevice->pop2D();
+    rd->pop2D();
 
     debugAssertGLOk();    
     varStream->reset();

@@ -57,7 +57,7 @@ void App::showSplashScreen() {
 
     // Load the font
     if (reportFont.isNull()) {
-        reportFont = GFont::fromFile(NULL, dataDir + "arial.fnt");
+        reportFont = GFont::fromFile(dataDir + "arial.fnt");
     }
 
     renderDevice->push2D();
@@ -65,7 +65,7 @@ void App::showSplashScreen() {
         renderDevice->setColorClearValue(Color3::white());
         renderDevice->clear();
 
-        int s = gfxMeterTexture->getTexelWidth();
+        int s = gfxMeterTexture->texelWidth();
         int w = 800, h = 600;
         renderDevice->setTexture(0, gfxMeterTexture);
         Draw::rect2D(Rect2D::xywh(w/2-s/2,h/2-s/2,s,s), renderDevice);
@@ -141,7 +141,7 @@ void App::main() {
         }
     }
 
-    titleFont = GFont::fromFile(NULL, dataDir + "carbon.fnt");
+    titleFont = GFont::fromFile(dataDir + "carbon.fnt");
 
     shaderVersions(combineShader, asmShader, glslShader);
     computeFeatureRating();
@@ -300,7 +300,7 @@ App::App(const GAppSettings& settings) : GApp(settings) {
 #   endif
 
     if (reportFont.isNull()) {
-        reportFont = GFont::fromFile(NULL, dataDir + "arial.fnt");
+        reportFont = GFont::fromFile(dataDir + "arial.fnt");
     }
 
     applet = new Report(this);

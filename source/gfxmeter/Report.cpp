@@ -17,7 +17,7 @@ Report::Report(App* _app) : GApplet(_app), app(_app) {
 }
 
 
-void Report::init()  {
+void Report::onInit()  {
     popup = NONE;
 
     // Called before Report::run() beings
@@ -36,17 +36,17 @@ void Report::init()  {
 }
 
 
-void Report::cleanup() {
+void Report::onCleanup() {
     // Called when Report::run() exits
 }
 
 
-void Report::doNetwork() {
+void Report::onNetwork() {
 	// Poll net messages here
 }
 
 
-void Report::doSimulation(SimTime dt) {
+void Report::onSimulation(SimTime sdt, SimTime dt, SimTime idt) {
 	// Add physical simulation here
 
     GameTime deltaTime = 0.02;
@@ -56,9 +56,9 @@ void Report::doSimulation(SimTime dt) {
 }
 
 
-void Report::doLogic() {    
-    int w = app->renderDevice->getWidth();
-    int h = app->renderDevice->getHeight();
+void Report::onLogic() {    
+    int w = app->renderDevice->width();
+    int h = app->renderDevice->height();
 
     Vector2 mouse = app->userInput->mouseXY();
 
@@ -109,7 +109,7 @@ void Report::doFunStuff() {
 
 
 static void drawBar(RenderDevice* rd, int value, const Vector2& p) {
-    float s = rd->getWidth() * 0.35f / 100.0f;
+    float s = rd->width() * 0.35f / 100.0f;
     Draw::rect2D(Rect2D::xywh(p.x, p.y, 100 * s, 20), rd, Color3::white() * 0.9f);
     Draw::rect2D(Rect2D::xywh(p.x, p.y, value * s, 20), rd, Color3::yellow());
     Draw::rect2DBorder(Rect2D::xywh(p.x, p.y, 100 * s, 20), rd, Color3::black());
@@ -117,8 +117,8 @@ static void drawBar(RenderDevice* rd, int value, const Vector2& p) {
 
 
 Rect2D Report::drawPopup(const char* title) {
-    int w = app->renderDevice->getWidth();
-    int h = app->renderDevice->getHeight();
+    int w = app->renderDevice->width();
+    int h = app->renderDevice->height();
 
     // Drop shadow
     app->renderDevice->pushState();
@@ -148,21 +148,21 @@ Rect2D Report::drawPopup(const char* title) {
 }
 
 
-void Report::doGraphics() {
-    app->renderDevice->setColorClearValue(Color3::white());
-    app->renderDevice->clear();
+void Report::onGraphics(RenderDevice* rd) {
+    rd->setColorClearValue(Color3::white());
+    rd->clear();
 
     doFunStuff();
 
-    app->renderDevice->push2D();
+    rd->push2D();
 
-        int w = app->renderDevice->getWidth();
-        int h = app->renderDevice->getHeight();
+        int w = rd->width();
+        int h = rd->height();
 
         ///////////////////////////////////////
         // Left panel
-#       define LABEL(str) p.y += app->titleFont->draw2D(app->renderDevice, str, p - Vector2((float)w * 0.0075f, 0), s * 2, Color3::white() * 0.4f).y
-#       define PRINT(str) p.y += app->reportFont->draw2D(app->renderDevice, str, p, s, Color3::black()).y
+#       define LABEL(str) p.y += app->titleFont->draw2D(rd, str, p - Vector2((float)w * 0.0075f, 0), s * 2, Color3::white() * 0.4f).y
+#       define PRINT(str) p.y += app->reportFont->draw2D(rd, str, p, s, Color3::black()).y
 
         int x0 = w * 0.015;
         // Cursor position
@@ -195,9 +195,9 @@ void Report::doGraphics() {
 
         // Graphics Card
         LABEL("Graphics Card");
-        app->renderDevice->setTexture(0, app->cardLogo);
-        Draw::rect2D(Rect2D::xywh(p.x - s * 6, p.y, s * 5, s * 5), app->renderDevice);
-        app->renderDevice->setTexture(0, NULL);
+        rd->setTexture(0, app->cardLogo);
+        Draw::rect2D(Rect2D::xywh(p.x - s * 6, p.y, s * 5, s * 5), rd);
+        rd->setTexture(0, NULL);
 
         PRINT(GLCaps::vendor().c_str());
         PRINT(GLCaps::renderer().c_str());
@@ -215,9 +215,9 @@ void Report::doGraphics() {
 
         // Processor
         LABEL("Processor");
-        app->renderDevice->setTexture(0, app->chipLogo);
-        Draw::rect2D(Rect2D::xywh(p.x - s * 6, p.y, s * 5, s * 5), app->renderDevice);
-        app->renderDevice->setTexture(0, NULL);
+        rd->setTexture(0, app->chipLogo);
+        Draw::rect2D(Rect2D::xywh(p.x - s * 6, p.y, s * 5, s * 5), rd);
+        rd->setTexture(0, NULL);
 
         PRINT(System::cpuVendor().c_str());
         PRINT(System::cpuArchitecture().c_str());
@@ -245,9 +245,9 @@ void Report::doGraphics() {
 
         // Operating System
         LABEL("OS");
-        app->renderDevice->setTexture(0, app->osLogo);
-        Draw::rect2D(Rect2D::xywh(p.x - s * 6, p.y - s * 2, s * 5, s * 5), app->renderDevice);
-        app->renderDevice->setTexture(0, NULL);
+        rd->setTexture(0, app->osLogo);
+        Draw::rect2D(Rect2D::xywh(p.x - s * 6, p.y - s * 2, s * 5, s * 5), rd);
+        rd->setTexture(0, NULL);
 
 
         if (beginsWith(System::operatingSystem(), "Windows 5.0")) {
@@ -260,33 +260,33 @@ void Report::doGraphics() {
         p.y += s * 3;
 
         x0 = w - s * 10;
-        app->titleFont->draw2D(app->renderDevice, "Features", p - Vector2(w * 0.0075f, 0), s * 2, Color3::white() * 0.4f);
-        p.y += app->reportFont->draw2D(app->renderDevice, format("f%d", app->featureRating), Vector2(x0, p.y), s*2, Color3::red() * 0.5).y;
-        drawBar(app->renderDevice, app->featureRating, p);
+        app->titleFont->draw2D(rd, "Features", p - Vector2(w * 0.0075f, 0), s * 2, Color3::white() * 0.4f);
+        p.y += app->reportFont->draw2D(rd, format("f%d", app->featureRating), Vector2(x0, p.y), s*2, Color3::red() * 0.5).y;
+        drawBar(rd, app->featureRating, p);
 
         // Designed to put NV40 at 50
-        app->performanceRating = log(app->renderDevice->getFrameRate()) * 15.0f;
+        app->performanceRating = log(rd->getFrameRate()) * 15.0f;
 
         p.y += s * 4;
         performanceButton = Rect2D::xywh(p,
-            app->titleFont->draw2D(app->renderDevice, "Speed", p - Vector2(w * 0.0075f, 0), s * 2, Color3::white() * 0.4f));
+            app->titleFont->draw2D(rd, "Speed", p - Vector2(w * 0.0075f, 0), s * 2, Color3::white() * 0.4f));
 
 		{
 			float spd = iRound(app->performanceRating * 10) / 10.0f;
-	        p.y += app->reportFont->draw2D(app->renderDevice, format("%5.1f", spd), Vector2(x0 - s*2, p.y), s*2, Color3::red() * 0.5).y;
+	        p.y += app->reportFont->draw2D(rd, format("%5.1f", spd), Vector2(x0 - s*2, p.y), s*2, Color3::red() * 0.5).y;
 		}
-        drawBar(app->renderDevice, min(app->performanceRating, 100.0f), p);
+        drawBar(rd, min(app->performanceRating, 100.0f), p);
 
         p.y += s * 4;
-        app->titleFont->draw2D(app->renderDevice, "Quality", p - Vector2(w * 0.0075f, 0), s * 2, Color3::white() * 0.4f);
-        p.y += app->reportFont->draw2D(app->renderDevice, quality(app->bugCount), Vector2(x0, p.y), s*2, Color3::red() * 0.5f).y;
-        drawBar(app->renderDevice, iClamp(100 - app->bugCount * 10, 0, 100), p);
+        app->titleFont->draw2D(rd, "Quality", p - Vector2(w * 0.0075f, 0), s * 2, Color3::white() * 0.4f);
+        p.y += app->reportFont->draw2D(rd, quality(app->bugCount), Vector2(x0, p.y), s*2, Color3::red() * 0.5f).y;
+        drawBar(rd, iClamp(100 - app->bugCount * 10, 0, 100), p);
 
 #       undef PRINT
 
 
         p.y = h - 50;
-#       define PRINT(str) p.y += app->reportFont->draw2D(app->renderDevice, str, p, 8, Color3::black()).y;
+#       define PRINT(str) p.y += app->reportFont->draw2D(rd, str, p, 8, Color3::black()).y;
 
         PRINT("These ratings are based on the performance of G3D apps.");
         PRINT("They may not be representative of overall 3D performance.");
@@ -311,25 +311,25 @@ void Report::doGraphics() {
                 float factor = 3 * app->vertexPerformance.numTris / 1e6;
 
 #               define PRINT(cap, val)   \
-                    app->reportFont->draw2D(app->renderDevice, cap, p, s, Color3::black());\
-                    app->reportFont->draw2D(app->renderDevice, (app->vertexPerformance.val[0] > 0) ? \
+                    app->reportFont->draw2D(rd, cap, p, s, Color3::black());\
+                    app->reportFont->draw2D(rd, (app->vertexPerformance.val[0] > 0) ? \
                         format("%5.1f", app->vertexPerformance.val[0]) : \
                         std::string("X"), p + Vector2(190, 0), s, Color3::red() * 0.5, Color4::clear(), GFont::XALIGN_RIGHT);\
-                    app->reportFont->draw2D(app->renderDevice, (app->vertexPerformance.val[0] > 0) ? \
+                    app->reportFont->draw2D(rd, (app->vertexPerformance.val[0] > 0) ? \
                         format("%5.1f", factor * app->vertexPerformance.val[0]) : \
                         std::string("X"), p + Vector2(240, 0), s, Color3::red() * 0.5, Color4::clear(), GFont::XALIGN_RIGHT);\
-                    app->reportFont->draw2D(app->renderDevice, (app->vertexPerformance.val[1] > 0) ? \
+                    app->reportFont->draw2D(rd, (app->vertexPerformance.val[1] > 0) ? \
                         format("%5.1f", app->vertexPerformance.val[1]) : \
                         std::string("X"), p + Vector2(330, 0), s, Color3::red() * 0.5, Color4::clear(), GFont::XALIGN_RIGHT);\
-                    p.y += app->reportFont->draw2D(app->renderDevice, (app->vertexPerformance.val[1] > 0) ? \
+                    p.y += app->reportFont->draw2D(rd, (app->vertexPerformance.val[1] > 0) ? \
                         format("%5.1f", factor * app->vertexPerformance.val[1]) : \
                         std::string("X"), p + Vector2(380, 0), s, Color3::red() * 0.5, Color4::clear(), GFont::XALIGN_RIGHT).y;
 
-                app->reportFont->draw2D(app->renderDevice, "Incoherent", p + Vector2(220, 0), s, Color3::black(), Color4::clear(), GFont::XALIGN_RIGHT);
-                p.y += app->reportFont->draw2D(app->renderDevice, "Coherent", p + Vector2(350, 0), s, Color3::black(), Color4::clear(), GFont::XALIGN_RIGHT).y;
+                app->reportFont->draw2D(rd, "Incoherent", p + Vector2(220, 0), s, Color3::black(), Color4::clear(), GFont::XALIGN_RIGHT);
+                p.y += app->reportFont->draw2D(rd, "Coherent", p + Vector2(350, 0), s, Color3::black(), Color4::clear(), GFont::XALIGN_RIGHT).y;
 
-                app->reportFont->draw2D(app->renderDevice, "FPS*   MVerts/s", p + Vector2(240, 0), s, Color3::black(), Color4::clear(), GFont::XALIGN_RIGHT);
-                p.y += app->reportFont->draw2D(app->renderDevice, "FPS*   MVerts/s", p + Vector2(370, 0), s, Color3::black(), Color4::clear(), GFont::XALIGN_RIGHT).y;
+                app->reportFont->draw2D(rd, "FPS*   MVerts/s", p + Vector2(240, 0), s, Color3::black(), Color4::clear(), GFont::XALIGN_RIGHT);
+                p.y += app->reportFont->draw2D(rd, "FPS*   MVerts/s", p + Vector2(370, 0), s, Color3::black(), Color4::clear(), GFont::XALIGN_RIGHT).y;
                 
                 PRINT("glBegin/glEnd", beginEndFPS);
                 PRINT("glDrawElements", drawElementsRAMFPS); 
@@ -338,21 +338,21 @@ void Report::doGraphics() {
                 PRINT("  + interleaving", drawElementsVBOIFPS);
                 PRINT("  (without shading)", drawElementsVBOPeakFPS);
 
-                app->reportFont->draw2D(app->renderDevice, "glDrawArrays", p, s, Color3::black());
-                app->reportFont->draw2D(app->renderDevice, (app->vertexPerformance.drawArraysVBOPeakFPS > 0) ? \
+                app->reportFont->draw2D(rd, "glDrawArrays", p, s, Color3::black());
+                app->reportFont->draw2D(rd, (app->vertexPerformance.drawArraysVBOPeakFPS > 0) ? \
                     format("%5.1f", app->vertexPerformance.drawArraysVBOPeakFPS) : \
                     std::string("X"), p + Vector2(330, 0), s, Color3::red() * 0.5, Color4::clear(), GFont::XALIGN_RIGHT);\
-                p.y += app->reportFont->draw2D(app->renderDevice, (app->vertexPerformance.drawArraysVBOPeakFPS > 0) ? \
+                p.y += app->reportFont->draw2D(rd, (app->vertexPerformance.drawArraysVBOPeakFPS > 0) ? \
                     format("%5.1f", factor * app->vertexPerformance.drawArraysVBOPeakFPS) : \
                     std::string("X"), p + Vector2(380, 0), s, Color3::red() * 0.5, Color4::clear(), GFont::XALIGN_RIGHT).y;
 
 #               undef PRINT
 
                 p.y += s;
-                p.y += app->reportFont->draw2D(app->renderDevice, format("* FPS at %d k polys/frame.", 
+                p.y += app->reportFont->draw2D(rd, format("* FPS at %d k polys/frame.", 
                     iRound(app->vertexPerformance.numTris / 1000.0)), p + Vector2(20, 0), s, Color3::black()).y;
             }
         }
 
-    app->renderDevice->pop2D();
+    rd->pop2D();
 }

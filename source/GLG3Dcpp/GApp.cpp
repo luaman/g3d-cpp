@@ -138,7 +138,7 @@ void GApp::loadFont(const std::string& fontName) {
     }
 
     if (fileExists(filename)) {
-        debugFont = GFont::fromFile(renderDevice, filename);
+        debugFont = GFont::fromFile(filename);
     } else {
         debugLog->printf(
             "Warning: G3D::GApp could not load font \"%s\".\n"
@@ -253,7 +253,7 @@ void GApp::renderDebugInfo() {
 
                 Color3 statColor = Color3::yellow();
 
-                debugFont->draw2D(renderDevice->getCardDescription() + "   " + System::version(), 
+                debugFont->draw2D(renderDevice, renderDevice->getCardDescription() + "   " + System::version(), 
                     pos, size, color);
                 pos.y += size * 1.5f;
                 
@@ -263,7 +263,7 @@ void GApp::renderDebugInfo() {
                     iRound(renderDevice->getTrianglesPerFrame() / 1e5) * .1f,
                     iRound(renderDevice->getTrianglesPerFrame() / 1e5) * .1f,
                     majGL, majAll, minGL, minAll, pushCalls);
-                debugFont->draw2D(s, pos, size, statColor);
+                debugFont->draw2D(renderDevice, s, pos, size, statColor);
 
                 pos.x = x;
                 pos.y += size * 1.5;
@@ -291,7 +291,7 @@ void GApp::renderDebugInfo() {
                 std::string str = 
                     format("Time: %3.0f%% Gfx, %3.0f%% Sim, %3.0f%% Lgc, %3.0f%% Net, %3.0f%% UI, %3.0f%% wait", 
                         g, s, L, n, u, w);
-                debugFont->draw2D(str, pos, size, statColor);
+                debugFont->draw2D(renderDevice, str, pos, size, statColor);
                 }
 
                 pos.x = x;
@@ -299,7 +299,7 @@ void GApp::renderDebugInfo() {
             }
 
             for (int i = 0; i < debugText.length(); ++i) {
-                debugFont->draw2D(debugText[i], pos, size, color, Color3::black());
+                debugFont->draw2D(renderDevice, debugText[i], pos, size, color, Color3::black());
                 pos.y += size * 1.5;
             }
 

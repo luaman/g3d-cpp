@@ -102,6 +102,7 @@ void Demo::onInit()  {
     app->debugCamera.lookAt(Vector3(0, 1, 0));
 }
 
+
 void Demo::onUserInput(UserInput* ui) {
     if (ui->keyPressed(SDLK_ESCAPE)) {
         // Even when we aren't in debug mode, quit on escape.
@@ -123,7 +124,7 @@ void Demo::onGraphics(RenderDevice* rd) {
 
     rd->clear(app->sky.isNull(), true, true);
     if (app->sky.notNull()) {
-        app->sky->render(lighting);
+        app->sky->render(rd, lighting);
     }
 
     // Create a light 
@@ -169,12 +170,12 @@ void Demo::onGraphics(RenderDevice* rd) {
     Draw::sphere(Sphere(wsLight.xyz(), .1f), rd, Color3::white(), Color4::clear());
 
     if (app->sky.notNull()) {
-        app->sky->renderLensFlare(lighting);
+        app->sky->renderLensFlare(rd, lighting);
     }
 
     rd->push2D();
-        app->debugFont->draw2D("The surface is a single quad textured with parallax bump mapping and per-pixel shading.", Vector2(10, 10), 10, Color3::white(), Color3::black());
-        app->debugFont->draw2D("Press TAB to toggle to first person camera controls.", Vector2(10, 30), 10, Color3::white(), Color3::black());
+        app->debugFont->draw2D(rd, "The surface is a single quad textured with parallax bump mapping and per-pixel shading.", Vector2(10, 10), 10, Color3::white(), Color3::black());
+        app->debugFont->draw2D(rd, "Press TAB to toggle to first person camera controls.", Vector2(10, 30), 10, Color3::white(), Color3::black());
     rd->pop2D();
 }
 
@@ -184,7 +185,7 @@ void App::main() {
 	debugController.setActive(false);
 
     // Load objects here
-    sky = Sky::create(renderDevice, dataDir + "sky/");
+    sky = Sky::fromFile(dataDir + "sky/");
     debugShowRenderingStats = false;
 
     Demo(this).run();

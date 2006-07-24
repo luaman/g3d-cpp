@@ -85,15 +85,9 @@ private:
         Spacing             spacing,
         Vector2*            array) const;
 
-    class RenderDevice*             renderDevice;
-
-    GFont(class RenderDevice* renderDevice, const std::string& filename, BinaryInput& b);
+    GFont(const std::string& filename, BinaryInput& b);
 
 public:
-
-    /** @deprecated */
-    static GFontRef G3D_DEPRECATED
-        fromFile(class RenderDevice* renderDevice, const std::string& filename);
 
     /** The filename must be a FNT (proportional width font) file.
         <P> If a font file is not found, an assertion will fail, an
@@ -145,9 +139,9 @@ public:
       @param infileBase The name of the raw/ini files @param outfile Defaults
 	  to infileBase + ".fnt"
      */
-    static void convertRAWINItoPWF
-    (const std::string& infileBase, 
-     std::string outfile = "");
+    static void convertRAWINItoPWF(
+		const std::string& infileBase, 
+		std::string outfile = "");
 
 
     /** Returns the natural character width and height of this font. */
@@ -192,19 +186,6 @@ public:
         YAlign              yalign  = YALIGN_TOP,
         Spacing             spacing = PROPORTIONAL_SPACING) const;
 
-    /** @deprecated  Use the version that accepts a RenderDevice as the 1st argument.
-     */
-    Vector2 G3D_DEPRECATED draw2D(
-        const std::string&  s,
-        const Vector2&      pos2D,
-        double              size    = 12,
-        const Color4&       color   = Color3::black(),
-        const Color4&       outline = Color4::clear(),
-        XAlign              xalign  = XALIGN_LEFT,
-        YAlign              yalign  = YALIGN_TOP,
-        Spacing             spacing = PROPORTIONAL_SPACING) const {
-        return draw2D(renderDevice, s, pos2D, size, color, outline, xalign, yalign, spacing);
-    }
 
     /**
      Text is visible from behind.  The text is oriented so that it
@@ -226,20 +207,8 @@ public:
         YAlign              yalign  = YALIGN_TOP,
         Spacing             spacing = PROPORTIONAL_SPACING) const;
 
-    /** @deprecated Use the version that accepts a RenderDevice as the 1st argument.*/
-    Vector2 G3D_DEPRECATED draw3D(
-        const std::string&          s,
-        const CoordinateFrame&      pos3D,
-        double              size    = .1,
-        const Color4&       color   = Color3::black(),
-        const Color4&       outline = Color4::clear(),
-        XAlign              xalign  = XALIGN_LEFT,
-        YAlign              yalign  = YALIGN_TOP,
-        Spacing             spacing = PROPORTIONAL_SPACING) const {
-        return draw3D(renderDevice, s, pos3D, size, color, outline, xalign, yalign, spacing);
-    }
-
-    /**
+		
+	/**
      Useful for drawing centered text and boxes around text.
      */
     Vector2 get2DStringBounds(
@@ -247,16 +216,6 @@ public:
         double              size = 12,
         Spacing             spacing = PROPORTIONAL_SPACING) const;
 };
-
-/**
- @deprecated
- */
-typedef GFont CFont;
-
-/**
- @deprecated
- */
-typedef GFontRef CFontRef;
 
 }
 #endif

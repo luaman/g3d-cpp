@@ -49,6 +49,7 @@ configured to create compile time errors to help you catch bugs.  These will app
 <code>error C2555: 'Browse::doGraphics' : overriding virtual function differs from 'G3D::GApplet::doGraphics' only by return type or calling convention</code>
 </p>
 
+
 <hr noshade>
 <p><b>Renamings</b></p>
 <p>

@@ -82,7 +82,7 @@ public:
     Model(const std::string& filename) {
 
         tex = Texture::fromFile("tiny.jpg");
-        textureID = tex->getOpenGLID();
+        textureID = tex->openGLID();
 
         if (filename != "") {
             PosedModelRef m = IFSModel::create(filename)->pose();
@@ -113,7 +113,7 @@ public:
 
                     // Cylindrical projection to get tex coords
                     Vector3 dir = g.vertexArray[i].direction();
-                    cpuTexCoord[i].x = (atan2(dir.x, dir.z) / G3D_TWO_PI + 0.5) * 5;
+                    cpuTexCoord[i].x = (atan2(dir.x, dir.z) / twoPi() + 0.5) * 5;
                     cpuTexCoord[i].y = (0.5 - dir.y * 0.5) * 5;
                 }
             }

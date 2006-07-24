@@ -42,7 +42,7 @@ static bool debugLightMap = false;
 
 
 Scene::Scene() {
-    sky = Sky::create(app->renderDevice, app->dataDir + "sky/");
+    sky = Sky::fromFile(app->dataDir + "sky/");
 
     if (GLCaps::supports_GL_ARB_shadow()) {
         shadowMap = Texture::createEmpty(shadowMapSize, shadowMapSize, "Shadow map", TextureFormat::depth(),
@@ -80,8 +80,8 @@ void Scene::renderingPass() const {
 void Scene::generateShadowMap(
     const CoordinateFrame& lightViewMatrix) const {
 
-    debugAssert(shadowMapSize < app->renderDevice->getHeight());
-    debugAssert(shadowMapSize < app->renderDevice->getWidth());
+    debugAssert(shadowMapSize < app->renderDevice->height());
+    debugAssert(shadowMapSize < app->renderDevice->width());
 
     app->renderDevice->clear(debugLightMap, true, false);
     
@@ -133,7 +133,7 @@ void Scene::render(const LightingParameters& lighting) const {
     debugAssertGLOk();
 
     if (sky != NULL) {
-		sky->render(lighting);
+		sky->render(app->renderDevice, lighting);
     }
 
     debugAssertGLOk();
@@ -161,7 +161,7 @@ void Scene::render(const LightingParameters& lighting) const {
     app->renderDevice->popState();
 
     if (sky != NULL) {
-        sky->renderLensFlare(lighting);
+        sky->renderLensFlare(app->renderDevice, lighting);
     }
     
 }

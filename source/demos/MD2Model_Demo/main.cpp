@@ -191,15 +191,15 @@ void Demo::onGraphics(RenderDevice* rd) {
     const double wy = weapon->pose(CoordinateFrame(), MD2Model::Pose(MD2Model::STAND))->objectSpaceBoundingBox().corner(0).y;
     const double footy = 0.98 * min(my, wy);
 
-    app->renderDevice->clear(true, true, true);
-    app->renderDevice->pushState();
+    rd->clear(true, true, true);
+    rd->pushState();
 			
-		app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
+		rd->setProjectionAndCameraMatrix(app->debugCamera);
         
-        app->renderDevice->enableLighting();
-        app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
-        app->renderDevice->setLight(1, GLight::directional(-lighting.lightDirection, Color3::white() * .25));
-        app->renderDevice->setAmbientLightColor(lighting.ambient);
+        rd->enableLighting();
+        rd->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
+        rd->setLight(1, GLight::directional(-lighting.lightDirection, Color3::white() * .25));
+        rd->setAmbientLightColor(lighting.ambient);
 
         int n = 1;
     
@@ -212,7 +212,7 @@ void Demo::onGraphics(RenderDevice* rd) {
                 cframe.rotation = Matrix3::fromAxisAngle(Vector3::unitY(), n * .5 + 4);
 
                 if (modelTexture.size() > 0) {
-                    app->renderDevice->setTexture(0, modelTexture[(n + 1 + z * 2) % modelTexture.size()]);
+                    rd->setTexture(0, modelTexture[(n + 1 + z * 2) % modelTexture.size()]);
                 }
 
                 drawCharWithShadow(cframe, pose);
@@ -226,52 +226,50 @@ void Demo::onGraphics(RenderDevice* rd) {
             CoordinateFrame cframe(Vector3(0, -footy, -8));
         
             if (modelTexture.size() > 0) {
-                app->renderDevice->setTexture(0, modelTexture.last());
+                rd->setTexture(0, modelTexture.last());
             }
 
             drawCharWithShadow(cframe, pose);
         }
 
-        app->renderDevice->disableLighting();
+        rd->disableLighting();
 
-        app->renderDevice->setObjectToWorldMatrix(CoordinateFrame());
+        rd->setObjectToWorldMatrix(CoordinateFrame());
     
         // Ground plane (to hide parts of characters that stick through ground)
-        app->renderDevice->setColor(Color3::white());
-        app->renderDevice->beginPrimitive(RenderDevice::QUADS);
-            app->renderDevice->sendVertex(Vector3(-50, -.01f, 50));
-            app->renderDevice->sendVertex(Vector3(50, -.01f, 50));
-            app->renderDevice->sendVertex(Vector3(50, -.01f, -50));
-            app->renderDevice->sendVertex(Vector3(-50, -.01f, -50));
-        app->renderDevice->endPrimitive();
-    app->renderDevice->popState();
+        rd->setColor(Color3::white());
+        rd->beginPrimitive(RenderDevice::QUADS);
+            rd->sendVertex(Vector3(-50, -.01f, 50));
+            rd->sendVertex(Vector3(50, -.01f, 50));
+            rd->sendVertex(Vector3(50, -.01f, -50));
+            rd->sendVertex(Vector3(-50, -.01f, -50));
+        rd->endPrimitive();
+    rd->popState();
 
-    app->renderDevice->push2D();
+    rd->push2D();
         double x = 10;
         double y = 10;
         double f = 16;
-        app->debugFont->draw2D(format("%d fps", iRound(app->renderDevice->getFrameRate())), Vector2(x, y), 20, Color3::yellow(), Color3::black()); y += 30;
-        app->debugFont->draw2D(format("%d characters", n), Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
-        app->debugFont->draw2D(format("%1.1f MB", model->mainMemorySize() / 1e6), Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
-        app->debugFont->draw2D(format("%1.0f Mtris/sec", app->renderDevice->getTriangleRate() / 1e6), Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
+        app->debugFont->draw2D(rd, format("%d fps", iRound(rd->getFrameRate())), Vector2(x, y), 20, Color3::yellow(), Color3::black()); y += 30;
+        app->debugFont->draw2D(rd, format("%d characters", n), Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
+        app->debugFont->draw2D(rd, format("%1.1f MB", model->mainMemorySize() / 1e6), Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
+        app->debugFont->draw2D(rd, format("%1.0f Mtris/sec", rd->getTriangleRate() / 1e6), Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
 
-        app->debugFont->draw2D(model->name(), Vector2(app->renderDevice->getWidth()/2, app->renderDevice->getHeight() - 45), 30, Color3::black(), Color3::white(), GFont::XALIGN_CENTER);
+        app->debugFont->draw2D(rd, model->name(), Vector2(rd->width()/2, rd->height() - 45), 30, Color3::black(), Color3::white(), GFont::XALIGN_CENTER);
 
-        x = app->renderDevice->getWidth() - 130;
+        x = rd->width() - 130;
         y = 10;
         f = 12;
-        app->debugFont->draw2D("CLICK   attack", Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
-        app->debugFont->draw2D("SPACE  jump", Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
-        app->debugFont->draw2D("CTRL     crouch", Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
-        app->debugFont->draw2D("1 . . 5    taunt", Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
-        app->debugFont->draw2D("6 . . 8    die", Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
-        app->debugFont->draw2D("9 . . -    pain", Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
-        app->debugFont->draw2D("R/T       run/back", Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
-        app->debugFont->draw2D("e           new character", Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
+        app->debugFont->draw2D(rd, "CLICK   attack", Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
+        app->debugFont->draw2D(rd, "SPACE  jump", Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
+        app->debugFont->draw2D(rd, "CTRL     crouch", Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
+        app->debugFont->draw2D(rd, "1 . . 5    taunt", Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
+        app->debugFont->draw2D(rd, "6 . . 8    die", Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
+        app->debugFont->draw2D(rd, "9 . . -    pain", Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
+        app->debugFont->draw2D(rd, "R/T       run/back", Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
+        app->debugFont->draw2D(rd, "e           new character", Vector2(x, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
 
-        //app->debugFont->draw2D(System::mallocPerformance(), Vector2(0, y), f, Color3::cyan(), Color3::black()); y += f * 1.5;
-
-    app->renderDevice->pop2D();	   
+    rd->pop2D();	   
 
 }
 

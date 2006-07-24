@@ -41,7 +41,7 @@ public:
     }
 
     void doSimulation(GameTime dt) {
-        pose = MD2Model::Pose(MD2Model::STAND, System::getTick());
+        pose = MD2Model::Pose(MD2Model::STAND, System::time());
         /*
         pose.doSimulation(dt,
             false, false, false, 
@@ -84,17 +84,17 @@ public:
 
     virtual ~Report() {}
 
-    virtual void init();
+    virtual void onInit();
 
-    virtual void doLogic();
+    virtual void onLogic();
 
-	virtual void doNetwork();
+	virtual void onNetwork();
 
-    virtual void doSimulation(SimTime dt);
+    virtual void onSimulation(SimTime sdt, SimTime rdt, SimTime idt);
 
-    virtual void doGraphics();
+    virtual void onGraphics(RenderDevice* rd);
 
-    virtual void cleanup();
+    virtual void onCleanup();
 
 };
 

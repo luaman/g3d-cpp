@@ -25,27 +25,19 @@ GFontRef GFont::fromFile(const std::string& filename) {
     }
 
     BinaryInput b(filename, G3D_LITTLE_ENDIAN, true);
-    return new GFont(NULL, filename, b);
+    return new GFont(filename, b);
 }
 
-GFontRef GFont::fromFile(RenderDevice* _rd, const std::string& filename) {
-    if (! fileExists(filename)) {
-        debugAssertM(false, format("Could not load font: %s", filename.c_str()));
-        return NULL;
-    }
-
-    BinaryInput b(filename, G3D_LITTLE_ENDIAN, true);
-    return new GFont(_rd, filename, b);
-}
 
 GFontRef GFont::fromMemory(const std::string& name, const uint8* bytes, const int size) {
     // Note that we do not need to copy the memory since GFont will be done with it
     // by the time this method returns.
     BinaryInput b(bytes, size, G3D_LITTLE_ENDIAN, true, false); 
-    return new GFont(NULL, name, b);
+    return new GFont(name, b);
 } 
 
-GFont::GFont(RenderDevice* _rd, const std::string& filename, BinaryInput& b) : renderDevice(_rd) {
+
+GFont::GFont(const std::string& filename, BinaryInput& b) {
 
     debugAssertM(GLCaps::supports(TextureFormat::A8),
         "This graphics card does not support the GL_ALPHA8 texture format used by GFont.");

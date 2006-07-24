@@ -148,7 +148,7 @@ public:
     /**
      NULL if not loaded
      */
-    CFontRef                debugFont;
+    GFontRef                debugFont;
     UserInput*              userInput;
     bool                    endProgram;
 

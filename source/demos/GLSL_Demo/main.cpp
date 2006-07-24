@@ -34,7 +34,7 @@ void App::main() {
 
     debugLog->println("Loading textures\n");
 
-    sky = Sky::create(renderDevice, dataDir + "sky/");
+    sky = Sky::fromFile(dataDir + "sky/");
 
     // Find the path to our runtime files
     std::string path = "GLSL_Demo/";

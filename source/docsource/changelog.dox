@@ -32,8 +32,8 @@
    <ul>
      <li> Removed all deprecated APIs
 	 <li> All accessors of the form "getXXX" that take no arguments are now named just "xxx" 
-     <li> G3D::Sky::create no longer accepts a G3D::RenderDevice and G3D::Sky::render now requires a RenderDevice.
-     <li> G3D::GFont::create no longer accepts a G3D::RenderDevice and G3D::GFont::draw2D now requires a RenderDevice.
+     <li> G3D::Sky::create is now named G3D::Sky::fromFile and no longer accepts a G3D::RenderDevice. G3D::Sky::render now requires a RenderDevice.
+     <li> G3D::GFont::fromFile no longer accepts a G3D::RenderDevice and G3D::GFont::draw2D now requires a RenderDevice.
      <li> Removed an assertion in BinaryInput requiring that compressed buffers be copied on construction [Nick Bray]
      <li> Removed CoordinateFrame::zLookDirection (use -1)
 	 <li> Removed Capsule::endPoint (use point)
