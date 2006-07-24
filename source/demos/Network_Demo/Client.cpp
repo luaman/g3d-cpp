@@ -244,7 +244,7 @@ void Client::onGraphics(RenderDevice* rd) {
 
     app->renderDevice->clear(app->sky.isNull(), true, true);
     if (app->sky.notNull()) {
-        app->sky->render(lighting);
+        app->sky->render(rd, lighting);
     }
 
     // Setup lighting
@@ -268,7 +268,7 @@ void Client::onGraphics(RenderDevice* rd) {
     app->renderDevice->disableLighting();
 
     if (app->sky.notNull()) {
-        app->sky->renderLensFlare(lighting);
+        app->sky->renderLensFlare(rd, lighting);
     }
 
     app->renderDevice->push2D();

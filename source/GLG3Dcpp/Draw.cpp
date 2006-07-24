@@ -1034,8 +1034,8 @@ void Draw::sphere(
 void Draw::fullScreenImage(const GImage& im, RenderDevice* renderDevice) {
     debugAssert( im.channels == 3 || im.channels == 4 );
     renderDevice->push2D();
-        glPixelZoom((float)renderDevice->getWidth() / (float)im.width, 
-                   -(float)renderDevice->getHeight() / (float)im.height);
+        glPixelZoom((float)renderDevice->width() / (float)im.width, 
+                   -(float)renderDevice->height() / (float)im.height);
         glRasterPos4d(0.0, 0.0, 0.0, 1.0);
 
         glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);

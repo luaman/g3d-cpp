@@ -62,8 +62,8 @@ void App::main() {
     debugQuitOnEscape = false;
 
     // Load objects here
-    sky  = Sky::create(renderDevice, dataDir + "sky/");
-    font = GFont::fromFile(renderDevice, dataDir + "font/dominant.fnt");
+    sky  = Sky::fromFile(dataDir + "sky/");
+    font = GFont::fromFile(dataDir + "font/dominant.fnt");
 
     Browse browse(this);
     Client client(this);

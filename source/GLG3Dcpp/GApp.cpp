@@ -544,8 +544,8 @@ void GApplet::onUserInput(UserInput* userInput) {
                     (event.resize.w, event.resize.h);
                 Rect2D full = 
                     Rect2D::xywh(0, 0, 
-                                 app->renderDevice->getWidth(), 
-                                 app->renderDevice->getHeight());
+                                 app->renderDevice->width(), 
+                                 app->renderDevice->height());
                 app->renderDevice->setViewport(full);
             }
             break;

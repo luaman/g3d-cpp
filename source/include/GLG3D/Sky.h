@@ -73,9 +73,6 @@ private:
 
     bool                                        drawCelestialBodies;
 
-    /** @deprecated To be removed in 7.00 */
-    class RenderDevice*                         renderDevice;
-
     /**
      Renders the sky box.
      */
@@ -88,7 +85,6 @@ private:
     void drawMoonAndStars(RenderDevice* rd, const class LightingParameters&);
 
     Sky(
-        class RenderDevice*                     renderDevice,
         TextureRef                              textures[6],
         const std::string&                      directory,
         bool                                    useCubeMap,
@@ -119,13 +115,10 @@ public:
         0 -> 1/16 the texture memory of 1.0.
         Color banding will occur at low quality settings.
 
-     @param renderDevice May be NULL, if a non-NULL argument is provided to G3D::Sky::render.
-
      @param scaleDownFactor Resize the texture by 1/scaleDownFactor in each dimension.  Should be a power of two.
               Useful for creating a skybox that occupies less memory on low-end cards.
      */
     static SkyRef fromFile(
-        class RenderDevice*                     renderDevice,
         const std::string&                      directory,
         const std::string&                      filename = "plainsky/null_plainsky512_*.jpg",
         bool                                    drawCelestialBodies = true,
@@ -133,42 +126,17 @@ public:
         int                                     scaleDownFactor = 1);
 
     static SkyRef fromFile(
-        class RenderDevice*                     renderDevice,
         const std::string&                      directory,
         const std::string                       filename[6],
         bool                                    drawCelestialBodies = true,
         double                                  quality = 1.0,
         int                                     scaleDownFactor = 1);
 
-    /** @deprecated Converted to Sky::fromFile */
-    static SkyRef G3D_DEPRECATED create(
-        class RenderDevice*                     renderDevice,
-        const std::string&                      directory,
-        const std::string&                      filename = "plainsky/null_plainsky512_*.jpg",
-        bool                                    drawCelestialBodies = true,
-        double                                  quality = 1.0,
-        int                                     scaleDownFactor = 1) {
-
-        return Sky::fromFile(renderDevice, directory, filename, drawCelestialBodies, quality, scaleDownFactor);
-    }
-
-    /** @deprecated Converted to Sky::fromFile */
-    static SkyRef G3D_DEPRECATED create(
-        class RenderDevice*                     renderDevice,
-        const std::string&                      directory,
-        const std::string                       filename[6],
-        bool                                    drawCelestialBodies = true,
-        double                                  quality = 1.0,
-        int                                     scaleDownFactor = 1) {
-
-        return Sky::fromFile(renderDevice, directory, filename, drawCelestialBodies, quality, scaleDownFactor);
-    }
 
     /**
      @param _cubeMap This must be a Texture of dimension - DIM_CUBE_MAP.
      */
     static SkyRef fromCubeMap(
-        RenderDevice*                           rd,
         TextureRef                              _cubeMap,
         const std::string&                      directory,
         bool                                    _drawCelestialBodies = true,
@@ -184,12 +152,6 @@ public:
         RenderDevice* renderDevice,
         const class LightingParameters&         lighting);
 
-    /** @deprecated Use render(RenderDevice, LightingParameters) */
-    void render(
-        const class LightingParameters&         lighting) {
-        render(renderDevice, lighting);
-    }
-
     /**
      Call at the very end of your rendering routine.
      Will restore all state it changes.
@@ -197,12 +159,6 @@ public:
     void renderLensFlare(
         RenderDevice*                           renderDevice,
         const class LightingParameters&         lighting);
-
-    /** @deprecated Use renderLensFlare(RenderDevice, LightingParameters) */
-    void renderLensFlare(
-        const class LightingParameters&         lighting) {
-        renderLensFlare(renderDevice, lighting);
-    }
 
     /**
      Returns an environment cube map (or the front 2D texture if cube maps are not supported

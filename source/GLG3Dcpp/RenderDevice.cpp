@@ -328,7 +328,7 @@ bool RenderDevice::init(GWindow* window, Log* log) {
            "*********************************************************\n\n");
     }
 
-	glViewport(0, 0, getWidth(), getHeight());
+	glViewport(0, 0, width(), height());
 
     int depthBits, stencilBits, redBits, greenBits, blueBits, alphaBits;
     depthBits       = glGetInteger(GL_DEPTH_BITS);
@@ -555,16 +555,6 @@ void RenderDevice::setCaption(const std::string& caption) {
 }
 
 
-int RenderDevice::getWidth() const {
-	return width();
-}
-
-
-int RenderDevice::getHeight() const {
-	return height();
-}
-
-
 int RenderDevice::width() const {
 	if (state.framebuffer.isNull()) {
 	    return _window->width();
@@ -755,7 +745,7 @@ RenderDevice::RenderState::TextureUnit::TextureUnit() : texture(NULL), LODBias(0
 
 
 void RenderDevice::resetState() {
-    state = RenderState(getWidth(), getHeight());
+    state = RenderState(width(), height());
 
 	glClearDepth(1.0);
 
@@ -779,7 +769,7 @@ void RenderDevice::resetState() {
     {
         // WARNING: this must be kept in sync with the 
         // RenderState constructor
-        state = RenderState(getWidth(), getHeight(), iMax(_numTextures, _numTextureCoords) - 1);
+        state = RenderState(width(), height(), iMax(_numTextures, _numTextureCoords) - 1);
 
         _glViewport(state.viewport.x0(), state.viewport.y0(), state.viewport.width(), state.viewport.height());
         glDepthMask(GL_TRUE);
@@ -1462,7 +1452,7 @@ void RenderDevice::enableClip2D(const Rect2D& clip) {
 	int clipX1 = iCeil(clip.x1());
 	int clipY1 = iCeil(clip.y1());
 
-	glScissor(clipX0, getHeight() - clipY1, clipX1 - clipX0, clipY1 - clipY0);
+	glScissor(clipX0, height() - clipY1, clipX1 - clipX0, clipY1 - clipY0);
 
     if (! state.useClip2D) {
         glEnable(GL_SCISSOR_TEST);
@@ -2766,7 +2756,7 @@ double RenderDevice::getDepthBufferValue(
     GLfloat depth;
 
     glReadPixels(x,
-		         (getHeight() - 1) - y,
+		         (height() - 1) - y,
                  1, 1,
                  GL_DEPTH_COMPONENT,
 		         GL_FLOAT,
@@ -2797,16 +2787,16 @@ void RenderDevice::screenshotPic(GImage& dest, bool useBackBuffer, bool getAlpha
     int ch = getAlpha ? 4 : 3;
 
     if ((dest.channels != ch) ||
-        (dest.width != getWidth()) ||
-        (dest.height != getHeight())) {
+        (dest.width != width()) ||
+        (dest.height != height())) {
         // Only resize if the current size is not correct
-        dest.resize(getWidth(), getHeight(), ch);
+        dest.resize(width(), height(), ch);
     }
 
     glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);
 
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
-    glReadPixels(0, 0, getWidth(), getHeight(), 
+    glReadPixels(0, 0, width(), height(), 
         getAlpha ? GL_RGBA : GL_RGB,
         GL_UNSIGNED_BYTE, dest.byte());    
 
@@ -2814,9 +2804,9 @@ void RenderDevice::screenshotPic(GImage& dest, bool useBackBuffer, bool getAlpha
 
     // Flip right side up
     if (getAlpha) {
-		GImage::flipRGBAVertical(dest.byte(), dest.byte(), getWidth(), getHeight());
+		GImage::flipRGBAVertical(dest.byte(), dest.byte(), width(), height());
     } else {
-        GImage::flipRGBVertical(dest.byte(), dest.byte(), getWidth(), getHeight());
+        GImage::flipRGBVertical(dest.byte(), dest.byte(), width(), height());
     }
 
     // Restore the read buffer to the back

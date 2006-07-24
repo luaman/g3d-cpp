@@ -22,7 +22,6 @@ namespace G3D {
 
 
 SkyRef Sky::fromCubeMap(
-    RenderDevice*                       rd,
     TextureRef                          _cubeMap,
     const std::string&                  directory,
     bool                                _drawCelestialBodies,
@@ -43,12 +42,11 @@ SkyRef Sky::fromCubeMap(
         t[i] = NULL;
     }    
 
-    return new Sky(rd, t, directory, true, _drawCelestialBodies, quality);
+    return new Sky(t, directory, true, _drawCelestialBodies, quality);
 }
-    
+
 
 SkyRef Sky::fromFile(
-    RenderDevice*                       rd,
     const std::string&                  directory,
     const std::string&                  filename,
     bool                                _drawCelestialBodies,
@@ -60,12 +58,12 @@ SkyRef Sky::fromFile(
     for (int i = 1; i < 6; ++i) {
         f[i] = "";
     }
-    return Sky::fromFile(rd, directory, f, _drawCelestialBodies, quality, scaleDownFactor);
+    return Sky::fromFile(directory, f, _drawCelestialBodies, quality, scaleDownFactor);
 }
 
+    
 
 SkyRef Sky::fromFile(
-    RenderDevice*                       rd,
     const std::string&                  directory,
     const std::string                   _filename[6],
     bool                                _drawCelestialBodies,
@@ -155,19 +153,18 @@ SkyRef Sky::fromFile(
         useCubeMap = false;
     }
     
-    return new Sky(rd, faceTextures, directory, useCubeMap, _drawCelestialBodies, quality);
+    return new Sky(faceTextures, directory, useCubeMap, _drawCelestialBodies, quality);
 }
 
 
+
 Sky::Sky(
-    RenderDevice*                       rd,
     TextureRef                          textures[6],
-    const std::string&                   directory,
+    const std::string&                  directory,
     bool                                useCubeMap,
     bool                                _drawCelestialBodies,
     double                              quality) :
-    drawCelestialBodies(_drawCelestialBodies),
-    renderDevice(rd) {
+    drawCelestialBodies(_drawCelestialBodies) {
 
     if (useCubeMap) {
         cubeMap = textures[0];

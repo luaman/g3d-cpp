@@ -74,6 +74,7 @@ configured to create compile time errors to help you catch bugs.  These will app
 <tr><td>G3D::GApplet::cleanup</td><td>G3D::GApplet::onCleanup</td></tr>
 <tr><td>G3D::computeNormalMap</td><td>G3D::GImage::computeNormalMap</td></tr>
 <tr><td>G3D::Box::getCorner</td><td>G3D::Box::corner</td></tr>
+<tr><td>G3D::Sky::create</td><td>G3D::Sky::fromFile</td></tr>
 </table>
 </p>
 

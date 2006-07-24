@@ -1628,19 +1628,9 @@ public:
     void screenshotPic(GImage& dest, bool useBackBuffer = false, bool getAlpha = false) const;
 
 	/**
-     @deprecated
-	 */
-    int G3D_DEPRECATED getWidth() const;
-
-	/**
 	 Pixel dimensions of the OpenGL window interior
 	 */
     int width() const;
-
-    /**
-     @deprecated
-     */
-    int G3D_DEPRECATED getHeight() const;
 
 	/**
 	 Pixel dimensions of the OpenGL window interior
