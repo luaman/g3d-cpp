@@ -13,8 +13,8 @@
 
 #include <G3DAll.h>
 
-#if G3D_VER < 60800
-    #error Requires G3D 6.08
+#if G3D_VER < 70000
+    #error Requires G3D 7.00
 #endif
 
 
@@ -61,7 +61,7 @@ public:
 
     Demo*               applet;
 
-    App(const GAppSettings& settings);
+    App(const GApp::Settings& settings);
 
     ~App();
 };
@@ -115,27 +115,27 @@ void Demo::onUserInput(UserInput* ui) {
 void Demo::onGraphics(RenderDevice* rd) {
 
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
-    app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
+    rd->setProjectionAndCameraMatrix(app->debugCamera);
 
     // Cyan background
-    app->renderDevice->setColorClearValue(Color3(0.1f, 0.5f, 1.0f));
+    rd->setColorClearValue(Color3(0.1f, 0.5f, 1.0f));
 
-    app->renderDevice->clear(app->sky.isNull(), true, true);
+    rd->clear(app->sky.isNull(), true, true);
     if (app->sky.notNull()) {
-        app->sky->render(app->renderDevice, lighting);
+        app->sky->render(rd, lighting);
     }
 
     // Setup lighting
-    app->renderDevice->enableLighting();
-		app->renderDevice->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
-		app->renderDevice->setAmbientLightColor(lighting.ambient);
+    rd->enableLighting();
+		rd->setLight(0, GLight::directional(lighting.lightDirection, lighting.lightColor));
+		rd->setAmbientLightColor(lighting.ambient);
 
-		Draw::axes(CoordinateFrame(Vector3(0, 4, 0)), app->renderDevice);
+		Draw::axes(CoordinateFrame(Vector3(0, 4, 0)), rd);
 
-    app->renderDevice->disableLighting();
+    rd->disableLighting();
 
     if (app->sky.notNull()) {
-        app->sky->renderLensFlare(app->renderDevice, lighting);
+        app->sky->renderLensFlare(rd, lighting);
     }
 }
 
@@ -161,7 +161,7 @@ App::~App() {
 }
 
 int main(int argc, char** argv) {
-    GAppSettings settings;
+	GApp::Settings settings;
     settings.useNetwork = false;
     App(settings).run();
     return 0;

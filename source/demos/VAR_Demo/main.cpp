@@ -63,7 +63,7 @@ public:
 
     GApplet* applet;
 
-    App(const GAppSettings& settings);
+    App(const GApp::Settings& settings);
 
     ~App() {
         delete applet;
@@ -257,12 +257,12 @@ void App::main() {
 }
 
 
-App::App(const GAppSettings& settings) : GApp(settings) {
+App::App(const GApp::Settings& settings) : GApp(settings) {
 }
 
 
 int main(int argc, char** argv) {
-    GAppSettings settings;
+	GApp::Settings settings;
     settings.useNetwork = false;
     settings.debugFontName = "dominant.fnt";
     settings.window.depthBits = 16;

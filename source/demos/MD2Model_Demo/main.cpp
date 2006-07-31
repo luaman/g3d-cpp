@@ -18,7 +18,7 @@ public:
 
     GApplet* applet;
 
-    App(const GAppSettings& settings);
+    App(const GApp::Settings& settings);
 
     ~App() {
         delete applet;
@@ -299,24 +299,26 @@ void Demo::loadSkins(const std::string& dir, double brighten) {
         getFiles(dir + base + ".*", textureName);
     }
 
+	Texture::PreProcess preProcess;
+	preProcess.brighten = brighten;
     // Now load the skins themselves
     for (int i = 0; i < textureName.size(); ++i) {
         std::string ext      = filenameExt(textureName[i]);
 
         if (GImage::supportedFormat(ext)) {
             std::string filename = dir + textureName[i];
-            modelTexture.append(Texture::fromFile(filename, TextureFormat::AUTO, Texture::TILE, Texture::TRILINEAR_MIPMAP, Texture::DIM_2D, brighten));
+            modelTexture.append(Texture::fromFile(filename, TextureFormat::AUTO, Texture::DIM_2D, Texture::Settings(), preProcess));
         }
     }
 
     if (weapon->textureFilenames().size() > 0) {
         std::string filename = "data/" + weapon->textureFilenames()[0];
         if (fileExists(filename)) {
-            weaponTexture = Texture::fromFile(filename, TextureFormat::AUTO, Texture::TILE, Texture::TRILINEAR_MIPMAP, Texture::DIM_2D, brighten);
+            weaponTexture = Texture::fromFile(filename, TextureFormat::AUTO, Texture::DIM_2D, Texture::Settings(), preProcess);
         } else {
             filename = dir + "weapon.pcx";
             if (fileExists(filename)) {
-                weaponTexture = Texture::fromFile(filename, TextureFormat::AUTO, Texture::TILE, Texture::TRILINEAR_MIPMAP, Texture::DIM_2D, brighten);
+                weaponTexture = Texture::fromFile(filename, TextureFormat::AUTO, Texture::DIM_2D, Texture::Settings(), preProcess);
             }
         }
     } else {
@@ -350,7 +352,7 @@ void Demo::onUserInput(UserInput* ui) {
 }
 
 
-App::App(const GAppSettings& settings): GApp(settings) {
+App::App(const GApp::Settings& settings): GApp(settings) {
 }
 
 
@@ -368,7 +370,7 @@ void App::main() {
 
 int main(int argc, char** argv) {
 
-    GAppSettings settings;
+	GApp::Settings settings;
     settings.useNetwork = false;
     settings.debugFontName = "dominant.fnt";
 

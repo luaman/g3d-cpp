@@ -46,7 +46,7 @@ public:
 
     GApplet* applet;
 
-    App(const GAppSettings& settings);
+    App(const GApp::Settings& settings);
 
     ~App() {
         delete applet;
@@ -186,7 +186,7 @@ void App::main() {
 }
 
 
-App::App(const GAppSettings& settings) : GApp(settings) {
+App::App(const GApp::Settings& settings) : GApp(settings) {
     globalApp = this;
 }
 
@@ -293,7 +293,7 @@ void Model::render(const CoordinateFrame& c,
 
 int main(int argc, char** argv) {
 
-   GAppSettings settings;
+	GApp::Settings settings;
 
    App(settings).run();
 
