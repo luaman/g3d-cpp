@@ -64,11 +64,20 @@ GFont::GFont(const std::string& filename, BinaryInput& b) {
     // Create a texture
     const uint8* ptr = ((uint8*)b.getCArray()) + b.getPosition();
 
+	Texture::Settings fontSettings;
+	fontSettings.wrapMode = Texture::CLAMP;
+
     texture = 
-        Texture::fromMemory(filename, &ptr,
-            TextureFormat::A8, width, height, 1, TextureFormat::A8, 
-            Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_2D,
-            Texture::DEPTH_NORMAL, 1.0);
+        Texture::fromMemory(
+			filename, 
+			ptr,
+            TextureFormat::A8, 
+			width, 
+			height,
+			1,
+			TextureFormat::A8, 
+			Texture::DIM_2D,
+			fontSettings);
 }
 
 

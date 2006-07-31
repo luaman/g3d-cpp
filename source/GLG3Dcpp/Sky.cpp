@@ -34,7 +34,7 @@ SkyRef Sky::fromCubeMap(
         "Directory must end in a slash");
 
     debugAssert( _cubeMap.notNull() );
-    debugAssert( _cubeMap->getDimension() == Texture::DIM_CUBE_MAP );
+    debugAssert( _cubeMap->dimensions() == Texture::DIM_CUBE_MAP );
 
     TextureRef t[6];
     t[0] = _cubeMap;
@@ -111,13 +111,34 @@ SkyRef Sky::fromFile(
     bool useCubeMap;
 
     if (GLCaps::supports_GL_ARB_texture_cube_map() && ! GLCaps::hasBug_normalMapTexGen()) {
+
+		Texture::Settings   textureSettings;
+		Texture::PreProcess texturePreProcess;
    
+		textureSettings.wrapMode = Texture::CLAMP;
+		textureSettings.interpolateMode = Texture::TRILINEAR_MIPMAP;
+		texturePreProcess.scaleFactor = 1.0f / scaleDownFactor;
+
         if (_filename[1] == "") {
+
             // Specified one cube map
-            faceTextures[0] = Texture::fromFile(filenameBase + "*" + filenameExt, format, Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP, 1.0, Texture::DEPTH_NORMAL, 1.0, 1.0f / scaleDownFactor);
+            faceTextures[0] = Texture::fromFile(
+				filenameBase + "*" + filenameExt, 
+				format, 
+				Texture::DIM_CUBE_MAP,
+				textureSettings,
+				texturePreProcess);
+
         } else {
+
             // Specified six filenames
-            faceTextures[0] = Texture::fromFile(_filename, format, Texture::CLAMP, Texture::TRILINEAR_MIPMAP, Texture::DIM_CUBE_MAP, 1.0, Texture::DEPTH_NORMAL, 1.0, 1.0f / scaleDownFactor);
+            faceTextures[0] = Texture::fromFile(
+				_filename, 
+				format, 
+				Texture::DIM_CUBE_MAP,
+				textureSettings,
+				texturePreProcess);
+
         }
 
         // For the cube map case, we don't need the other five texture slots
@@ -131,22 +152,34 @@ SkyRef Sky::fromFile(
 
         // This card doesn't support cube maps; it probably has low memory as well, so we
         // switch to bilinear instead of trilinear to save space on the mipmaps.
+		Texture::Settings   textureSettings;
+		Texture::PreProcess texturePreProcess;
+   
+		textureSettings.wrapMode = Texture::CLAMP;
+		textureSettings.interpolateMode = Texture::BILINEAR_NO_MIPMAP;
+		texturePreProcess.scaleFactor = 1.0f / scaleDownFactor;
 
         static const char* ext[] = {"up", "lf", "rt", "bk", "ft", "dn"};
 
         if (_filename[1] == "") {
             // Specified one cube map
             for (int t = 0; t < 6; ++t) {
-                faceTextures[t] = Texture::fromFile(filenameBase + ext[t] + filenameExt, 
-                    format, Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D,
-                    1.0, Texture::DEPTH_NORMAL, 1.0, 1.0f / scaleDownFactor);
+                faceTextures[t] = Texture::fromFile(
+					filenameBase + ext[t] + filenameExt, 
+                    format, 
+					Texture::DIM_2D, 
+					textureSettings, 
+					texturePreProcess);
             }
         } else {
             // Specified six textures
             for (int t = 0; t < 6; ++t) {
-                faceTextures[t] = Texture::fromFile(_filename[t], 
-                    format, Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D,
-                    1.0, Texture::DEPTH_NORMAL, 1.0, 1.0f / scaleDownFactor);
+                faceTextures[t] = Texture::fromFile(
+					_filename[t],
+					format,
+                    Texture::DIM_2D,
+					textureSettings, 
+					texturePreProcess);
             }
         }
 
@@ -189,14 +222,16 @@ Sky::Sky(
     }
 
     if (drawCelestialBodies) {
-        moon     = Texture::fromTwoFiles(directory + "moon.jpg", directory + "moon-alpha.jpg",
-            alphaFormat, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, 
-            Texture::DEPTH_NORMAL, 1.0);
+		Texture::Settings textureSettings;
 
-        sun      = Texture::fromFile(directory + "sun.jpg", format, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, 1.0, Texture::DEPTH_NORMAL, 1.0);
-        disk     = Texture::fromFile(directory + "lensflare.jpg", format, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, 1.0, Texture::DEPTH_NORMAL, 1.0);
-        sunRays  = Texture::fromFile(directory + "sun-rays.jpg", format, Texture::TRANSPARENT_BORDER, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, 1.0, Texture::DEPTH_NORMAL, 1.0);
-    
+		textureSettings.wrapMode        = Texture::TRANSPARENT_BORDER;
+		textureSettings.interpolateMode = Texture::BILINEAR_NO_MIPMAP;
+
+        moon     = Texture::fromTwoFiles(directory + "moon.jpg", directory + "moon-alpha.jpg", alphaFormat, Texture::DIM_2D, textureSettings);
+        sun      = Texture::fromFile(directory + "sun.jpg", format, Texture::DIM_2D, textureSettings);		
+        disk     = Texture::fromFile(directory + "lensflare.jpg", format, Texture::DIM_2D, textureSettings);
+        sunRays  = Texture::fromFile(directory + "sun-rays.jpg", format, Texture::DIM_2D, textureSettings);
+		
         int i = 0;
 
 	    // If file exists, load the real starfield
@@ -213,7 +248,7 @@ Sky::Sky(
 	        starIntensity.resize(numStars);
 
 		    // Read X, Y, Z, and intensity
-		    for(i = 0; i < numStars; i++) {
+		    for (i = 0; i < numStars; ++i) {
 			    x = SHORT_TO_FLOAT(in.readInt16());
 			    y = SHORT_TO_FLOAT(in.readInt16());
 			    z = SHORT_TO_FLOAT(in.readInt16());

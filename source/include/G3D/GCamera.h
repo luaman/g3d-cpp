@@ -218,6 +218,9 @@ public:
 
     void setPosition(const Vector3& t);
 
+	/** Rotate the camera in place to look at the target.  
+	    Does not persistently look at that location when the camera moves; i.e., if you move the camera and still want it to look at the old target,
+	    you must call lookAt again after moving the camera.)*/
     void lookAt(const Vector3& position, const Vector3& up = Vector3::unitY());
 
    /**

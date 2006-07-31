@@ -169,7 +169,7 @@ private:
 
         Attachment() {}
         Attachment(const RenderbufferRef& r) : type(RENDERBUFFER), renderbuffer(r) {}
-        Attachment(const TextureRef& r) : type(TEXTURE), texture(r), hadAutoMipMap(r->parameters().autoMipMap) {
+        Attachment(const TextureRef& r) : type(TEXTURE), texture(r), hadAutoMipMap(r->settings().autoMipMap) {
 			if (hadAutoMipMap) {
 				texture->setAutoMipMap(false);
 			}

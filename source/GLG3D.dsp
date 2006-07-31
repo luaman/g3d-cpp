@@ -66,7 +66,7 @@ LIB32=link.exe -lib
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
 # ADD CPP /nologo /MDd /W3 /GR /GX /Od /I "include" /D "_DEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D "_CRT_SECURE_NO_DEPRECATE" /FD /GZ /c
-# SUBTRACT CPP /Z<none> /Fr /YX
+# SUBTRACT CPP /Fr /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -216,10 +216,6 @@ SOURCE=.\GLG3Dcpp\Texture.cpp
 # Begin Source File
 
 SOURCE=.\GLG3Dcpp\TextureFormat.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\GLG3Dcpp\TextureManager.cpp
 # End Source File
 # Begin Source File
 
@@ -388,10 +384,6 @@ SOURCE=.\include\GLG3D\Texture.h
 # Begin Source File
 
 SOURCE=.\include\GLG3D\TextureFormat.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\GLG3D\TextureManager.h
 # End Source File
 # Begin Source File
 

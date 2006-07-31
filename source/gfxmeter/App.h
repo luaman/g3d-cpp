@@ -53,7 +53,7 @@ public:
     /** Also loads reportFont and gfxMeterTexture */
     void showSplashScreen();
 
-    App(const GAppSettings& settings);
+    App(const GApp::Settings& settings);
 
     ~App();
 };

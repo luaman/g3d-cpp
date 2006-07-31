@@ -4,6 +4,8 @@
  */
 
 #include "ArticulatedModel.h"
+#include "../TextureManager/TextureManager.h"
+#include "../TextureManager/TextureManager.cpp"
 #include "Load3DS.h"
 
 const ArticulatedModel::Pose ArticulatedModel::DEFAULT_POSE;

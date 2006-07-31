@@ -2325,7 +2325,7 @@ void RenderDevice::forceSetTextureMatrix(int unit, const float* m) {
 
         float ymax = 1.0;
     
-        if (texture->getDimension() == Texture::DIM_2D_RECT) {
+        if (texture->dimensions() == Texture::DIM_2D_RECT) {
             ymax = texture->texelHeight();
         }
 
@@ -3067,10 +3067,10 @@ void RenderDevice::configureShadowMap(
 
     // http://www.nvidia.com/dev_content/nvopenglspecs/GL_ARB_shadow.txt
 
-    debugAssertM(shadowMap->getFormat()->OpenGLBaseFormat == GL_DEPTH_COMPONENT,
+    debugAssertM(shadowMap->format()->OpenGLBaseFormat == GL_DEPTH_COMPONENT,
         "Can only configure shadow maps from depth textures");
 
-    debugAssertM(shadowMap->depthReadMode() != Texture::DEPTH_NORMAL,
+    debugAssertM(shadowMap->settings().depthReadMode != Texture::DEPTH_NORMAL,
         "Shadow maps must be configured for either Texture::DEPTH_LEQUAL"
         " or Texture::DEPTH_GEQUAL comparisions.");
 
@@ -3126,7 +3126,7 @@ void RenderDevice::configureReflectionMap(
     uint                textureUnit,
     TextureRef          reflectionTexture) {
 
-    debugAssert(reflectionTexture->getDimension() == Texture::DIM_CUBE_MAP);
+    debugAssert(reflectionTexture->dimensions() == Texture::DIM_CUBE_MAP);
 
     // Texture coordinates will be generated in object space.
     // Set the texture matrix to transform them into camera space.

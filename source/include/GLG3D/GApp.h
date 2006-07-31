@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2003-11-03
- @edited  2006-03-04
+ @edited  2006-08-04
  */
 
 #ifndef G3D_GAPP_H
@@ -15,7 +15,6 @@
 #include "G3D/GCamera.h"
 #include "GLG3D/ManualCameraController.h"
 #include "GLG3D/RenderDevice.h"
-#include "GLG3D/TextureManager.h"
 #include "G3D/NetworkDevice.h"
 #include "GLG3D/GWindow.h"
 #include "GLG3D/GModule.h"
@@ -151,11 +150,6 @@ public:
     GFontRef                debugFont;
     UserInput*              userInput;
     bool                    endProgram;
-
-    /**
-     A global texture manager.
-     */
-    TextureManager          textureManager;
 
     /**
      A default camera that is driven by the debugController.
@@ -602,11 +596,6 @@ protected:
     virtual DoNotOverrideThisMethod G3D_DEPRECATED doSimulation(RealTime rdt){(void)rdt; return DoNotOverrideThisMethod();}
     virtual DoNotOverrideThisMethod G3D_DEPRECATED doGraphics(){ return DoNotOverrideThisMethod(); }
 };
-
-/**
- @deprecated Use GApp::Settings.  GAppSettings will be removed in 7.0 
- */
-typedef GApp::Settings GAppSettings;
 
 }
 

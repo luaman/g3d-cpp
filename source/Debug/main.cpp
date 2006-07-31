@@ -70,7 +70,7 @@ public:
 
     Demo*               applet;
 
-    App(const GAppSettings& settings);
+    App(const GApp::Settings& settings);
 
     ~App();
 };
@@ -214,17 +214,17 @@ void App::main() {
 	debugController.setActive(true);
     debugShowRenderingStats = true;
 
-    debugController.setMouseMode(FPCameraController::MOUSE_DIRECT_RIGHT_BUTTON);
+    debugController.setMouseMode(FirstPersonManipulator::MOUSE_DIRECT_RIGHT_BUTTON);
 
     // Load objects here
-    sky = Sky::create(NULL, dataDir + "sky/");
+    sky = Sky::fromFile(NULL, dataDir + "sky/");
     
     applet->run();
 
 }
 
 
-App::App(const GAppSettings& settings) : GApp(settings) {
+App::App(const GApp::Settings& settings) : GApp(settings) {
     applet = new Demo(this);
 }
 
@@ -235,7 +235,7 @@ App::~App() {
 
 
 int main(int argc, char** argv) {
-    GAppSettings settings;
+	GApp::Settings settings;
     settings.useNetwork = false;
     settings.window.resizable = true;
     App(settings).run();

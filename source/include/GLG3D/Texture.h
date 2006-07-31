@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, matrix@graphics3d.com
 
   @created 2001-02-28
-  @edited  2006-02-28
+  @edited  2007-07-28
 */
 
 #ifndef GLG3D_TEXTURE_H
@@ -194,11 +194,6 @@ public:
         uint32 hashCode() const;
     };
 
-    /**
-     @deprecated Use Texture::Settings
-     */
-    typedef Settings Parameters;
-
     class PreProcess {
     public:
 
@@ -223,23 +218,14 @@ private:
     /** OpenGL texture ID */
 	GLuint                          textureID;
 
-    /** TODO: Remove */
-    DepthReadMode                   _depthRead;
-    /** TODO: Remove */
-    float                           _maxAnisotropy;
-    /** TODO: Remove */
-    InterpolateMode                 interpolate;
-    /** TODO: Remove */
-    WrapMode                        wrap;
-
-    /** Duplicates the values above.  Set in the base constructor. */
+    /** Set in the base constructor. */
     Settings                        _settings;
 
-    std::string                     name;
-    Dimension                       dimension;
+    std::string                     _name;
+    Dimension                       _dimension;
     bool                            _opaque;
 
-    const class TextureFormat*      format;
+    const class TextureFormat*      _format;
     int                             width;
     int                             height;
     int                             depth;
@@ -247,36 +233,14 @@ private:
     static size_t                   _sizeOfAllTexturesInMemory;
 
     Texture(
-        const std::string&          _name,
-        GLuint                      _textureID,
-        Dimension                   _dimension,
-        const class TextureFormat*  _format,
-        InterpolateMode             _interpolate,
-        WrapMode                    _wrap,
-        bool                        _opaque,
-        DepthReadMode               _depthRead,
-        float                       _anisotropy);
+        const std::string&          name,
+        GLuint                      textureID,
+        Dimension                   dimension,
+        const class TextureFormat*  format,
+		bool						opaque,
+		const Settings&				settings);
 
 public:
-
-    /**
-     Returns a new OpenGL texture ID.
-     */
-    static unsigned int newGLTextureID();
-
-    /**
-     Creates an empty texture (useful for later reading from the screen).
-     */
-    static TextureRef G3D_DEPRECATED createEmpty(
-        int                             width,
-        int                             height,
-        const std::string&              name           = "Texture",
-        const class TextureFormat*      desiredFormat  = TextureFormat::RGBA8,
-        WrapMode                        wrap           = TILE,
-        InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
-        Dimension                       dimension      = DIM_2D,
-        DepthReadMode                   depthRead      = DEPTH_NORMAL,
-        float                           maxAnisotropy  = 2.0);
 
     /**
      Creates an empty texture (useful for later reading from the screen).
@@ -287,10 +251,7 @@ public:
         int                             height,
         const class TextureFormat*      desiredFormat  = TextureFormat::RGBA8,
         Dimension                       dimension      = DIM_2D,
-        const Parameters&               param          = Parameters::defaults()) {
-        return Texture::createEmpty(width, height, name, desiredFormat, param.wrapMode, 
-               param.interpolateMode, dimension, param.depthReadMode, param.maxAnisotropy);
-    }
+        const Settings&                 settings       = Settings::defaults());
 
     /**
      Wrap and interpolate will override the existing parameters on the
@@ -304,47 +265,22 @@ public:
         const std::string&              name,
         GLuint                          textureID,
         const class TextureFormat*      textureFormat,
-        WrapMode                        wrap           = TILE,
-        InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
-        DepthReadMode                   depthRead      = DEPTH_NORMAL,
-        float                           maxAnisotropy  = 2.0f);
-
-
-    static TextureRef G3D_DEPRECATED fromFile(
-        const std::string&              filename,
-        const class TextureFormat*      desiredFormat,
-        WrapMode                        wrap,
-        InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
-        Dimension                       dimension      = DIM_2D,
-        double                          brighten       = 1.0,
-        DepthReadMode                   depthRead      = DEPTH_NORMAL,
-        float                           maxAnisotropy  = 2.0f,
-        float                           resizeFactor   = 1.0f);
+        const Settings&                 settings       = Settings::defaults());
 
     /**
      Creates a texture from a single image.  The image must have a format understood
-     by G3D::GImage.  If dimension is DIM_CUBE_MAP, this loads the 6 files with names
+     by G3D::GImage or a DirectDraw Surface (DDS).  If dimension is DIM_CUBE_MAP, this loads the 6 files with names
      _ft, _bk, ... following the G3D::Sky documentation.
      @param brighten A value to multiply all color channels by; useful for loading
             dark Quake textures.
      */    
-    inline static TextureRef fromFile(
+    static TextureRef fromFile(
         const std::string&              filename,
         const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
         Dimension                       dimension      = DIM_2D,
-        const Parameters&               param          = Parameters::defaults(),
-        const PreProcess&               process        = PreProcess()) {
-        return Texture::fromFile(
-            filename, 
-            desiredFormat, 
-            param.wrapMode, 
-            param.interpolateMode, 
-            dimension, process.brighten, 
-            param.depthReadMode, 
-            param.maxAnisotropy, 
-            process.scaleFactor);
-    }
+        const Settings&                 settings       = Settings::defaults(),
+        const PreProcess&               process        = PreProcess());
 
     /**
      Creates a cube map from six independently named files.  The first
@@ -353,13 +289,9 @@ public:
     static TextureRef fromFile(
         const std::string               filename[6],
         const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
-        WrapMode                        wrap           = TILE,
-        InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
-        double                          brighten       = 1.0,
-        DepthReadMode                   depthRead      = DEPTH_NORMAL,
-        float                           maxAnisotropy  = 2.0,
-        float                           resizeFactor   = 1.0f);
+        const Settings&                 settings       = Settings::defaults(),
+        const PreProcess&               process        = PreProcess());
 
     /**
      Creates a texture from the colors of filename and takes the alpha values
@@ -369,19 +301,21 @@ public:
     static TextureRef fromTwoFiles(
         const std::string&              filename,
         const std::string&              alphaFilename,
-        const class TextureFormat*      desiredFormat  = TextureFormat::RGBA8,
-        WrapMode                        wrap           = TILE,
-        InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
+        const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
         Dimension                       dimension      = DIM_2D,
-        DepthReadMode                   depthRead      = DEPTH_NORMAL,
-        float                           maxAnisotropy  = 2.0);
+        const Settings&                 settings       = Settings::defaults(),
+        const PreProcess&               process        = PreProcess());
 
     /**
+    Construct from an explicit set of (optional) mipmaps and (optional) cubemap faces.
+
     bytes[miplevel][cubeface] is a pointer to the bytes
     for that miplevel and cube
     face. If the outer array has only one element and the
     interpolation mode is
-    TRILINEAR_MIPMAP, mip-maps are automatically generated.
+    TRILINEAR_MIPMAP, mip-maps are automatically generated from
+	the level 0 mip-map.
+
     There must be exactly
     6 cube faces per mip-level if the dimensions are
     DIM_CUBE and and 1 per
@@ -399,81 +333,31 @@ public:
         int                                 height,
         int                                 depth,
         const TextureFormat*                desiredFormat  = TextureFormat::AUTO,
-        WrapMode                            wrap           = TILE,
-        InterpolateMode                     interpolate    = TRILINEAR_MIPMAP,
         Dimension                           dimension      = DIM_2D,
-        DepthReadMode                       depthRead      = DEPTH_NORMAL,
-        float                               maxAnisotropy  = 2.0,
-        float                               resizeFactor   = 1.0f);
+        const Settings&                     settings       = Settings::defaults(),
+		const PreProcess&                   preProcess     = PreProcess::defaults());
 
-    /**
-     The bytes are described by byteFormat, which may differ from the
-     format you want the graphics card to use (desiredFormat).
-     If dimenion is DIM_CUBE_MAP bytes is an array of six images (for the faces)
-     in the order: {FT, BK, UP, DN, RT, LF}.  Otherwise bytes is a pointer to
-     an array of data.  Note that all faces must have the same dimensions and
-     format for cube maps.
-     */
-    static TextureRef fromMemory(
-        const std::string&              name,
-        const uint8**                   bytes,
-        const class TextureFormat*      bytesFormat,
-        int                             width,
-        int                             height,
-        int                             depth,
-        const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
-        WrapMode                        wrap           = TILE,
-        InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
-        Dimension                       dimension      = DIM_2D,
-        DepthReadMode                   depthRead      = DEPTH_NORMAL,
-        float                           maxAnisotropy  = 2.0,
-        float                           resizeFactor   = 1.0f);
 
-    /** Use the constructor that accepts Texture::Parameters. */
-	static TextureRef G3D_DEPRECATED fromMemory(
-        const std::string&              name,
-        const uint8*                    bytes,
-        const class TextureFormat*      bytesFormat,
-        int                             width,
-        int                             height,
-        const class TextureFormat*      desiredFormat,
-        WrapMode                        wrap,
-        InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
-        Dimension                       dimension      = DIM_2D,
-        DepthReadMode                   depthRead      = DEPTH_NORMAL,
-        float                           maxAnisotropy  = 2.0,
-        float                           resizeFactor   = 1.0f);
-
+	 /** Construct from a single packed 2D or 3D data set. */
 	 static TextureRef fromMemory(
         const std::string&              name,
-        const uint8*                    bytes,
+        const void*                     bytes,
         const class TextureFormat*      bytesFormat,
         int                             width,
         int                             height,
+		int								depth,
         const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
-        Dimension                       dimension = DIM_2D,
-        const Parameters&               param = Parameters::defaults());
-
-
-    /** Use the constructor that accepts Texture::Parameters. */
-    static TextureRef G3D_DEPRECATED fromGImage(
-        const std::string&              name,
-        const GImage&                   image,
-        const class TextureFormat*      desiredFormat,
-        WrapMode                        wrap,
-        InterpolateMode                 interpolate    = TRILINEAR_MIPMAP,
         Dimension                       dimension      = DIM_2D,
-        DepthReadMode                   depthRead      = DEPTH_NORMAL,
-        float                           maxAnisotropy  = 2.0);
+        const Settings&                 settings       = Settings::defaults(),
+		const PreProcess&               preProcess     = PreProcess::defaults());
 
-    inline static TextureRef fromGImage(
+    static TextureRef fromGImage(
         const std::string&              name,
         const GImage&                   image,
         const class TextureFormat*      desiredFormat  = TextureFormat::AUTO,
         Dimension                       dimension      = DIM_2D,
-        const Parameters&               param = Parameters::defaults()) {
-        return fromGImage(name, image, desiredFormat, param.wrapMode, param.interpolateMode, dimension, param.depthReadMode, param.maxAnisotropy);
-    }
+        const Settings&                 settings	   = Settings::defaults(),
+		const PreProcess&               preProcess     = PreProcess::defaults());
 
     /** Creates another texture that is the same as this one but contains only
         an alpha channel.  Alpha-only textures are useful as mattes.  
@@ -484,6 +368,11 @@ public:
         Like all texture construction methods, this is fairly
         slow and should not be called every frame during interactive rendering.*/
     TextureRef alphaOnlyVersion() const;
+
+    /**
+     Returns a new OpenGL texture ID.
+     */
+    static unsigned int newGLTextureID();
 
     /**
      Copies data from screen into an existing texture (replacing whatever was
@@ -579,16 +468,6 @@ public:
         return _opaque;
     }
 
-    /** @deprecated use Texture::parameters. */
-    inline DepthReadMode G3D_DEPRECATED depthReadMode() const {
-        return _depthRead;
-    }
-
-    /** @deprecated use Texture::parameters. */
-    inline float G3D_DEPRECATED maxAnisotropy() const {
-        return _maxAnisotropy;
-    }
-
     /**
      Returns the level 0 mip-map data in the format that most closely matches
      outFormat.
@@ -622,31 +501,16 @@ public:
         return depth;
     }
 
-    inline const std::string& getName() const {
-        return name;
+    inline const std::string& name() const {
+        return _name;
     }
 
-    /** @deprecated use Texture::parameters. */
-    inline InterpolateMode G3D_DEPRECATED getInterpolateMode() const {
-        return interpolate;
-    }
-
-	/** @deprecated use Texture::parameters. */
-    inline WrapMode getWrapMode() const {
-        return wrap;
-    }
-
-    /** @deprecated use Texture::parameters. */
-    inline WrapMode G3D_DEPRECATED wrapMode() const {
-        return wrap;
-    }
-
-    inline const TextureFormat* getFormat() const {
-        return format;
+    inline const TextureFormat* format() const {
+        return _format;
     }
     
-    inline Dimension G3D_DEPRECATED getDimension() const {
-        return dimension;
+    inline Dimension dimensions() const {
+        return _dimension;
     }
 
     /**
@@ -658,11 +522,6 @@ public:
      The OpenGL texture target this binds (e.g. GL_TEXTURE_2D)
      */
     unsigned int openGLTextureTarget() const;
-
-    /**
-     @deprecated Use settings()
-     */
-    const Settings& parameters() const;
 
     const Settings& settings() const;
 
@@ -723,6 +582,6 @@ private:
 
 } // namespace
 
-G3D::uint32 hashCode(const G3D::Texture::Parameters& p);
+G3D::uint32 hashCode(const G3D::Texture::Settings& p);
 
 #endif

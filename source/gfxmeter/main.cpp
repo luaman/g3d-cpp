@@ -53,7 +53,9 @@ void shaderVersions(
 
 
 void App::showSplashScreen() {
-    TextureRef gfxMeterTexture = Texture::fromFile("gears.jpg", TextureFormat::AUTO, Texture::CLAMP);
+	Texture::Settings textureSettings;
+	textureSettings.wrapMode = Texture::CLAMP;
+    TextureRef gfxMeterTexture = Texture::fromFile("gears.jpg", TextureFormat::AUTO, Texture::DIM_2D, textureSettings);
 
     // Load the font
     if (reportFont.isNull()) {
@@ -97,7 +99,9 @@ void App::main() {
         }
 
         if (filename != "") {
-            cardLogo = Texture::fromFile(filename, TextureFormat::AUTO, Texture::CLAMP);
+			Texture::Settings textureSettings;
+			textureSettings.wrapMode = Texture::CLAMP;
+            cardLogo = Texture::fromFile(filename, TextureFormat::AUTO, Texture::DIM_2D, textureSettings);
         }
     }
 
@@ -111,7 +115,9 @@ void App::main() {
         }
 
         if (filename != "") {
-            chipLogo = Texture::fromFile(filename, TextureFormat::AUTO, Texture::CLAMP);
+			Texture::Settings textureSettings;
+			textureSettings.wrapMode = Texture::CLAMP;
+            chipLogo = Texture::fromFile(filename, TextureFormat::AUTO, Texture::DIM_2D, textureSettings);
         }
 
 #       ifdef G3D_WIN32
@@ -137,7 +143,9 @@ void App::main() {
         }
 
         if (filename != "") {
-            osLogo = Texture::fromFile(filename, TextureFormat::AUTO, Texture::CLAMP);
+			Texture::Settings textureSettings;
+			textureSettings.wrapMode = Texture::CLAMP;
+            osLogo = Texture::fromFile(filename, TextureFormat::AUTO, Texture::DIM_2D, textureSettings);
         }
     }
 
@@ -291,7 +299,7 @@ void App::computeFeatureRating() {
     }
 }
 
-App::App(const GAppSettings& settings) : GApp(settings) {
+App::App(const GApp::Settings& settings) : GApp(settings) {
 
     window()->setCaption(format("gfx-meter %03.1f", gfxMeterVersion));
 
@@ -313,7 +321,7 @@ App::~App() {
 
 
 int main(int argc, char** argv) {
-    GAppSettings settings;
+	GApp::Settings settings;
     
     settings.useNetwork = false;
     settings.window.fsaaSamples = 4;

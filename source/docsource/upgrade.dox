@@ -78,11 +78,38 @@ configured to create compile time errors to help you catch bugs.  These will app
 <tr><td>G3D::Sky::create</td><td>G3D::Sky::fromFile</td></tr>
 <tr><td>G3D::UserInput::appHasFocus</td><td>G3D::GWindow::hasFocus</td></tr>
 <tr><td>G3D::PosedModelWrapper</td><td>contrib/PosedModelWrapper</td></tr>
+<tr><td>G3D::TextureManager</td><td>contrib/TextureManager</td></tr>
+<tr><td>G3D::GAppSettings</td><td>G3D::GApp::Settings</td></tr>
+<tr><td>G3D::Texture::Parameters</td><td>G3D::Texture::Settings</td></tr>
+<tr><td>G3D::Texture::maxAnisotropy</td><td>G3D::Texture::settings().maxAnisotropy</td></tr>
+<tr><td>G3D::Texture::getInterpolateMode</td><td>G3D::Texture::settings().interpolateMode</td></tr>
+<tr><td>G3D::Texture::getWrapMode</td><td>G3D::Texture::settings().wrapMode</td></tr>
+<tr><td>G3D::Texture::wrapMode</td><td>G3D::Texture::settings().wrapMode</td></tr>
+<tr><td>G3D::Texture::parameters</td><td>G3D::Texture::settings</td></tr>
 </table>
 </p>
 
 
 
+<hr noshade>
+<p><b>c:\program files\microsoft visual studio\vc98\include\winsock2.h(99) : error C2011: 'fd_set' : 'struct' type redefinition</b></p>
+<p>
+G3D (since 6.09) uses WinSock 2.0 on Windows.  Unfortunately, this is incompatible with WinSock 1.1, which is included by windows.h.
+So you have to EITHER:
+
+<ul>
+<li> always include graphics3d.h before windows.h (note that graphics3d.h includes windows.h, so you don't need your own include
+for windows.h) OR
+<li> edit g3d/NetAddress.h <code>#define G3D_WINSOCK_MAJOR_VERSION 2 / #define G3D_WINSOCK_MINOR_VERSION 0</code> to choose version 1.1 OR
+<li> Change your Windows include to 
+  <pre>
+   #define _WINSOCKAPI_
+   #include <windows.h>
+   #undef _WINSOCKAPI_
+  </pre>
+</ul>
+
+</p>
 
 
 <hr noshade>

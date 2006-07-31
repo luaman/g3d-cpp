@@ -30,6 +30,8 @@
    <P>
    Changes in 7.00:
    <ul>
+     <li> Changed BSPMap leaf bounds from Box to AABox--50% improvement in frustum culling speed
+	 <li> Optimized BSPMap rendering performance
      <li> Removed all deprecated APIs
 	 <li> All accessors of the form "getXXX" that take no arguments are now named just "xxx" 
      <li> G3D::Sky::create is now named G3D::Sky::fromFile and no longer accepts a G3D::RenderDevice. G3D::Sky::render now requires a RenderDevice.

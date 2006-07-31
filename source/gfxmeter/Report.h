@@ -18,8 +18,11 @@ public:
 
     void load(const std::string& filename) {
         model = MD2Model::create(filename + ".md2");
+
+		Texture::PreProcess preProcess;
+		preProcess.brighten = 2.0;
         material.texture.append(Texture::fromFile(filename + ".pcx", 
-            TextureFormat::AUTO, Texture::TILE, Texture::TRILINEAR_MIPMAP, Texture::DIM_2D, 2.0));
+            TextureFormat::AUTO, Texture::DIM_2D, Texture::Settings(), preProcess));
     }
 
     void render(RenderDevice* rd) {

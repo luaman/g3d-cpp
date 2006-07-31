@@ -60,7 +60,6 @@
 #include "GLG3D/PosedModel.h"
 #include "GLG3D/IFSModel.h"
 #include "GLG3D/MD2Model.h"
-#include "GLG3D/TextureManager.h"
 #include "GLG3D/shadowVolume.h"
 #include "GLG3D/GWindow.h"
 #include "GLG3D/SDLWindow.h"
