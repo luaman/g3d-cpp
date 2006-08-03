@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT([g3d-cpp], [6.04], [matrix@graphics3d.com])
+AC_INIT([g3d-cpp], [6.10], [matrix@graphics3d.com])
 AM_INIT_AUTOMAKE([1.6.1 foreign no-installinfo no-installman])
 AC_CONFIG_SRCDIR([source/G3Dcpp/Box.cpp])
 AM_CONFIG_HEADER(source/config.h)

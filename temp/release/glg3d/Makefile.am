@@ -27,7 +27,6 @@ libGLG3D_a_SOURCES= ../../../source/GLG3Dcpp/DDSTexture.cpp \
                         ../../../source/GLG3Dcpp/Sky.cpp \
                         ../../../source/GLG3Dcpp/Texture.cpp \
                         ../../../source/GLG3Dcpp/TextureFormat.cpp \
-                        ../../../source/GLG3Dcpp/TextureManager.cpp \
                         ../../../source/GLG3Dcpp/ThirdPersonManipulator.cpp \
                         ../../../source/GLG3Dcpp/UserInput.cpp \
                         ../../../source/GLG3Dcpp/VAR.cpp \
