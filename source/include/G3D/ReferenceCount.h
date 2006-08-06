@@ -284,7 +284,7 @@ public:
     template <class S>
     inline ReferenceCountedPointer(const ReferenceCountedPointer<S>& p) : 
         m_pointer(NULL) {
-        setPointer(p.getPointer());
+        setPointer(p.pointer());
     }
 
 #   if (! defined(MSC_VER) || (MSC_VER >= 1300))
