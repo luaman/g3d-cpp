@@ -254,7 +254,7 @@ public:
 
     float dot(const Vector3& rkVector) const;
     
-    float G3D_DEPRECATED unitize(float fTolerance = 1e-06);
+    float unitize(float tolerance = 1e-06);
 
     /** Cross product.  Note that two cross products in a row
         can be computed more cheaply: v1 x (v2 x v3) = (v1 dot v3) v2  - (v1 dot v2) v3.

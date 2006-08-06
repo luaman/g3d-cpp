@@ -188,6 +188,7 @@ bool _handleDebugAssert_(
         break;
     }
 
+    return false;
 }
 
 

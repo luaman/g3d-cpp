@@ -82,7 +82,6 @@ typedef bool (*AssertionHook)(
     bool& ignoreAlways,
     bool useGuiPrompt);
 
-
 /** 
   Allows customization of the global function invoked when a debugAssert fails.
   The initial value is G3D::_internal::_handleDebugAssert_.  G3D will invoke
@@ -113,7 +112,7 @@ namespace _internal {
 
 #ifdef G3D_DEBUG
 
-    #ifndef G3D_OSX
+#    ifndef G3D_OSX
         #if defined(_MSC_VER) 
             #if (_MSC_VER >= 1300)
                 #define rawBreak()  DebugBreak();
@@ -126,8 +125,8 @@ namespace _internal {
             #define rawBreak() __asm__ __volatile__ ( "int $3" ); 
         #endif
     #else
-        #define rawBreak() DebugStr("\pG3D: Invoking breakpoint in debugger."); /* XCode must be set to break on Debugger()/DebugStr() */
-    #endif
+        #define rawBreak() DebugStr((const unsigned char*)("\nG3D: Invoking breakpoint in debugger.")); /* XCode must be set to break on Debugger()/DebugStr() */
+#    endif
 
 
     #define debugBreak() G3D::_internal::_releaseInputGrab_(); rawBreak(); G3D::_internal::_restoreInputGrab_();
@@ -144,7 +143,7 @@ namespace _internal {
         if (!__debugAssertIgnoreAlways__ && !(exp)) { \
             G3D::_internal::_releaseInputGrab_(); \
             if ((G3D::_internal::_debugHook != NULL) && \
-                G3D::_internal::_debugHook(#exp, message, __FILE__, __LINE__, __debugAssertIgnoreAlways__, __debugPromptShowDialog__)) { \
+                G3D::_internal::_debugHook((const char*)(#exp), message, __FILE__, __LINE__, __debugAssertIgnoreAlways__, __debugPromptShowDialog__)) { \
                  rawBreak(); \
             } \
             G3D::_internal::_restoreInputGrab_(); \

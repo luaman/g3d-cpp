@@ -452,14 +452,14 @@ inline double sinc(double x) {
 /**
  Computes a floating point modulo; the result is t wrapped to the range [lo, hi).
  */
-inline double wrap(double t, double lo, double hi) {
+inline float wrap(float t, float lo, float hi) {
     if ((t >= lo) && (t < hi)) {
         return t;
     }
 
     debugAssert(hi > lo);
 
-    double interval = hi - lo;
+    float interval = hi - lo;
 
     return t - interval * iFloor((t - lo) / interval);
 

@@ -147,7 +147,6 @@ def linuxCheckVersion():
             aclocal = 'aclocal-1.7'
             checkVersion(aclocal + ' --version', '1.6', 'Requires aclocal 1.6 or later.')
             
-
         checkVersion(doxygen + ' --version', '1.3', 'Requires doxygen 1.3 or later.')
         checkVersion(sdlconfig + ' --version', '1.2', 'Requires SDL 1.2 or later.')
 

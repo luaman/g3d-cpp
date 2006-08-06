@@ -24,7 +24,6 @@ to add them to this page directly.
 <ul>
  <li><a href="#mandate">Mandate</a>
  <li><a href="#sourcetree">Source Directory Tree</a>
- <li><a href="#externaltree">External Directory Tree</a>
  <li><a href="#buildtree">Build Directory Tree</a>
 </ul>
 
@@ -39,14 +38,23 @@ to add them to this page directly.
  <li> Same commands used to execute the build on all platforms
  <li> Builds from multiple compilers can sit side-by-side
  <li> Build system requires only a single, easy-to-install tool (so that users can easily build by themselves)
- <li> Build targets: 
+ <li> Libraries support single-step debugging on VC8
+ <li> Platforms:
+  <ol>
+    <li> Intel & PPC OS X: gcc
+    <li> FreeBSD: gcc
+    <li> Linux: gcc
+    <li> Win2k, XP, Vista: VC8, VC7.3, VC6
+    <li> 32- and 64-bit machines
+  </ol>
+ <li> Build targets:
    <ol>  
-     <li> <b>debug-lib</b> - Static libraries and headers    
-     <li> <b>release-lib</b> - Static libraries and headers
+     <li> <b>debug-lib</b> - All static libraries and headers    
+     <li> <b>release-lib</b> - All static libraries and headers
      <li> <b>lib</b> - debug-lib, release-lib
      <li> <b>doc</b> - Documentation, data, and demos
      <li> <b>test</b> - Automated tests; depends on lib
-     <li> <b>source</b> - zipfile of source tree without SVN directories
+     <li> <b>source</b> - zipfile of source tree without CVS directories
      <li> <b>all</b> - lib, doc, test, source
      <li> <b>clean</b> - Remove all generated files
    </ol>
@@ -61,19 +69,29 @@ documentation for all platforms.  It is a checkout of the 'g3d'
 module from subversion.
 
 <pre>
-  <img src="folder.png"> <b>g3d/</b>                                    <font color=#009000>New CVS Module</font>
-  |--<img src="folder.png"> <b>g3d.lib/</b>
+  <img src="folder.png"> <b>g3d/</b>                                    <font color=#009000>CVS Module</font>
+  |--<img src="folder.png"> <b>g3d.lib/</b>                             <font color=#009000>Utility Library (Requires zlib, boost)</font>
   |  |--<img src="folder.png"><b>include/</b>
-  |  |  |-- AABox.h
-  |  |  `-- ...
-  |  |
-  |  |-- AABox.cpp
-  |  `-- ...
+  |  |  `--<img src="folder.png"><b>G3D/</b>
+  |  |      |-- AABox.h
+  |  |      `-- ...
+  |  `--<img src="folder.png"><b>source/</b>
+  |     |
+  |     |-- AABox.cpp
+  |     `-- ...
   |
-  |--<img src="folder.png"> <b>glg3d.lib/</b>                           <font color=#009000>Rendering + UI library</font>
-  |  |--<img src="folder.png"> <b>gl/</b>                               <font color=#009000>Customized OpenGL Headers</font>
-  |  |  `-- ...
-  |  `-- ...
+  |--<img src="folder.png"> <b>glg3d.lib/</b>                           <font color=#009000>Rendering + UI library (Requires OpenGL)</font>
+  |  |--<img src="folder.png"><b>include/</b>
+  |  |  `--<img src="folder.png"><b>GLG3D/</b>
+  |  |     |--<img src="folder.png"> <b>gl/</b>                         <font color=#009000>Customized OpenGL Headers</font> 
+  |  |     |  `-- ...
+  |  |     |  
+  |  |     |-- RenderDevice.h
+  |  |     `-- ...
+  |  |
+  |  `--<img src="folder.png"><b>source/</b>
+  |     |-- RenderDevice.cpp
+  |     `-- ...
   |
   |--<img src="folder.png"> <b>sensei/</b>                              <font color=#009000>G3D Profiler & Debugger Tool</font>
   |  |-- main.cpp
@@ -91,32 +109,8 @@ module from subversion.
   |
   |--<img src="folder.png"> <b>data/</b>                                <font color=#009000>Standard data files</font>
   |
-  |-- build
-  |-- build.bat
-  |-- .svnignore
-  |
-  :
-</pre>
-
-<hr width=50%>
-
-<ul>
-  <li> OpenGL headers are usually out of date on end-user machines.  So we include our own private GL headers under glg3d.
-  <li> 3<sup>rd</sup> party libraries are provided primarily for Win32 users who don't have these standard tools.  G3D depends on these.
-</ul>
-
-<hr>
-<a name="externaltree">
-<h2>External Directory Tree</h2>
-
-The external tree contains code needed to compile 3<sup>rd</sup> party
-libraries on which G3D (at least, for Win32) depends.  It is a checkout
-of the 'external' module from subversion.
-
-<pre>
-  <img src="folder.png"> <b>g3d-external/</b>                           <font color=#009000>New SVN Module</font>
   |--<img src="folder.png"> <b>libpng.lib/</b>                          <font color=#009000>PNG</font>
-  |     ...
+  |  `-- ...
   |
   |--<img src="folder.png"> <b>libjpeg.lib/</b>                         <font color=#009000>JPEG</font>
   |  `-- ...
@@ -133,10 +127,19 @@ of the 'external' module from subversion.
   |  `--<img src="folder.png"> <b>include/</b>
   |     `-- ...
   |
-  |-- .svnignore
+  |-- build
+  |-- build.bat
+  |-- .cvsignore
   |
   :
 </pre>
+
+<hr width=50%>
+
+<ul>
+  <li> OpenGL headers are usually out of date on end-user machines.  So we include our own private GL headers under glg3d.
+  <li> 3<sup>rd</sup> party libraries are provided primarily for Win32 users who don't have these standard tools.  G3D depends on these.
+</ul>
 
 <hr width=50%>
 
@@ -154,18 +157,17 @@ is what is copied elsewhere when installing the library.
   :
   |
   `--<img src="folder.png"> <b>build/</b>                               <font color=#009000>Base of the build tree</font>
-     |--<img src="folder.png"> <b>doc/</b>
      |--<img src="folder.png"> <b>install/</b>
      |  |--<img src="folder.png"> <b>doc/</b>
      |  |   `-- ...
      |  |
      |  |--<img src="folder.png"> <b>include/</b>
-     |  |  |--<img src="folder.png"> <b>g3d/</b>
+     |  |  |--<img src="folder.png"> <b>G3D/</b>
      |  |  |  |-- AABox.h
-     |  |  |  |-- graphics3d.h
+     |  |  |  |-- g3d.h
      |  |  |  `-- ...
      |  |  |
-     |  |  |--<img src="folder.png"> <b>glg3d/</b>
+     |  |  |--<img src="folder.png"> <b>GLG3D/</b>
      |  |  |  |--<img src="folder.png"> <b>gl/</b>
      |  |  |  |   `-- ...
      |  |  |  |
@@ -227,12 +229,14 @@ is what is copied elsewhere when installing the library.
      |
      `--<img src="folder.png"> <b>temp/</b>
         |--<img src="folder.png"> <b>g3d.lib/</b>
-        |  |--<img src="folder.png"> <b>debug/</b>
-        |  |   |-- AABox.obj
-        |  |   `-- ...
-        |  |
-        |  `--<img src="folder.png"> <b>release/</b>
-        |     `--...
+        |  |--<img src="folder.png"> <b>win32-vc6.0/</b>
+        |  |  |--<img src="folder.png"> <b>debug/</b>
+        |  |  |  |-- AABox.obj
+        |  |  |  `-- ...
+        |  |  |
+        |  |  `--<img src="folder.png"> <b>release/</b>
+        |  |     `--...
+        |  :
         |
         |--<img src="folder.png"> <b>glg3d.lib/</b>
         |  `-- ...

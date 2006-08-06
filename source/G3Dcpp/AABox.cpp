@@ -280,5 +280,4 @@ bool AABox::intersects(const class Sphere& sphere) const {
     return d <= square(sphere.radius);
 }
 
-
-} // namespace
+}

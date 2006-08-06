@@ -272,9 +272,9 @@ void AnyVal::serialize(G3D::TextOutput& t) const {
             t.printf("M3(\n");
             t.pushIndent();
             t.printf("%10.5f, %10.5f, %10.5f,\n%10.5f, %10.5f, %10.5f,\n%10.5f, %10.5f, %10.5f)",
-                m[0, 0], m[0, 1], m[0, 2],
-                m[1, 0], m[1, 1], m[1, 2],
-                m[2, 0], m[2, 1], m[2, 2]);
+                m[0][0], m[0][1], m[0][2],
+                m[1][0], m[1][1], m[1][2],
+                m[2][0], m[2][1], m[2][2]);
             t.popIndent();
         }
         break;
@@ -289,10 +289,10 @@ void AnyVal::serialize(G3D::TextOutput& t) const {
                 "%10.5f, %10.5f, %10.5f, %10.5f,\n"
                 "%10.5f, %10.5f, %10.5f, %10.5f,\n"
                 "%10.5f, %10.5f, %10.5f, %10.5f)",
-                m[0, 0], m[0, 1], m[0, 2], m[0, 3],
-                m[1, 0], m[1, 1], m[1, 2], m[1, 3],
-                m[2, 0], m[2, 1], m[2, 2], m[2, 3],
-                m[3, 0], m[3, 1], m[3, 2], m[3, 3]);
+                m[0][0], m[0][1], m[0][2], m[0][3],
+                m[1][0], m[1][1], m[1][2], m[1][3],
+                m[2][0], m[2][1], m[2][2], m[2][3],
+                m[3][0], m[3][1], m[3][2], m[3][3]);
             t.popIndent();
         }
         break;
@@ -310,9 +310,9 @@ void AnyVal::serialize(G3D::TextOutput& t) const {
                 "%10.5f, %10.5f, %10.5f,   %10.5f,\n"
                 "%10.5f, %10.5f, %10.5f,   %10.5f,\n"
                 "%10.5f, %10.5f, %10.5f,   %10.5f)",
-                c.rotation[0, 0], c.rotation[0, 1], c.rotation[0, 2], c.translation.x,
-                c.rotation[1, 0], c.rotation[1, 1], c.rotation[1, 2], c.translation.y,
-                c.rotation[2, 0], c.rotation[2, 1], c.rotation[2, 2], c.translation.z);
+                c.rotation[0][0], c.rotation[0][1], c.rotation[0][2], c.translation.x,
+                c.rotation[1][0], c.rotation[1][1], c.rotation[1][2], c.translation.y,
+                c.rotation[2][0], c.rotation[2][1], c.rotation[2][2], c.translation.z);
             t.popIndent();
         }
         break;
