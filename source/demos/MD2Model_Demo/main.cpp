@@ -210,7 +210,6 @@ void Demo::onGraphics(RenderDevice* rd) {
             
                 CoordinateFrame cframe(Vector3(x * 6 + (z % 2) * 2, -footy, z * 6));
                 cframe.rotation = Matrix3::fromAxisAngle(Vector3::unitY(), n * .5 + 4);
-
                 if (modelTexture.size() > 0) {
                     rd->setTexture(0, modelTexture[(n + 1 + z * 2) % modelTexture.size()]);
                 }

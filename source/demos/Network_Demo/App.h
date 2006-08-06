@@ -30,7 +30,7 @@ public:
 
     DiscoverySettings   discoverySettings;
 
-    App(const GAppSettings& settings);
+    App(const GApp::Settings& settings);
 };
 
 /** Used for debugging */

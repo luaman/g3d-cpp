@@ -923,7 +923,7 @@ public:
      (0, 0) is the <B>upper</B>-left corner of the screen.
      */
     void setViewport(const Rect2D& v);
-    Rect2D getViewport() const;
+    Rect2D viewport() const;
 
     /**
      Vertices are "sent" rather than "set" because they

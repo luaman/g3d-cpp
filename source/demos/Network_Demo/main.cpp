@@ -27,7 +27,7 @@
 App* app;
 
 int main(int argc, char** argv) {
-    GAppSettings settings;
+    GApp::Settings settings;
 
     if (argc > 1) {
         settings.logFilename = argv[1];
@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
 }
 
 
-App::App(const GAppSettings& settings) : GApp(settings),
+App::App(const GApp::Settings& settings) : GApp(settings),
     hostingServer(NULL),
     discoverySettings("Demo Discovery Protocol", 1) {
 

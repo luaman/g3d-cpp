@@ -13,8 +13,8 @@
 
 #include <G3DAll.h>
 
-#if G3D_VER < 60900
-    #error Requires G3D 6.09
+#if G3D_VER < 70000
+    #error Requires G3D 7.00
 #endif
 
 /**
@@ -127,6 +127,9 @@ void Demo::onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
 
 
 void Demo::onUserInput(UserInput* ui) {
+
+    GApplet::onUserInput(ui);
+
     if (ui->keyPressed(SDLK_ESCAPE)) {
         // Even when we aren't in debug mode, quit on escape.
         endApplet = true;

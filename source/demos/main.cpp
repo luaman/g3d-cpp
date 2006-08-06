@@ -145,13 +145,13 @@ void App::main() {
 	debugController.setActive(true);
 
     // Load objects here
-    sky = Sky::create(NULL, dataDir + "sky/");
+    sky = Sky::fromFile(dataDir + "sky/");
     
     applet->run();
 }
 
 
-App::App(const GAppSettings& settings) : GApp(settings) {
+App::App(const GApp::Settings& settings) : GApp(settings) {
     applet = new Demo(this);
 }
 

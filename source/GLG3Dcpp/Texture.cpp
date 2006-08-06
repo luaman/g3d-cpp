@@ -382,14 +382,15 @@ TextureRef Texture::fromTwoFiles(
     // The six cube map faces, or the one texture and 5 dummys.
     Array< Array<const void*> > mip(1);
 	Array<const void*>& array = mip[0];
-	array.resize(6);
-    for (int i = 0; i < 6; ++i) {
-        array[i] = NULL;
-    }
 
     const int numFaces = 
 		((dimension == DIM_CUBE_MAP) || (dimension == DIM_CUBE_MAP_NPOT)) ? 
         6 : 1;
+
+    array.resize(numFaces);
+    for (int i = 0; i < numFaces; ++i) {
+        array[i] = NULL;
+    }
 
     // Parse the filename into a base name and extension
     std::string filenameBase = filename;
@@ -646,9 +647,6 @@ TextureRef Texture::fromGImage(
     const TextureFormat* format = TextureFormat::RGB8;
     bool opaque = true;
 
-    // The six cube map faces, or the one texture and 5 dummys.
-    const uint8* array[1];
-
     switch (image.channels) {
     case 4:
         format = TextureFormat::RGBA8;
@@ -675,12 +673,10 @@ TextureRef Texture::fromGImage(
         desiredFormat = format;
     }
 
-    array[0] = image.byte();
-
     TextureRef t =
         fromMemory(
 			name, 
-			array, 
+			image.byte(), 
 			format,
             image.width, 
 			image.height, 
@@ -1365,6 +1361,10 @@ static void createTexture(
                 height, 0, (bytesPerPixel * ((width + 3) / 4) * ((height + 3) / 4)), rawBytes);
 
         } else {
+
+            debugAssert(isValidPointer(bytes));
+            debugAssertM(isValidPointer(bytes + (width * height - 1) * bytesPerPixel), 
+                "Byte array in Texture creation was too small");
 
             // 2D texture, level of detail 0 (normal), internal format, x size from image, y size from image, 
             // border 0 (normal), rgb color data, unsigned byte data, and finally the data itself.

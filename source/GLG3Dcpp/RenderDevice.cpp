@@ -606,7 +606,7 @@ void RenderDevice::cleanup() {
 
 
 void RenderDevice::push2D() {
-    push2D(getViewport());
+    push2D(viewport());
 }
 
 void RenderDevice::push2D(const Rect2D& viewport) {
@@ -1493,7 +1493,7 @@ void RenderDevice::setProjectionAndCameraMatrix(const GCamera& camera) {
 }
 
 
-Rect2D RenderDevice::getViewport() const {
+Rect2D RenderDevice::viewport() const {
     return state.viewport;
 }
 

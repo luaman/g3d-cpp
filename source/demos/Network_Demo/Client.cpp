@@ -132,6 +132,8 @@ void Client::onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
 }
 
 void Client::onUserInput(UserInput* ui) {
+    GApplet::onUserInput(ui);
+
     if (ui->keyPressed(SDLK_ESCAPE)) {
         // Quit back to main menu
         endApplet = true;
@@ -279,7 +281,7 @@ void Client::onGraphics(RenderDevice* rd) {
             for (EntityTable::Iterator e = entityTable.begin(); e != end; ++e) {
                 const Entity& entity = e->value;
                 Vector3 pos = cam.project(entity.smoothCoordinateFrame().translation,
-                    app->renderDevice->getViewport());
+                    app->renderDevice->viewport());
 
                 if (pos.isFinite()) {
                     app->font->draw2D(app->renderDevice, entity.name, pos.xy(), 16, Color3::white(), Color3::black(),

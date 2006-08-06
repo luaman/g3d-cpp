@@ -2,8 +2,7 @@
  @file VAR_Demo/main.cpp
 
  Demonstration of begin/end style rendering and VAR (Vertex Arrays) for higher
- performance.  This demo predates the GApp infrastructure; consider
- using it instead of intializing RenderDevice yourself.
+ performance.
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-10-22
@@ -153,6 +152,8 @@ void Demo::onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
 
 
 void Demo::onUserInput(UserInput* ui) {
+    GApplet::onUserInput(ui);
+
     if (ui->keyPressed(SDLK_ESCAPE)) {
         // Even when we aren't in debug mode, quit on escape.
         endApplet = true;
