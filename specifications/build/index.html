@@ -13,10 +13,9 @@ documents.
 This build system is intended to be rolled out in the G3D 7.00 release
 but may slip to a future release if it cannot be implemented in time.
 <p>
-Please discuss this document on the <a
-href="http://g3d-cpp.sourceforge.net/forums/viewforum.php?f=1">new
-forums</a>.  If Morgan accepts your proposed changes he will ask you
-to add them to this page directly.
+
+Please discuss this document on the forums.  If Morgan accepts your
+proposed changes he will ask you to add them to this page directly.
 <p>
 
 <hr>
@@ -34,6 +33,7 @@ to add them to this page directly.
 <ol>
  <li> Compile static libraries
  <li> All generated files go under one subdirectory
+ <li> Automatically detect dependency changes (e.g., when #include is added to a cpp file)
  <li> No project files neeed to be modified when new files are added
  <li> Same commands used to execute the build on all platforms
  <li> Builds from multiple compilers can sit side-by-side
@@ -65,12 +65,12 @@ to add them to this page directly.
 <h2>Source Directory Tree</h2>
 
 The source tree contains code needed to compile G3D, tools, and
-documentation for all platforms.  It is a checkout of the 'g3d'
-module from subversion.
+documentation for all platforms.  It is a checkout of the 'G3D'
+module from CVS.
 
 <pre>
-  <img src="folder.png"> <b>g3d/</b>                                    <font color=#009000>CVS Module</font>
-  |--<img src="folder.png"> <b>g3d.lib/</b>                             <font color=#009000>Utility Library (Requires zlib, boost)</font>
+  <img src="folder.png"> <b>G3D/</b>                                    <font color=#009000>CVS Module</font>
+  |--<img src="folder.png"> <b>G3D.lib/</b>                             <font color=#009000>Utility Library (Requires zlib, boost)</font>
   |  |--<img src="folder.png"><b>include/</b>
   |  |  `--<img src="folder.png"><b>G3D/</b>
   |  |      |-- AABox.h
@@ -80,10 +80,10 @@ module from subversion.
   |     |-- AABox.cpp
   |     `-- ...
   |
-  |--<img src="folder.png"> <b>glg3d.lib/</b>                           <font color=#009000>Rendering + UI library (Requires OpenGL)</font>
+  |--<img src="folder.png"> <b>GLG3D.lib/</b>                           <font color=#009000>Rendering + UI library (Requires OpenGL)</font>
   |  |--<img src="folder.png"><b>include/</b>
   |  |  `--<img src="folder.png"><b>GLG3D/</b>
-  |  |     |--<img src="folder.png"> <b>gl/</b>                         <font color=#009000>Customized OpenGL Headers</font> 
+  |  |     |--<img src="folder.png"> <b>GL/</b>                         <font color=#009000>Customized OpenGL Headers</font> 
   |  |     |  `-- ...
   |  |     |  
   |  |     |-- RenderDevice.h
@@ -152,7 +152,7 @@ is what is copied elsewhere when installing the library.
 <p>
 
 <pre>  
-  <img src="folder.png"> <b>g3d/</b>                                    <font color=#009000>New CVS Module</font>
+  <img src="folder.png"> <b>G3D/</b>                                    <font color=#009000>New CVS Module</font>
   |
   :
   |
@@ -168,7 +168,7 @@ is what is copied elsewhere when installing the library.
      |  |  |  `-- ...
      |  |  |
      |  |  |--<img src="folder.png"> <b>GLG3D/</b>
-     |  |  |  |--<img src="folder.png"> <b>gl/</b>
+     |  |  |  |--<img src="folder.png"> <b>GL/</b>
      |  |  |  |   `-- ...
      |  |  |  |
      |  |  |  `-- ...
@@ -179,20 +179,23 @@ is what is copied elsewhere when installing the library.
      |  |  `--<img src="folder.png"> <b>zlib/</b>
      |  |     `-- zlib.h
      |  |   
-     |  |--<img src="folder.png"> <b>win32-vc6.0-lib/</b>
+     |  |--<img src="folder.png"> <b>osx-i686-g++4.01-lib/</b>
      |  |  `-- ...
      |  |
-     |  |--<img src="folder.png"> <b>win32-vc7.1-lib/</b>
+     |  |--<img src="folder.png"> <b>win32-i686-vc6.0-lib/</b>
      |  |  `-- ...
      |  |
-     |  |--<img src="folder.png"> <b>win32-vc8.0-lib/</b>
-     |  |  |-- g3d.lib
-     |  |  |-- glg3d.lib
-     |  |  |-- g3d-debug.lib
-     |  |  |-- glg3d-debug.lib
+     |  |--<img src="folder.png"> <b>win32-i686-vc7.1-lib/</b>
+     |  |  `-- ...
+     |  |
+     |  |--<img src="folder.png"> <b>win32-i686-vc8.0-lib/</b>
+     |  |  |-- G3D.lib
+     |  |  |-- GLG3D.lib
+     |  |  |-- G3Dd.lib
+     |  |  |-- GLG3Dd.lib
      |  |  |-- zlib.lib
      |  |  |-- libpng.lib
-     |  |  `-- libjpg.lib
+     |  |  `-- libjpeg.lib
      |  |
      |  |--<img src="folder.png"> <b>java/</b>
      |  |  `-- g3d.jar
