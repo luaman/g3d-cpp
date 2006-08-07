@@ -5,7 +5,7 @@
 
 
  @created 2006-04-22
- @edited  2006-04-22
+ @edited  2006-08-10
 */
 
 #ifndef GLG3D_GMODULE_H
@@ -71,7 +71,11 @@ typedef ReferenceCountedPointer<class GModuleManager> GModuleManagerRef;
 class GModuleManager : public GModule {
 public:
 
-    enum EventPriority {LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY, NUM_PRIORITY};
+    enum EventPriority {
+        LOW_PRIORITY, 
+        NORMAL_PRIORITY, 
+        HIGH_PRIORITY, 
+        NUM_PRIORITY};
 
 private:
     
@@ -105,20 +109,22 @@ public:
     static GModuleManagerRef create();
 
     /** 
-      Between beginLock and endLock, add and remove operations are delayed so that 
-      iteration is safe.  Locks may not be executed recursively; only one level of
-      locking is allowed.
+      Between beginLock and endLock, add and remove operations are
+      delayed so that iteration is safe.  Locks may not be executed
+      recursively; only one level of locking is allowed.
       */
     void beginLock();
 
     void endLock();
 
     /** 
-        If a lock is in effect, the add may be delayed until the unlock.
+        If a lock is in effect, the add may be delayed until the
+        unlock.
 
-        Priorities should generally not be used; they are largely for supporting
-        debugging components at HIGH_PRIORITY that intercept events before they
-        can hit the regular infrastructure.
+        Priorities should generally not be used; they are largely for
+        supporting debugging components at HIGH_PRIORITY that
+        intercept events before they can hit the regular
+        infrastructure.
       */
     void add(const GModuleRef& m, EventPriority p = NORMAL_PRIORITY);
 
@@ -134,8 +140,11 @@ public:
 
     int size() const;
 
-    /** Runs the event handles of each manager interlaced, as if all the modules from a were in b.*/
-    static bool onEvent(const GEvent& event, GModuleManagerRef& a, GModuleManagerRef& b);
+    /** Runs the event handles of each manager interlaced, as if all
+        the modules from a were in b.*/
+    static bool onEvent(const GEvent& event, 
+                        GModuleManagerRef& a, 
+                        GModuleManagerRef& b);
 
     const GModuleRef& operator[](int i) const;
 

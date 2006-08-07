@@ -154,8 +154,8 @@ public:
     Vector3& operator*= (const Vector3& v);
     Vector3& operator/= (const Vector3& v);
 
-    /** @deprecated Use magnitude */
-	float G3D_DEPRECATED length() const;
+    /** Same as magnitude */
+	float length() const;
 
     float magnitude() const;
     
@@ -237,21 +237,17 @@ public:
         return direction();
     }
 
-    /** Returns a normalized vector.  May be computed with lower precision than unit */
+    /** Returns a normalized vector.  May be computed with lower
+        precision than unit */
     inline Vector3 fastUnit() const {
         return fastDirection();
     }
 
-    /** @deprecated Use squaredMagnitude */
-    float G3D_DEPRECATED squaredLength() const;
+    /** Same as squaredMagnitude */
+    float squaredLength() const;
 
     float squaredMagnitude () const;
 	
-    /** @deprecated Use squaredMagnitude */
-    inline float G3D_DEPRECATED norm() const {
-        return squaredMagnitude();
-    }
-
     float dot(const Vector3& rkVector) const;
     
     float unitize(float tolerance = 1e-06);

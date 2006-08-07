@@ -5,7 +5,7 @@
  @cite   Windows GUI code by Max McGuire
 
  @created 2001-08-26
- @edited  2003-09-13
+ @edited  2006-08-13
  */
 
 #ifndef G3D_PROMPT_H
@@ -29,9 +29,8 @@ namespace G3D {
 
   @cite Windows dialog interface by Max McGuire, mmcguire@ironlore.com
   @cite Font setting code by Kurt Miller, kurt@flipcode.com
-  @deprecated
  */
-int G3D_DEPRECATED prompt(
+int prompt(
     const char*     windowTitle,
     const char*     promptx,
     const char**    choice,
@@ -43,9 +42,8 @@ int G3D_DEPRECATED prompt(
   the number of the user's choice (the first is 0, if there are no
   choices, returns 0).
   <P>Uses GUI under Win32, stdout prompt otherwise.
-  @deprecated
  */
-inline int G3D_DEPRECATED prompt(
+inline int prompt(
     const char*     windowTitle,
     const char*     promptx,
     const char**    choice,
@@ -62,9 +60,9 @@ inline int G3D_DEPRECATED prompt(
  immediately.  If you use SDL, use SDL 1.2.5, which does not have that
  problem.
  */
-void G3D_DEPRECATED msgBox(
+void msgBox(
     const std::string& message,
-    const std::string& title="Message");
+    const std::string& title = "Message");
 
 
 }; // namespace

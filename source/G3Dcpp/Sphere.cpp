@@ -165,9 +165,9 @@ Vector3 Sphere::randomSurfacePoint() const {
 Vector3 Sphere::randomInteriorPoint() const {
     Vector3 result;
     do {
-        result = Vector3((float)symmetricRandom(), 
-                         (float)symmetricRandom(),
-                         (float)symmetricRandom());
+        result = Vector3(uniformRandom(-1, 1), 
+                         uniformRandom(-1, 1), 
+                         uniformRandom(-1, 1));
     } while (result.squaredMagnitude() >= 1.0f);
 
     return result * radius + center;

@@ -1,7 +1,8 @@
 /**
 @file Framebuffer.cpp
 
-@maintainer Daniel Hilferty, djhilferty@users.sourceforge.net
+@author Daniel Hilferty, djhilferty@users.sourceforge.net
+@maintainer Morgan McGuire
 
 Notes:
 <UL>
@@ -9,7 +10,7 @@ Notes:
 </UL>
 
 @created 2006-01-07
-@edited  2006-01-20
+@edited  2006-08-10
 */
 
 #include "GLG3D/Framebuffer.h"
@@ -21,8 +22,8 @@ namespace G3D {
 Framebuffer::Framebuffer(
     const std::string&  _name, 
     GLuint              _framebufferID) : 
-    m_name(_name),
     framebufferID(_framebufferID),
+    m_name(_name),
     m_height(0),
     m_width(0),
     numAttachments(0) {
@@ -65,7 +66,7 @@ void Framebuffer::set(AttachmentPoint ap, const void* n) {
     debugAssertGLOk();
 
     // If we aren't already bound, bind us now
-    if (origFB != openGLID()) {
+    if (origFB != (GLint)openGLID()) {
         // Bind this framebuffer
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, openGLID());
         debugAssertGLOk();
@@ -75,14 +76,16 @@ void Framebuffer::set(AttachmentPoint ap, const void* n) {
         // Detach
         if (attachmentTable[ap].type == Attachment::TEXTURE) {
 
-            glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, ap, GL_TEXTURE_2D, 0, 0);
+            glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, ap, 
+                                      GL_TEXTURE_2D, 0, 0);
 			debugAssertGLOk();
 
 			if (attachmentTable[ap].hadAutoMipMap) {
 				attachmentTable[ap].texture->setAutoMipMap(true);
 			}
         } else {
-            glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, ap, GL_RENDERBUFFER_EXT, 0);
+            glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, ap, 
+                                         GL_RENDERBUFFER_EXT, 0);
 			debugAssertGLOk();
         }
 
@@ -94,7 +97,7 @@ void Framebuffer::set(AttachmentPoint ap, const void* n) {
     }
 
     // If we were already bound, don't bother restoring
-    if (origFB != openGLID()) {
+    if (origFB != (GLint)openGLID()) {
         // Bind original framebuffer
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, origFB);
         debugAssertGLOk();
@@ -113,7 +116,7 @@ void Framebuffer::set(AttachmentPoint ap, const TextureRef& texture) {
     GLint origFB = glGetInteger(GL_FRAMEBUFFER_BINDING_EXT);
 
     // If we aren't already bound, bind us now
-    if (origFB != openGLID()) {
+    if (origFB != (GLint)openGLID()) {
         // Bind this framebuffer
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, openGLID());
         debugAssertGLOk();
@@ -129,7 +132,8 @@ void Framebuffer::set(AttachmentPoint ap, const TextureRef& texture) {
         // Verify same dimensions
         debugAssertM((texture->texelWidth() != width()) || 
                       (texture->texelHeight() != height()), 
-           "All attachments bound to a Framebuffer must have identical dimensions!");
+           "All attachments bound to a Framebuffer must "
+                     "have identical dimensions!");
     }
     
     if (! attachmentTable.containsKey(ap)) {
@@ -145,7 +149,7 @@ void Framebuffer::set(AttachmentPoint ap, const TextureRef& texture) {
     debugAssertGLOk();
 
     // If we were already bound, don't bother restoring
-    if (origFB != openGLID()) {
+    if (origFB != (GLint)openGLID()) {
         // Bind original framebuffer
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, origFB);
     }
@@ -169,7 +173,7 @@ void Framebuffer::set(
     GLint origFB = glGetInteger(GL_FRAMEBUFFER_BINDING_EXT);
 
     // If we aren't already bound, bind us now
-    if (origFB != openGLID()) {
+    if (origFB != (GLint)openGLID()) {
         // Bind this framebuffer
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, openGLID());
         debugAssertGLOk();
@@ -195,7 +199,7 @@ void Framebuffer::set(
     }
 
     // If we were already bound, don't bother restoring
-    if (origFB != openGLID()) {
+    if (origFB != (GLint)openGLID()) {
         // Bind original framebuffer
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, origFB);
     }

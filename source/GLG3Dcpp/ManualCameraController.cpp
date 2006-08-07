@@ -20,11 +20,17 @@ FirstPersonManipulatorRef FirstPersonManipulator::create() {
     return new FirstPersonManipulator();
 }
 
-FirstPersonManipulator::FirstPersonManipulator() : m_mouseMode(MOUSE_DIRECT), _active(false) {}
+FirstPersonManipulator::FirstPersonManipulator() : 
+    _active(false),
+    m_mouseMode(MOUSE_DIRECT) {}
+
 
 
 FirstPersonManipulator::FirstPersonManipulator(
-    RenderDevice* rd, UserInput* ui) : m_mouseMode(MOUSE_DIRECT), _active(false) {
+    RenderDevice* rd, UserInput* ui) : 
+    _active(false),
+    m_mouseMode(MOUSE_DIRECT) {
+
     init(rd, ui);
 }
 

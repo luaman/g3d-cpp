@@ -115,11 +115,11 @@ public:
         return mName;
     }
 
-	inline unsigned int width() const {
+	inline int width() const {
         return mWidth;
     }
 
-	inline unsigned int height() const {
+	inline int height() const {
         return mHeight;
     }
    

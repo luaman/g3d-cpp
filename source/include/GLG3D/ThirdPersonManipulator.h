@@ -149,7 +149,7 @@ protected:
 
 public:
 
-    UIGeom() :  m_twoSidedPolys(true), visible(true) {}
+    UIGeom() :  visible(true), m_twoSidedPolys(true) {}
 
     /** 
       Returns true and sets nearestDepth (on the range 0 = close, 1 = far)
@@ -159,9 +159,10 @@ public:
 
       depth values are approximate.
 
-      @param tangent2D Returns the projected tangent (unit length 3D vector projected into 2D,
-       which then has non-unit length) to the selected location 
-       if it was a line; undefined if it was a plane.
+      @param tangent2D Returns the projected tangent (unit length 3D
+       vector projected into 2D, which then has non-unit length) to
+       the selected location if it was a line; undefined if it was a
+       plane.
 
       @param projectionW Returns the if close to a line.
      */
@@ -295,8 +296,9 @@ public:
     void render(RenderDevice* rd);
 
 
-    /** Called when it has been determined that the user first began a drag on
-        one of our controls.  Invoked before m_dragging is true. */
+    /** Called when it has been determined that the user first began a
+        drag on one of our controls.  Invoked before m_dragging is
+        true. */
     virtual void onDragBegin(const Vector2& start);
 
     /** Invoked after m_dragging is false. */

@@ -104,12 +104,12 @@ Texture::Texture(
     const TextureFormat*    __format,
 	bool					__opaque,
 	const Settings&			__settings) :
-    _name(__name),
     textureID(__textureID),
+	_settings(__settings),
+    _name(__name),
     _dimension(__dimension),
-    _format(__format),
     _opaque(__opaque),
-	_settings(__settings) {
+    _format(__format) {
 
     debugAssert(_format);
     debugAssertGLOk();
@@ -1466,8 +1466,8 @@ Texture::Settings::Settings() :
     depthReadMode(DEPTH_NORMAL),
     maxAnisotropy(2.0),
     autoMipMap(true),
-    minMipMap(-1000),
-    maxMipMap(1000) {
+    maxMipMap(1000),
+    minMipMap(-1000){
 }
 
 

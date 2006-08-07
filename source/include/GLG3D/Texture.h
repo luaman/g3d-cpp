@@ -127,7 +127,8 @@ public:
 
 
     /**
-     All parameters of a texture that are independent of the underlying image data.
+     All parameters of a texture that are independent of the
+     underlying image data.
      */
     class Settings {
     public:
@@ -148,22 +149,25 @@ public:
         bool                        autoMipMap;
 
         /**
-         Highest MIP-map level that will be used during rendering.  The highest
-         level that actually exists will be L = log(max(width, height), 2)), although
-         it is fine to set maxMipMap higher than this.  Must be larger than minMipMap.
+         Highest MIP-map level that will be used during rendering.
+         The highest level that actually exists will be L =
+         log(max(width, height), 2)), although it is fine to set
+         maxMipMap higher than this.  Must be larger than minMipMap.
          Default is 1000.
 
-         Setting the max mipmap level is useful for preventing adjacent areas of
-         a texture from being blurred together when viewed at a distance.  It may
-         decrease performance, however, by forcing a larger texture into cache
-         than would otherwise be required.
+         Setting the max mipmap level is useful for preventing
+         adjacent areas of a texture from being blurred together when
+         viewed at a distance.  It may decrease performance, however,
+         by forcing a larger texture into cache than would otherwise
+         be required.
          */
         int                         maxMipMap;
 
         /**
-         Lowest MIP-map level that will be used during rendering.  Level 0 is the
-         full-size image.  Default is -1000, matching the OpenGL spec.
-         @cite http://oss.sgi.com/projects/ogl-sample/registry/SGIS/texture_lod.txt
+         Lowest MIP-map level that will be used during rendering.
+         Level 0 is the full-size image.  Default is -1000, matching
+         the OpenGL spec.  @cite
+         http://oss.sgi.com/projects/ogl-sample/registry/SGIS/texture_lod.txt
          */
         int                         minMipMap;
 

@@ -132,7 +132,7 @@ void VertexAndPixelShader::GPUShader::replaceG3DSize(std::string& code, std::str
         size_t last = 0;
         while (true) {
             int next = code.find(funcName, last);
-            if (next == std::string::npos) {
+            if ((unsigned int)next == std::string::npos) {
                 break;
             }
 

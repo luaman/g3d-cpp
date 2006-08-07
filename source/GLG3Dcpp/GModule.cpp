@@ -18,7 +18,10 @@ GModuleManagerRef GModuleManager::create() {
 }
 
 
-GModuleManager::GModuleManager() : m_locked(false), m_size(0), m_removeAll(false) {
+GModuleManager::GModuleManager() : 
+    m_size(0), 
+    m_locked(false), 
+    m_removeAll(false) {
 }
 
 

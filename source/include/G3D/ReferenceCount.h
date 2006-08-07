@@ -515,8 +515,9 @@ public:
 
     template <class S>
     inline WeakReferenceCountedPointer(const ReferenceCountedPointer<S>& p) : pointer(0) {
-        // Threadsafe: the object cannot be collected while the other pointer exists.
-        setPointer(p.getPointer());
+        // Threadsafe: the object cannot be collected while the other
+        // pointer exists.
+        setPointer(p.pointer());
     }
 
     // Gets called a *lot* when weak pointers are on the stack

@@ -178,10 +178,11 @@ void UIGeom::render(RenderDevice* rd, float lineScale) {
         bool colorWrite = rd->colorWrite();
         bool depthWrite = rd->depthWrite();
 
-        // Draw lines twice.  The first time we draw color information but do not 
-        // set the depth buffer.  The second time we write to the depth buffer; this
-        // prevents line strips from corrupting their own antialiasing with depth
-        // conflicts at the line joint points.
+        // Draw lines twice.  The first time we draw color information
+        // but do not set the depth buffer.  The second time we write
+        // to the depth buffer; this prevents line strips from
+        // corrupting their own antialiasing with depth conflicts at
+        // the line joint points.
         if (colorWrite) {
             rd->setDepthWrite(false);
             rd->beginPrimitive(RenderDevice::LINE_STRIP);
@@ -195,11 +196,13 @@ void UIGeom::render(RenderDevice* rd, float lineScale) {
                         N = normal.last();
                     } else {
                         // Average two adjacent normals
-                        N = normal[v % normal.size()] + normal[(v - 1) % normal.size()];
+                        N = normal[v % normal.size()] + normal[(v - 1) % 
+                                                               normal.size()];
                     }
 
                     if (N.squaredLength() < 0.05) {
-                        // Too small to normalize; revert to the nearest segment normal
+                        // Too small to normalize; revert to the
+                        // nearest segment normal
                         rd->setNormal(normal[iMin(v, normal.size() - 1)]);
                     } else {
                         rd->setNormal(N.direction());
@@ -273,10 +276,13 @@ void ThirdPersonManipulator::render(RenderDevice* rd) {
     }
 
     // The Draw::axes command automatically doubles whatever scale we give it
-    Draw::axes(m_controlFrame, rd, color[0], color[1], color[2], m_axisScale * 0.5f);
+    Draw::axes(m_controlFrame, rd, 
+               color[0], color[1], color[2], m_axisScale * 0.5f);
 
-    // Can't use nice blend modes or line strip segments will fight each other in the z-buffer
-    rd->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
+    // Can't use nice blend modes or line strip segments will fight
+    // each other in the z-buffer
+    rd->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, 
+                     RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
     rd->setShadeMode(RenderDevice::SHADE_SMOOTH);
     rd->setObjectToWorldMatrix(m_controlFrame);
 
@@ -296,6 +302,7 @@ void ThirdPersonManipulator::render(RenderDevice* rd) {
     computeProjection(rd);
     rd->popState();
 }
+
 
 class TPMPosedModel : public PosedModel {
     friend class ThirdPersonManipulator;
@@ -324,7 +331,8 @@ public:
         return x;
     }
 
-    virtual const Array<Vector3>& objectSpaceFaceNormals(bool normalize = true) const {
+    virtual const Array<Vector3>& objectSpaceFaceNormals
+    (bool normalize = true) const {
         (void)normalize;
         static Array<Vector3> x;
         return x;
@@ -499,11 +507,11 @@ ThirdPersonManipulator::ThirdPersonManipulator() :
     m_axisScale(1), 
     m_dragging(false), 
     m_dragKey(SDL_LEFT_MOUSE_KEY),
-    m_maxAxisDistance2D(10),
     m_overAxis(NO_AXIS),
-    m_translationEnabled(true),
+    m_maxAxisDistance2D(10),
     m_rotationEnabled(true),
     m_doubleAxisDrag(false),
+    m_translationEnabled(true),
     m_enabled(true) {
 
     for (int i = 0; i < NUM_GEOMS; ++i) {

@@ -112,8 +112,9 @@ Vector2 Vector2::random() {
     Vector2 result;
 
     do {
-        result = Vector2((float)symmetricRandom(), (float)symmetricRandom());
-    } while ((result.squaredLength() > 1.0f) || (result.squaredLength() == 1.0f));
+        result = Vector2(uniformRandom(-1, 1), uniformRandom(-1, 1));
+
+    } while (result.squaredLength() >= 1.0f);
 
     result.unitize();
 

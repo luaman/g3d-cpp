@@ -92,7 +92,7 @@ std::string GLCaps::getDriverVersion() {
 
 		static std::string _glVersion = (char*)glGetString(GL_VERSION);
 		int i = _glVersion.rfind(' ');
-		if (i == std::string::npos) {
+		if (i == (int)std::string::npos) {
 			return "Unknown (bad MESA driver string)";
 		} else {
 			return _glVersion.substr(i + 1, _glVersion.length() - i);

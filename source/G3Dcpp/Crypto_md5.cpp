@@ -93,7 +93,7 @@ MD5Hash Crypto::md5(const void* data, size_t n) {
   ghost@aladdin.com
 
  */
-/* $Id: Crypto_md5.cpp,v 1.3 2006/04/14 22:48:35 morgan3d Exp $ */
+/* $Id: Crypto_md5.cpp,v 1.4 2006/08/07 21:07:27 morgan3d Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
 
@@ -134,11 +134,17 @@ MD5Hash Crypto::md5(const void* data, size_t n) {
  */
 
 
+#ifdef G3D_LINUX
+#    include <endian.h>
+#else
+#    define BYTE_ORDER 0
+#endif
+
 //#undef BYTE_ORDER /* 1 = big-endian, -1 = little-endian, 0 = unknown */
 //#ifdef ARCH_IS_BIG_ENDIAN
 //#  define BYTE_ORDER (ARCH_IS_BIG_ENDIAN ? 1 : -1)
 //#else
-#  define BYTE_ORDER 0
+//#  define BYTE_ORDER 0
 //#endif
 
 #define T_MASK ((md5_word_t)~0)

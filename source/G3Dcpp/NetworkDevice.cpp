@@ -756,7 +756,7 @@ void ReliableConduit::receiveHeader() {
     if ((ret == SOCKET_ERROR) || (ret != sizeof(messageType))) {
         if (nd->debugLog) {
             nd->debugLog->printf("Call to recv failed.  ret = %d,"
-                                 " sizeof(messageType) = %lu\n", 
+                                 " sizeof(messageType) = %d\n", 
                                  ret, sizeof(messageType));
             nd->debugLog->println(socketErrorCode());
         }
@@ -771,7 +771,8 @@ void ReliableConduit::receiveHeader() {
     if ((ret == SOCKET_ERROR) || (ret != sizeof(messageSize))) {
         if (nd->debugLog) {
             nd->debugLog->printf("Call to recv failed.  ret = %d,"
-                                 " sizeof(len) = %lu\n", ret, sizeof(messageSize));
+                                 " sizeof(len) = %d\n", ret,
+                                 sizeof(messageSize));
             nd->debugLog->println(socketErrorCode());
         }
         nd->closesocket(sock);
@@ -1023,6 +1024,23 @@ NetListener::NetListener(NetworkDevice* _nd, uint16 port) {
         return;
     }
     if (nd->debugLog) {nd->debugLog->println("Ok");}
+
+    const int T = true;
+
+    // Set reuse address so that a new server can start up soon after
+    // an old one has closed.
+    if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, 
+                   (const char*)&T, sizeof(T)) == SOCKET_ERROR) {
+        
+        if (nd->debugLog) {
+            nd->debugLog->println("WARNING: Setting socket reuseaddr failed.");
+            nd->debugLog->println(socketErrorCode());
+        }
+    }
+    else if (nd->debugLog) {
+        nd->debugLog->println("Set socket option reuseaddr.");
+    }
+
     
     if (! nd->bind(sock, NetAddress(0, port))) {
         if (nd->debugLog) {nd->debugLog->printf("Unable to bind!\n");}
