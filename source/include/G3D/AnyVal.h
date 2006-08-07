@@ -179,8 +179,8 @@ public:
 
 private:
 
-    void*  m_value;
     Type   m_type;
+    void*  m_value;
 
 public:
 

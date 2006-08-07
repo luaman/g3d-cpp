@@ -3,7 +3,7 @@
 #
 # See manual.html for documentation.  http://ice.sf.net
 #
-# Copyright 2003-2005 Morgan McGuire and Rob Hunter
+# Copyright 2003-2006 Morgan McGuire and Rob Hunter
 # All rights reserved.
 #
 # morgan@cs.brown.edu, rob@cs.brown.edu
@@ -215,7 +215,8 @@ def colorPrint(text, color = 'default'):
     if useColor == 'Unknown':
         # Figure out if this device supports color
         useColor = (os.environ.has_key('TERM') and
-                    (os.environ['TERM'] == 'xterm'))
+                    ((os.environ['TERM'] == 'xterm') or 
+                     (os.environ['TERM'] == 'xterm-color')))
    
     if not useColor:
 
@@ -356,14 +357,6 @@ getch = _Getch()
 def maybePrint(str):
     if not quiet:
         print str
-
-##############################################################################
-
-def beginsWith(str1, prefix):
-    return str1[:len(prefix)] == prefix
-
-def endsWith(str1, postfix):
-    return str1[-len(postfix):] == postfix
 
 ##############################################################################
 #                               Shell Helpers                                #
@@ -617,6 +610,10 @@ def versionToString(v):
 
 #############################################################################
 
+def beginswith(a, prefix):
+   return a[:len(prefix)] == prefix
+
+
 """ Returns the version number of a file as a list.  Note that under
 comparison, 1.10 != 1.1 and 1.01 == 1.1, which is usually what you
 want.
@@ -624,20 +621,22 @@ want.
 def getVersion(filename):
     cmd = filename
 
+    base = _basename(filename)
+
     # We check only the beginning of a filename because it may have
     # a version number as part of the name.
-    if beginsWith(_basename(filename), 'g++'):
+    if beginswith(base, 'g++'):
         cmd = filename + ' --version'
-    elif beginsWith(_basename(filename), 'python'):
+    elif beginswith(base, 'python'):
         cmd = filename + " -V"
-    elif beginsWith(_basename(filename), 'cl'):
+    elif beginswith(base, 'cl'):
         # MSVC++ compiler
         cmd = filename
-    elif beginsWith(_basename(filename), 'doxygen'):
+    elif beginswith(base, 'doxygen'):
         cmd = filename + " --version"
-    elif beginsWith(_basename(filename), 'ar'):
+    elif beginswith(base, 'ar'):
         cmd = filename + " --version"
-    elif beginsWith(_basename(filename), 'ld'):
+    elif beginswith(base, 'ld'):
         cmd = filename + " --version"
     else:
         # Unsupported
@@ -647,7 +646,9 @@ def getVersion(filename):
 
 
 _excludeDirPatterns = \
-    ['^.svn$',\
+    ['^\.',\
+     '^#',\
+     '^\.svn$',\
      '^CVS$', \
      '^Debug$', \
      '^Release$', \
@@ -656,11 +657,11 @@ _excludeDirPatterns = \
      '^temp$', \
      '^doc-files$', \
      '^data-files$', \
-     '^.icompile-temp$', \
+     '^\.icompile-temp$', \
      '^' + BUILDDIR + '$']
 
 """
-  Regular expression patterns (i.e. directory patterns) that are 
+  Regular expression patterns (i.e., directory patterns) that are 
   excluded from the search for cpp files
 """
 _cppExcludePatterns = ['^old$'] + _excludeDirPatterns
@@ -1085,7 +1086,7 @@ def expandvars(str):
 
         varname = str[(i + 2):j]
 
-        if beginsWith(varname, 'shell '):
+        if beginswith(varname, 'shell '):
             # Shell command
             cmd = varname[6:]
             value = shell(cmd, verbose)
@@ -1404,8 +1405,10 @@ def discoverPlatform():
     compiler = ''
 
     # Figure out the os
-    if (os.name == 'posix'):
+    if (os.uname()[0] == 'posix'):
         OS = 'linux'
+    elif (os.uname()[0] == 'Darwin'):
+        OS = 'osx'
     else:
         raise 'Error', 'iCompile only supports linux and os/x'
 
@@ -1503,7 +1506,7 @@ def getDependencies(file, iteration = 1):
                    string.join(getCompilerOptions([]), ' ') + ' ' + file,
                 verbose)
 
-    if beginsWith(raw, 'In file included from'):
+    if beginswith(raw, 'In file included from'):
         # If there was an error, the output will have the form
         # "In file included from _____:" and a list of files
         
@@ -1520,7 +1523,7 @@ def getDependencies(file, iteration = 1):
         # know how to fix.
         noSuchFile = []
         for line in string.split(raw, '\n'):
-            if endsWith(line, ': No such file or directory'):
+            if line.endswith(': No such file or directory'):
                 x = line[:-len(': No such file or directory')]
                 j = x.rfind(': ')
                 if (j >= 0): x = x[(j+2):]
@@ -2009,8 +2012,14 @@ def buildBinary():
     if (buildList != []):
         maybeColorPrint("Compiling...", SECTION_COLOR)
     
+    osx = (os.uname()[0] == 'Darwin')
+
     for file in buildList:
-        makeObjectFile(file, copt)
+        if osx and file.endswith('.cpp'):
+            # On OS X, C++ files might also need to call Objective C++ routines
+            makeObjectFile(file, copt + ' -x objective-c++')
+        else:
+            makeObjectFile(file, copt)
         relink = 1
  
     # Generate *all* object file names (even ones that
@@ -2362,12 +2371,16 @@ def configureGpp():
         defaultCompilerOptions = ['-D_DEBUG', '-g']
         defaultLinkerOptions   = []
 
+    if (os.uname()[0] == 'Darwin'):
+        # needed for inline asm on OS X
+        defaultCompilerOptions += ['-fasm-blocks']
+ 
     if (binaryType == DLL):
         defaultLinkerOptions  += ['-shared']
 
     #if verbose: compilerVerboseOptions.append('-v')
 
-    compilerWarningOptions     = ['-Wall']
+    compilerWarningOptions     = ['-Wall -Wformat=2']
 
 
 #################################################################
@@ -2486,6 +2499,8 @@ def linkerOptions():
 
 if __name__ == '__main__':
     (args, progArgs) = separateArgs(sys.argv[1:])
+
+    # --help and --version are processed immediately
     if ('--version' in args):
         printVersion()
         sys.exit(0)
@@ -2494,9 +2509,14 @@ if __name__ == '__main__':
         printHelp()
         sys.exit(0)
 
+    # Find an icompile project file.  If there isn't one, give the
+    # user the opportunity to create one or abort.
     checkForProjectFile(args)
+
+    # Load settings from the project file.
     processProjectFile(args)
 
+    # Load cached dependencies for this project
     cacheFilename = tempDir + '.icompile-cache'
     loadCache(cacheFilename)
 

@@ -14,7 +14,12 @@
 #include "G3D/BinaryOutput.h"
 #include "G3D/Log.h"
 
-#include "../png/png.h"
+#ifdef G3D_OSX
+#    include <png.h>
+#else
+#    include "../png/png.h"
+#endif
+
 #include <sys/stat.h>
 #include <assert.h>
 #include <sys/types.h>

@@ -1,8 +1,9 @@
 /** 
  @file AnyVal.cpp
  @author Morgan McGuire
+ @maintainer Morgan McGuire
  @created 2006-06-11
- @edited  2006-06-11
+ @edited  2006-08-06
  */
 
 #include "G3D/AnyVal.h"
@@ -128,14 +129,76 @@ AnyVal::AnyVal(Type arrayOrTable) : m_type(NIL), m_value(NULL) {
 
 
 AnyVal::~AnyVal() {
-    delete m_value;
-    m_type = NIL;
-    m_value = NULL;
+    *this = NIL;
 }
 
 
 AnyVal& AnyVal::operator=(const AnyVal& v) {
-    delete m_value;
+    switch (m_type) {
+    case NIL:
+        // Nothing to do
+        break;
+
+    case NUMBER:
+        delete (double*)m_value;
+        break;
+
+    case BOOLEAN:
+        delete (bool*)m_value;
+        break;
+
+    case STRING:
+        delete (std::string*)m_value;
+        break;
+        
+    case VECTOR2:
+        delete (Vector2*)m_value;
+        break;
+
+    case VECTOR3:
+        delete (Vector3*)m_value;
+        break;
+
+    case VECTOR4:
+        delete (Vector4*)m_value;
+        break;
+
+    case MATRIX3:
+        delete (Matrix3*)m_value;
+        break;
+
+    case MATRIX4:
+        delete (Matrix4*)m_value;
+        break;
+
+    case QUAT:
+        delete (Quat*)m_value;
+        break;
+
+    case COORDINATEFRAME:
+        delete (CoordinateFrame*)m_value;
+        break;
+
+    case COLOR3:
+        delete (Color3*)m_value;
+        break;
+
+    case COLOR4:
+        delete (Color4*)m_value;
+        break;
+
+    case ARRAY:
+        delete (Array<AnyVal>*)m_value;
+        break;
+
+    case TABLE:
+        delete (Table<std::string, AnyVal>*)m_value;
+        break;
+
+    default:
+        debugAssertM(false, "Internal error: no destructor for this type.");
+    } 
+   
     m_value = NULL;
     m_type = v.m_type;
 
@@ -389,6 +452,11 @@ void AnyVal::deserialize(G3D::TextInput& t) {
     }
 
     switch (t.peek().type()) {
+    case Token::END:
+        // should never get here because of the hasMore check above
+        return;
+        break;
+
     case Token::NUMBER:
         m_type = NUMBER;
         m_value = new double(t.readNumber());

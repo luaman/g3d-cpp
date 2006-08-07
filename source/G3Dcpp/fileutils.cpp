@@ -4,7 +4,7 @@
  @author Morgan McGuire, graphics3d.com
  
  @author  2002-06-06
- @edited  2005-02-24
+ @edited  2006-08-06
  */
 
 #include "G3D/platform.h"
@@ -33,17 +33,17 @@
 */
 extern "C" {
 #if (defined(_MSC_VER) || defined(__MINGW32__))
-	#include "../IJG/jpeglib.h"
+#    include "../IJG/jpeglib.h"
 #else
-	#include <jpeglib.h>
+#    include <jpeglib.h>
 #endif
 }
 
 #ifdef G3D_WIN32
     //for _mkdir and _stat
-    #include <direct.h>
+#    include <direct.h>
 #else
-    #define _stat stat
+#    define _stat stat
 #endif
 
 

@@ -15,18 +15,18 @@
 #include <stdio.h>
 
 #ifdef G3D_WIN32
-    #if (defined(G3D_MINGW32) || (_MSC_VER > 1200))
-        #include <sstream>
-    #else
-        #include <strstream>
-    #endif
-    #include <conio.h>
+#    if (defined(G3D_MINGW32) || (_MSC_VER > 1200))
+#        include <sstream>
+#    else
+#        include <strstream>
+#    endif
+#    include <conio.h>
 #else
-    #define _getch getchar
+#    define _getch getchar
 #endif
 
 #ifdef G3D_OSX
-    #import <AppKit/AppKit.h>
+#    import <AppKit/AppKit.h>
 #endif
 
 namespace G3D {
@@ -41,7 +41,7 @@ namespace _internal {
 class DialogTemplate {
 public:
 
-  DialogTemplate(LPCSTR caption, DWORD style, 
+    DialogTemplate(LPCSTR caption, DWORD style, 
                  int x, int y, int w, int h,
                  LPCSTR font = NULL, WORD fontSize = 8) {
     
