@@ -10,7 +10,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2006-04-10
+ @edited  2006-08-10
  */
 
 #include "../include/G3DAll.h"
@@ -422,7 +422,7 @@ void testCoordinateFrame() {
         CoordinateFrame c;
         c.lookAt(Vector3(-1, 0, -1));
         float h = c.getHeading();
-        debugAssert(fuzzyEq(h, pi() / 4));
+        debugAssert(fuzzyEq(h, G3D::pi() / 4));
     }
 
     // Test getHeading at a variety of angles
@@ -548,13 +548,13 @@ int main(int argc, char* argv[]) {
 
     testQueue();
 
-    testMatrix();
+    //testMatrix();
 
     testArray();
 
     testMeshAlgTangentSpace();
 
-    testGChunk();
+    //testGChunk();
 
     printf("ConvexPolygon2D\n");
     testConvexPolygon2D();

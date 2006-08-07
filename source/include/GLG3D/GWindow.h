@@ -536,7 +536,7 @@ private:
 
 protected:
 
-    GWindow() : m_renderDevice(NULL), m_inputCaptureCount(0), m_mouseHideCount(0) {}
+    GWindow() : m_inputCaptureCount(0), m_mouseHideCount(0), m_renderDevice(NULL) {}
 
 
     /** Override this with the glMakeCurrent call appropriate for your window.*/

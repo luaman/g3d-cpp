@@ -98,10 +98,10 @@ static void testSlerp() {
         // always between them (and not wrapping around the other way).
 
         // Start
-		float a0 = uniformRandom(0, (float)pi());
+		float a0 = uniformRandom(0, (float)G3D::pi());
 
         // End
-		float a1 = uniformRandom(0, (float)pi());
+		float a1 = uniformRandom(0, (float)G3D::pi());
 
 		float a2 = (a0 + a1) / 2;
 		Quat q0 = Quat::fromAxisAngleRotation(axis, a0);

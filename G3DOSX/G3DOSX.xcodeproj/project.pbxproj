@@ -28,7 +28,6 @@
 		0F5500B106DD5F29008DD4F8 /* VertexProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F55009206DD5F28008DD4F8 /* VertexProgram.cpp */; };
 		0F5500B306DD5F29008DD4F8 /* VAR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F55009406DD5F28008DD4F8 /* VAR.cpp */; };
 		0F5500B406DD5F29008DD4F8 /* UserInput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F55009506DD5F28008DD4F8 /* UserInput.cpp */; };
-		0F5500B506DD5F29008DD4F8 /* TextureManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F55009606DD5F28008DD4F8 /* TextureManager.cpp */; };
 		0F5500B606DD5F29008DD4F8 /* TextureFormat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F55009706DD5F28008DD4F8 /* TextureFormat.cpp */; };
 		0F5500B706DD5F29008DD4F8 /* Texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F55009806DD5F28008DD4F8 /* Texture.cpp */; };
 		0F5500B806DD5F29008DD4F8 /* tesselate.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F55009906DD5F28008DD4F8 /* tesselate.cpp */; };
@@ -331,7 +330,6 @@
 		0F55009206DD5F28008DD4F8 /* VertexProgram.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = VertexProgram.cpp; path = ../source/GLG3Dcpp/VertexProgram.cpp; sourceTree = SOURCE_ROOT; };
 		0F55009406DD5F28008DD4F8 /* VAR.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = VAR.cpp; path = ../source/GLG3Dcpp/VAR.cpp; sourceTree = SOURCE_ROOT; };
 		0F55009506DD5F28008DD4F8 /* UserInput.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = UserInput.cpp; path = ../source/GLG3Dcpp/UserInput.cpp; sourceTree = SOURCE_ROOT; };
-		0F55009606DD5F28008DD4F8 /* TextureManager.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TextureManager.cpp; path = ../source/GLG3Dcpp/TextureManager.cpp; sourceTree = SOURCE_ROOT; };
 		0F55009706DD5F28008DD4F8 /* TextureFormat.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TextureFormat.cpp; path = ../source/GLG3Dcpp/TextureFormat.cpp; sourceTree = SOURCE_ROOT; };
 		0F55009806DD5F28008DD4F8 /* Texture.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Texture.cpp; path = ../source/GLG3Dcpp/Texture.cpp; sourceTree = SOURCE_ROOT; };
 		0F55009906DD5F28008DD4F8 /* tesselate.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = tesselate.cpp; path = ../source/GLG3Dcpp/tesselate.cpp; sourceTree = SOURCE_ROOT; };
@@ -771,7 +769,6 @@
 				3EFE6A240735D82A00E12815 /* VARArea.cpp */,
 				0F55009406DD5F28008DD4F8 /* VAR.cpp */,
 				0F55009506DD5F28008DD4F8 /* UserInput.cpp */,
-				0F55009606DD5F28008DD4F8 /* TextureManager.cpp */,
 				0F55009706DD5F28008DD4F8 /* TextureFormat.cpp */,
 				0F55009806DD5F28008DD4F8 /* Texture.cpp */,
 				0F55009906DD5F28008DD4F8 /* tesselate.cpp */,
@@ -1332,7 +1329,6 @@
 				0F5500B106DD5F29008DD4F8 /* VertexProgram.cpp in Sources */,
 				0F5500B306DD5F29008DD4F8 /* VAR.cpp in Sources */,
 				0F5500B406DD5F29008DD4F8 /* UserInput.cpp in Sources */,
-				0F5500B506DD5F29008DD4F8 /* TextureManager.cpp in Sources */,
 				0F5500B606DD5F29008DD4F8 /* TextureFormat.cpp in Sources */,
 				0F5500B706DD5F29008DD4F8 /* Texture.cpp in Sources */,
 				0F5500B806DD5F29008DD4F8 /* tesselate.cpp in Sources */,

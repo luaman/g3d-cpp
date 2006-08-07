@@ -31,41 +31,41 @@ class GApp {
 public:
     friend class GApplet;
 
-	class Settings {
-	public:
-		GWindow::Settings    window;
+    class Settings {
+    public:
+        GWindow::Settings    window;
 
-		/**
-		 If "<AUTO>", G3D will search for the standard
-		 data files.  It is recommended that you override this
-		 default and set dataDir to a directory relative
-		 to your executable (e.g. "./data/")
-		 so your programs can be distributed to users who
-		 do not have full the G3D data directory.
-		 */
-		std::string             dataDir;
-
-		/**
-		 Can be relative to the G3D data directory (e.g. "font/dominant.fnt")
-		 or relative to the current directory.
-		 Default is "console-small.fnt"
-		 */
-		std::string             debugFontName;
-
-		std::string             logFilename;
-
-		/** 
-		  When true, GAapp ensures that g3d-license.txt exists in the current
-		  directory.  That file is written from the return value of G3D::license() */
-		bool                    writeLicenseFile;
-
-		/** When true, the networkDevice is initialized.  Defaults to true. */
-		bool                    useNetwork;
-
-		Settings() : dataDir("<AUTO>"), debugFontName("console-small.fnt"), 
-			logFilename("log.txt"), writeLicenseFile(true), useNetwork(true) {
-		}
-	};
+	/**
+	   If "<AUTO>", G3D will search for the standard
+	   data files.  It is recommended that you override this
+	   default and set dataDir to a directory relative
+	   to your executable (e.g. "./data/")
+	   so your programs can be distributed to users who
+	   do not have full the G3D data directory.
+	*/
+	std::string             dataDir;
+	
+	/**
+	   Can be relative to the G3D data directory (e.g. "font/dominant.fnt")
+	   or relative to the current directory.
+	   Default is "console-small.fnt"
+	*/
+	std::string             debugFontName;
+	
+	std::string             logFilename;
+	
+	/** 
+	    When true, GAapp ensures that g3d-license.txt exists in the current
+	    directory.  That file is written from the return value of G3D::license() */
+	bool                    writeLicenseFile;
+	
+	/** When true, the networkDevice is initialized.  Defaults to true. */
+	bool                    useNetwork;
+	
+	Settings() : dataDir("<AUTO>"), debugFontName("console-small.fnt"), 
+	    logFilename("log.txt"), writeLicenseFile(true), useNetwork(true) {
+	}
+    };
 
 
 private:
@@ -92,7 +92,6 @@ protected:
      */
     virtual void main() = 0;
 
-    friend class GApplet;
     Stopwatch           m_graphicsWatch;
     Stopwatch           m_logicWatch;
     Stopwatch           m_networkWatch;

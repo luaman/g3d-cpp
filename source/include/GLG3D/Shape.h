@@ -343,7 +343,7 @@ public:
 
     /** Bounds the graphic representation of the ray */
     virtual Sphere BoundingSphere() const {
-        return Sphere(geometry.origin + geometry.direction / 2, geometry.direction.length() / 2);
+        return Sphere(geometry.origin + geometry.direction / 2, geometry.direction.magnitude() / 2);
     }
 
     /** Bounds the graphic representation of the ray */
@@ -361,7 +361,7 @@ public:
 
     /** Returns a random point along the ray */
     virtual Vector3 randomInteriorPoint() const {
-        return geometry.origin + geometry.direction * unitRandom();
+        return geometry.origin + geometry.direction * uniformRandom(0, 1);
     }
 
 };
