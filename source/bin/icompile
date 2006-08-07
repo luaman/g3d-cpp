@@ -43,6 +43,7 @@
 version = [0, 4, 5]
 import sys, string, os, os.path, fileinput, tempfile, shutil, re
 import commands, pickle, time, ConfigParser
+from platform import machine
 from string import ljust
 
 if int(sys.version[:string.find(sys.version, '.')]) < 2:
@@ -193,7 +194,7 @@ ansiStyle = {
     'fastblink'        :   "6",  # Unsupported by most terminals
     'reverse'          :   "7",
     'hidden'           :   "8",  # Unsupported by most terminals
-    'srikethrough'     :   "9"}  # Unsupported by most terminals
+    'strikethrough'    :   "9"}  # Unsupported by most terminals
 
 """ Used by colorPrint """
 useColor = 'Unknown'
@@ -1410,14 +1411,13 @@ def discoverPlatform():
     elif (os.uname()[0] == 'Darwin'):
         OS = 'osx'
     else:
-        raise 'Error', 'iCompile only supports linux and os/x'
+        raise 'Error', 'iCompile only supports Linux and OS X'
 
     # Figure out the compiler
     c = compilerName()
-
     compiler = _basename(c)
 
-    if (compiler[0:3] == 'g++') or (compiler[0:3] == 'gcc'):
+    if beginswith(compiler, 'g++') or beginswith(compiler, 'gcc'):
         compiler = 'g++'
 
     # Append the major and minor compiler version number to the compiler name
@@ -1429,7 +1429,7 @@ def discoverPlatform():
         v = v + 0
     compiler += string.join(map(str, v), '.')
 
-    platform = OS + '-' + compiler
+    platform = OS + '-' + machine() + '-' + compiler
     
 ##############################################################################
 #                            Build Documentation                             #
@@ -2278,8 +2278,10 @@ def checkForProjectFile(args):
  @param args All arguments before --run
 """
 def setVariables(args):
-    global rootDir, projectName, binaryType, verbose, target
+    global rootDir, projectName, binaryType, target
     global binaryName, binaryDir, objDir
+
+    discoverPlatform()
 
     # Root directory
     rootDir                    = os.getcwd() + "/"
@@ -2302,9 +2304,6 @@ def setVariables(args):
         maybeWarn("This project has unknown extension '" + ext +
                   "' and will be compiled as an executable.")
 
-    # Verbose
-    verbose = '--verbose' in args
-
     # Choose target
     if ('--opt' in args) or ('-O' in args):
         if ("--debug" in args):
@@ -2317,8 +2316,6 @@ def setVariables(args):
     else:
         target                 = DEBUG
         d                      = 'd'
-
-    discoverPlatform()
     
     # Binary name
     if (binaryType == EXE):
@@ -2433,7 +2430,7 @@ def processDotICompile():
     preferenceFile = pathConcat(HOME, '.icompile')
     if os.path.exists(preferenceFile):
         if verbose:
-            print 'Reading ' + preferenceFile
+            print 'Processing ' + preferenceFile
         config.read(preferenceFile)
     else:
         success = False
@@ -2464,12 +2461,13 @@ def processProjectFile(args):
     global config, excludeFromCompilation, quiet
 
     processDotICompile()
-    
     # Process the project file
     projectFile = 'ice.txt'
+    if verbose:
+        print 'Processing ' + projectFile
     config.read(projectFile)
 
-    # Don't expand $ envvar in regular expressions since
+    # Don't expand '$' envvar in regular expressions since
     # $ means end of pattern.
     exclude = configGet(config, 'GLOBAL', 'exclude', False)
     excludeFromCompilation = re.compile(exclude)
@@ -2500,6 +2498,8 @@ def linkerOptions():
 if __name__ == '__main__':
     (args, progArgs) = separateArgs(sys.argv[1:])
 
+    verbose = '--verbose' in args
+
     # --help and --version are processed immediately
     if ('--version' in args):
         printVersion()
@@ -2520,10 +2520,10 @@ if __name__ == '__main__':
     cacheFilename = tempDir + '.icompile-cache'
     loadCache(cacheFilename)
 
-    setVariables(args)
-    
     configureCompiler()
-    
+
+    setVariables(args)
+
     ret = runCompile(args, progArgs)
 
     mkdir(tempDir)
