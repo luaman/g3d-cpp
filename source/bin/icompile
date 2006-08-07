@@ -1406,12 +1406,15 @@ def discoverPlatform():
     compiler = ''
 
     # Figure out the os
-    if (os.uname()[0] == 'posix'):
+    OS = os.uname()[0];
+    if (OS == 'Linux'):
         OS = 'linux'
+    elif (OS == 'FreeBSD'):
+        OS = 'freebsd'
     elif (os.uname()[0] == 'Darwin'):
         OS = 'osx'
     else:
-        raise 'Error', 'iCompile only supports Linux and OS X'
+        raise 'Error', 'iCompile only supports Linux, FreeBSD, and OS X'
 
     # Figure out the compiler
     c = compilerName()
