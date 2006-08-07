@@ -310,7 +310,7 @@ void System::init() {
         // We read the standard CPUID level 0x00000000 which should
         // be available on every x86 processor.  This fills out
         // a string with the processor vendor tag.
-        #if defined(_MSC_VER) || defined(G3D_OSX_INTEL)
+        #if defined(_MSC_VER)// || defined(G3D_OSX_INTEL)
             __asm {
                 push eax
                 push ebx
@@ -327,7 +327,7 @@ void System::init() {
                 pop ebx
                 pop eax
             }
-        #elif defined(__GNUC__) && defined(i386)
+        #elif defined(__GNUC__) && defined(i386) && !defined(G3D_OSX_INTEL)
             asm (
                 "movl $0, %%eax \n"
                 "cpuid          \n"
@@ -360,7 +360,7 @@ void System::init() {
         maxSupportedCPUIDLevel = eaxreg & 0xFFFF;
 
         // Then we read the ext. CPUID level 0x80000000
-        #if defined(_MSC_VER) || defined(G3D_OSX_INTEL)
+        #if defined(_MSC_VER) //|| defined(G3D_OSX_INTEL)
             __asm {
                 push eax
                 push ebx
@@ -374,7 +374,7 @@ void System::init() {
                 pop ebx
                 pop eax
             }
-        #elif defined(__GNUC__) && defined(i386)
+        #elif defined(__GNUC__) && defined(i386) && !defined(G3D_OSX_INTEL)
             asm (
                 "movl $0x80000000, %%eax \n"
                 "cpuid                   \n"
@@ -416,7 +416,9 @@ void System::init() {
     }
 
     #ifdef G3D_WIN32
-        bool success = RegistryUtil::readInt32("HKEY_LOCAL_MACHINE\\HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0\\~MHz", _CPUSpeed);
+        bool success = RegistryUtil::readInt32
+	  ("HKEY_LOCAL_MACHINE\\HARDWARE\\DESCRIPTION"
+	   "\\System\\CentralProcessor\\0\\~MHz", _CPUSpeed);
 
         SYSTEM_INFO systemInfo;
         GetSystemInfo(&systemInfo);
@@ -447,7 +449,7 @@ void System::init() {
                     systemInfo.dwNumberOfProcessors,
                     (int)(::log((double)maxAddr) / ::log(2.0) + 2.0),
                     arch);
-//                    _CPUSpeed / (1024.0 * 1024));
+                   //                    _CPUSpeed / (1024.0 * 1024));
 
         OSVERSIONINFO osVersionInfo;
         osVersionInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
@@ -468,7 +470,6 @@ void System::init() {
 
         {
             // Shell out to the 'uname' command
-
             FILE* f = popen("uname -a", "r");
 
             int len = 100;
@@ -486,7 +487,7 @@ void System::init() {
 
     #elif defined(G3D_OSX)
 
-        //Operating System:
+        // Operating System:
         SInt32 macVersion;
         Gestalt(gestaltSystemVersion, &macVersion);
 
@@ -496,35 +497,36 @@ void System::init() {
 
         sprintf(_operatingSystemCstr, "OS X %x.%x.%x", major, minor, revision); 
                  
-        //Clock Cycle Timing Information:
+        // Clock Cycle Timing Information:
         Gestalt('pclk', &System::m_OSXCPUSpeed);
         _CPUSpeed = iRound((double)m_OSXCPUSpeed / (1024 * 1024));
         m_secondsPerNS = 1.0 / 1.0e9;
         
-        //System Architecture:
-		const NXArchInfo* pInfo = NXGetLocalArchInfo();
+        // System Architecture:
+	const NXArchInfo* pInfo = NXGetLocalArchInfo();
 		
-		if(pInfo){
-			strcpy(_cpuArchCstr, pInfo->description);
+	if (pInfo) {
+	    strcpy(_cpuArchCstr, pInfo->description);
 			
-			switch(pInfo->cputype){
-			case CPU_TYPE_POWERPC:
-				switch(pInfo->cpusubtype){
-				case CPU_SUBTYPE_POWERPC_750:
-				case CPU_SUBTYPE_POWERPC_7400:
-				case CPU_SUBTYPE_POWERPC_7450:
-					strcpy(_cpuVendorCstr, "Motorola");
-					break;
-				case CPU_SUBTYPE_POWERPC_970:
-					strcpy(_cpuVendorCstr, "IBM");
-					break;
-				}
-				break;
-			case CPU_TYPE_I386:
-				strcpy(_cpuVendorCstr, "Intel");
-				break;
-			}
+	    switch (pInfo->cputype) {
+	    case CPU_TYPE_POWERPC:
+	        switch(pInfo->cpusubtype){
+		case CPU_SUBTYPE_POWERPC_750:
+		case CPU_SUBTYPE_POWERPC_7400:
+		case CPU_SUBTYPE_POWERPC_7450:
+		    strcpy(_cpuVendorCstr, "Motorola");
+		    break;
+		case CPU_SUBTYPE_POWERPC_970:
+		    strcpy(_cpuVendorCstr, "IBM");
+		    break;
 		}
+		break;
+	    
+	        case CPU_TYPE_I386:
+		    strcpy(_cpuVendorCstr, "Intel");
+		    break;
+	    }
+	}
     #endif
 
     initTime();
@@ -539,7 +541,7 @@ void checkForCPUID() {
     // We've to check if we can toggle the flag register bit 21.
     // If we can't the processor does not support the CPUID command.
     
-#   if defined(_MSC_VER) || defined(G3D_OSX_INTEL)
+#   if defined(_MSC_VER)// || defined(G3D_OSX_INTEL)
         __asm {
                 push eax
                 push ebx
@@ -559,7 +561,7 @@ void checkForCPUID() {
                 pop eax
         }
 
-#    elif defined(__GNUC__) && defined(i386)
+#    elif defined(__GNUC__) && defined(i386) && !defined(G3D_OSX_INTEL)
         // Linux
         __asm__ (
 "        pushfl                      # Get original EFLAGS             \n"
@@ -579,7 +581,7 @@ void checkForCPUID() {
         : "%eax", "%ecx"
         );
 
-#    else               
+#    else 
        // Unknown architecture
         _cpuID = false;
 #    endif
@@ -598,7 +600,7 @@ void getStandardProcessorExtensions() {
     // Invoking CPUID with '1' in EAX fills out edx with a bit string.
     // The bits of this value indicate the presence or absence of 
     // useful processor features.
-    #if defined(_MSC_VER) || defined(G3D_OSX_INTEL)
+    #if defined(_MSC_VER) //|| defined(G3D_OSX_INTEL)
         // Windows or OSX Intel
 
             __asm {
@@ -615,7 +617,7 @@ void getStandardProcessorExtensions() {
             pop eax
             }
 
-    #elif defined(__GNUC__) && defined(i386)
+    #elif defined(__GNUC__) && defined(i386) && ! defined(G3D_OSX_INTEL)
         // Linux
         __asm__ (
                 "movl    $1, %%eax                                                 \n"
