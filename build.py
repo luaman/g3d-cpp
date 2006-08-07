@@ -13,7 +13,7 @@ from buildlib import *
 from socket import gethostname
 
 # The library version number
-version = "7_00"
+version = "7_00-b01"
 
 # Setup versions for supporting programs
 aclocal    = "aclocal"
@@ -33,8 +33,8 @@ if (os.name == 'nt'):
     platform = 'win32'
 else:
     platform = {'FreeBSD' : 'linux', \
-                'Linux' : 'linux', \
-                'Darwin' : 'osx'}[os.uname()[0]]
+                'Linux'   : 'linux', \
+                'Darwin'  : 'osx'}[os.uname()[0]]
 
 # Williams environment customization
 if (gethostname().endswith('.cs.williams.edu')):
