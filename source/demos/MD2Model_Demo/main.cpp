@@ -202,14 +202,17 @@ void Demo::onGraphics(RenderDevice* rd) {
         rd->setAmbientLightColor(lighting.ambient);
 
         int n = 1;
+
+        static const RealTime t0 = System::time();
     
         // Draw a bunch of characters
         for (int z = 0; z < 5; ++z) {
             for (int x = -2; x <= 2; ++x) {
-                MD2Model::Pose pose(MD2Model::STAND, n + System::time());
+                MD2Model::Pose pose(MD2Model::STAND, n + (System::time() - t0));
             
                 CoordinateFrame cframe(Vector3(x * 6 + (z % 2) * 2, -footy, z * 6));
                 cframe.rotation = Matrix3::fromAxisAngle(Vector3::unitY(), n * .5 + 4);
+        
                 if (modelTexture.size() > 0) {
                     rd->setTexture(0, modelTexture[(n + 1 + z * 2) % modelTexture.size()]);
                 }
@@ -221,15 +224,13 @@ void Demo::onGraphics(RenderDevice* rd) {
         }
 
         // Draw the main character
-        {
-            CoordinateFrame cframe(Vector3(0, -footy, -8));
-        
-            if (modelTexture.size() > 0) {
-                rd->setTexture(0, modelTexture.last());
-            }
-
-            drawCharWithShadow(cframe, pose);
+        CoordinateFrame cframe(Vector3(0, -footy, -8));
+    
+        if (modelTexture.size() > 0) {
+            rd->setTexture(0, modelTexture.last());
         }
+
+        drawCharWithShadow(cframe, pose);
 
         rd->disableLighting();
 
