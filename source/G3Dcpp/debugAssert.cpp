@@ -181,13 +181,9 @@ bool _handleDebugAssert_(
     case cAbort:
         exit(-1);
         break;
-
-    default:
-        // Shouldn't get here
-        return false;
-        break;
     }
 
+    // Should never get here
     return false;
 }
 

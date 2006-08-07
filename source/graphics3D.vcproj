@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="graphics3D"
-	ProjectGUID="{EC8E61AE-17AE-4A1B-80BA-7EC01DE258FB}"
+	ProjectGUID="{D51989E9-CB8F-4058-80FF-1EADFA45DA71}"
 	>
 	<Platforms>
 		<Platform
@@ -50,9 +50,8 @@
 				AssemblerListingLocation=".\../temp/debug/g3d/"
 				ObjectFile=".\../temp/debug/g3d/"
 				ProgramDataBaseFileName=".\../temp/debug/g3d/"
-				WarningLevel="3"
+				WarningLevel="4"
 				SuppressStartupBanner="true"
-				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"

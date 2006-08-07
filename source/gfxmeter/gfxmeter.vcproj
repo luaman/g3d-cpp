@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="gfxmeter"
-	ProjectGUID="{B741A0C7-4B8D-484F-B0F9-99658DC5F0FB}"
+	ProjectGUID="{6339DBD0-C4A1-4D87-8EA6-E2C3B819B7EA}"
 	>
 	<Platforms>
 		<Platform

@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="GLG3D"
-	ProjectGUID="{14CF68D0-748E-4BB3-8821-A7A18D5BFCF7}"
+	ProjectGUID="{1EBD9F62-3F2B-451E-9CA6-21D16A9A206B}"
 	>
 	<Platforms>
 		<Platform
@@ -52,7 +52,6 @@
 				ProgramDataBaseFileName=".\../temp/debug/glg3d/"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
-				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"

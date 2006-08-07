@@ -141,6 +141,10 @@
 #       define for if (false) {} else for
 #    endif
 
+// Turn off "conditional expression is constant" warning; MSVC generates this
+// for debug assertions in inlined methods.
+#    pragma warning (disable : 4127)
+
 #   if (_MSC_VER <= 1200)
 //      Nothing we can do on VC6 for deprecated functions
 #      define G3D_DEPRECATED

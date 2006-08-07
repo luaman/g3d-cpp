@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="8.00"
 	Name="doc"
-	ProjectGUID="{039A7A14-E7DB-4323-9AE9-35ABF2520A5B}"
+	ProjectGUID="{3C597968-6B0C-41C4-BF26-18C3722883EB}"
 	Keyword="MakeFileProj"
 	>
 	<Platforms>

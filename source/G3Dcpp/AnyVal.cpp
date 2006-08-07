@@ -129,11 +129,11 @@ AnyVal::AnyVal(Type arrayOrTable) : m_type(NIL), m_value(NULL) {
 
 
 AnyVal::~AnyVal() {
-    *this = NIL;
+    deleteValue();
 }
 
 
-AnyVal& AnyVal::operator=(const AnyVal& v) {
+void AnyVal::deleteValue() {
     switch (m_type) {
     case NIL:
         // Nothing to do
@@ -200,6 +200,10 @@ AnyVal& AnyVal::operator=(const AnyVal& v) {
     } 
    
     m_value = NULL;
+}
+
+AnyVal& AnyVal::operator=(const AnyVal& v) {
+    deleteValue();
     m_type = v.m_type;
 
     switch (m_type) {
@@ -803,7 +807,7 @@ bool AnyVal::boolean() const {
 
 bool AnyVal::boolean(bool defaultVal) const {
     if (m_type != BOOLEAN) {
-        throw WrongType(BOOLEAN, m_type);
+        return defaultVal;
     }
 
     return *(bool*)m_value;

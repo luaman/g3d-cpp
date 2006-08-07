@@ -2,7 +2,7 @@
  @file AnyVal.h
  @author Morgan McGuire
  @created 2006-06-11
- @edited  2006-06-11
+ @edited  2006-08-11
  */
 
 #ifndef G3D_ANYVAL_H
@@ -178,6 +178,9 @@ public:
     };
 
 private:
+
+    /** Calls delete on @a m_value */
+    void deleteValue();
 
     Type   m_type;
     void*  m_value;
