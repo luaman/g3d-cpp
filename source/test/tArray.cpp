@@ -28,6 +28,7 @@ public:
     }
 
     Big& operator=(const Big& a) {
+        (void)a;
         /*
         x = a.x;
         for (int i = 0; i < 100; ++i) {
@@ -88,8 +89,8 @@ void perfArray() {
 
     {
         // Measure time for short array allocation
-        uint64 vectorAllocBig,  vectorAllocSmall;
-        uint64 arrayAllocBig,   arrayAllocSmall;
+        uint64 vectorAllocBig = 0,  vectorAllocSmall = 0;
+        uint64 arrayAllocBig = 0,   arrayAllocSmall = 0;
 
         const int M = 3000;
 
@@ -136,9 +137,9 @@ void perfArray() {
 
     ////////////////////////////////////////////////////
     // Measure time for array resize
-    uint64 vectorResizeBig,  vectorResizeSmall;
-    uint64 arrayResizeBig,   arrayResizeSmall;
-    uint64 mallocResizeBig,  mallocResizeSmall;
+    uint64 vectorResizeBig = 0,  vectorResizeSmall = 0;
+    uint64 arrayResizeBig = 0,   arrayResizeSmall = 0;
+    uint64 mallocResizeBig = 0,  mallocResizeSmall = 0;
 
     const int M = 10000;
 
@@ -223,11 +224,11 @@ void perfArray() {
 
 
     // Measure times for various operations on large arrays of small elements
-    uint64 newAllocInt,     newFreeInt,     newAccessInt;
-    uint64 arrayAllocInt,   arrayFreeInt,   arrayAccessInt;
-    uint64 vectorAllocInt,  vectorFreeInt,  vectorAccessInt;
-    uint64 mallocAllocInt,  mallocFreeInt,  mallocAccessInt;
-    uint64 sysmallocAllocInt,  sysmallocFreeInt,  sysmallocAccessInt;
+    uint64 newAllocInt = 0,     newFreeInt = 0,     newAccessInt = 0;
+    uint64 arrayAllocInt = 0,   arrayFreeInt = 0,   arrayAccessInt = 0;
+    uint64 vectorAllocInt = 0,  vectorFreeInt = 0,  vectorAccessInt = 0;
+    uint64 mallocAllocInt = 0,  mallocFreeInt = 0,  mallocAccessInt = 0;
+    uint64 sysmallocAllocInt = 0,  sysmallocFreeInt = 0,  sysmallocAccessInt = 0;
 
     // The code that generates memory accesses
 #define LOOPS\
@@ -356,11 +357,11 @@ void perfArray() {
     size = 1000000;
 
     // Measure times for various operations on large arrays of small elements
-    uint64 newAllocBig,     newFreeBig,     newAccessBig;
-    uint64 arrayAllocBig,   arrayFreeBig,   arrayAccessBig;
-    uint64 vectorAllocBig,  vectorFreeBig,  vectorAccessBig;
-    uint64 mallocAllocBig,  mallocFreeBig,  mallocAccessBig;
-    uint64 sysmallocAllocBig,  sysmallocFreeBig,  sysmallocAccessBig;
+    uint64 newAllocBig = 0,     newFreeBig = 0,     newAccessBig = 0;
+    uint64 arrayAllocBig = 0,   arrayFreeBig = 0,   arrayAccessBig = 0;
+    uint64 vectorAllocBig = 0,  vectorFreeBig = 0,  vectorAccessBig = 0;
+    uint64 mallocAllocBig = 0,  mallocFreeBig = 0,  mallocAccessBig = 0;
+    uint64 sysmallocAllocBig = 0,  sysmallocFreeBig = 0,  sysmallocAccessBig = 0;
     // Run many times to filter out startup behavior
     for (int j = 0; j < 3; ++j) {
         System::beginCycleCount(mallocAllocBig);

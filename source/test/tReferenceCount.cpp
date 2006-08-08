@@ -236,6 +236,7 @@ RCPFooRef someFunction(const RCPFooRef& f) {
     to create race conditions.
 */
 void* threadProc(void* x) {
+    (void)x;
     for (int i = 0; i < 100000; ++i) {
         // Increase and decrease counter
         {

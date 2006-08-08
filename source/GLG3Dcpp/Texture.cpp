@@ -9,7 +9,7 @@
  </UL>
 
  @created 2001-02-28
- @edited  2007-07-30
+ @edited  2006-08-08
 */
 
 #include "G3D/Log.h"
@@ -55,9 +55,8 @@ static void glStatePop() {
 
 /**
  Scales the intensity up or down of an entire image.
- @param skipAlpha 0 if there is no alpha channel, 1 if there is 
  */
-static void brightenImage(uint8* byte, int n, double brighten, int skipAlpha);
+static void brightenImage(TextureFormat::Code fmt, void* byte, int n, float brighten);
 
 static GLenum dimensionToTarget(Texture::Dimension d);
 
@@ -502,7 +501,7 @@ static bool isMipMapformat(Texture::InterpolateMode i) {
 
 TextureRef Texture::fromMemory(
     const std::string&                  name,
-    const Array< Array<const void*> >&  bytes,
+    const Array< Array<const void*> >&  _bytes,
     const TextureFormat*                bytesFormat,
     int                                 width,
     int                                 height,
@@ -511,26 +510,58 @@ TextureRef Texture::fromMemory(
     Dimension                           dimension,
 	const Settings&						settings,
 	const PreProcess&					preProcess) {
+
+    typedef Array< Array<const void*> > MipArray;
     
-	/*
-	// TODO:
-    if (brighten != 1.0) {
-        for (int f = 0; f < numFaces; ++f) {
-            brightenImage(
-                image[f].byte(),
-                image[f].width * image[f].height * image[f].channels,
-                brighten,
-                image[f].channels - 3);
+    // Indirection needed in case we have to reallocate our own
+    // data for preprocessing.
+    MipArray* bytesPtr = const_cast<MipArray*>(&_bytes);
+
+    if (preProcess.brighten != 1.0f) {
+
+        debugAssert(
+            (bytesFormat->code == TextureFormat::CODE_RGB8) ||
+            (bytesFormat->code == TextureFormat::CODE_RGBA8));
+
+        // Allow brightening to fail silently in release mode
+        if (
+            ( bytesFormat->code == TextureFormat::CODE_RGB8) ||
+            ( bytesFormat->code == TextureFormat::CODE_RGBA8)) {
+
+            bytesPtr = new MipArray;
+            bytesPtr->resize(_bytes.size());
+
+            for (int m = 0; m < bytesPtr->size(); ++m) {
+                Array<const void*>& face = (*bytesPtr)[m]; 
+                face.resize(_bytes[m].size());
+            
+                for (int f = 0; f < face.size(); ++f) {
+
+                    size_t numBytes = iCeil(width * height * depth * bytesFormat->packedBitsPerTexel / 8.0f);
+
+                    // Allocate space for the converted image
+                    face[f] = System::alignedMalloc(numBytes, 16);
+
+                    // Copy the original data
+                    System::memcpy(const_cast<void*>(face[f]), _bytes[m][f], numBytes);
+
+                    // Apply the processing to the copy
+                    brightenImage(
+                        bytesFormat->code,
+                        const_cast<void*>(face[f]),
+                        numBytes,
+                        preProcess.brighten);
+                }
+            }
         }
 	}
-	*/
 
 
     debugAssert(bytesFormat);
     (void)depth;
     
     // Check for at least one miplevel on the incoming data
-    int numMipMaps = bytes.length();
+    int numMipMaps = bytesPtr->length();
     debugAssert( numMipMaps > 0 );
 
     // Create the texture
@@ -567,7 +598,7 @@ TextureRef Texture::fromMemory(
         int mipHeight = height;
         for (int mipLevel = 0; mipLevel < numMipMaps; ++mipLevel) {
 
-            const int numFaces = bytes[mipLevel].length();
+            const int numFaces = (*bytesPtr)[mipLevel].length();
             
             debugAssert( (((dimension == DIM_CUBE_MAP) || (dimension == DIM_CUBE_MAP_NPOT)) ? 6 : 1) == numFaces);
         
@@ -585,7 +616,7 @@ TextureRef Texture::fromMemory(
 
                     createMipMapTexture(
 						target, 
-						reinterpret_cast<const uint8*>(bytes[mipLevel][f]),
+						reinterpret_cast<const uint8*>((*bytesPtr)[mipLevel][f]),
                         bytesFormat->OpenGLBaseFormat,
                         mipWidth, 
 						mipHeight, 
@@ -599,7 +630,7 @@ TextureRef Texture::fromMemory(
 
                     createTexture(
 						target, 
-						reinterpret_cast<const uint8*>(bytes[mipLevel][f]), 
+						reinterpret_cast<const uint8*>((*bytesPtr)[mipLevel][f]), 
 						bytesFormat->OpenGLBaseFormat,
                         bytesFormat->OpenGLFormat, 
 						mipWidth, 
@@ -632,6 +663,20 @@ TextureRef Texture::fromMemory(
 
     t->width = width;
     t->height = height;
+
+
+    if (bytesPtr != &_bytes) {
+        // We must free our own data
+        for (int m = 0; m < bytesPtr->size(); ++m) {
+            Array<const void*>& face = (*bytesPtr)[m]; 
+            for (int f = 0; f < face.size(); ++f) {
+                System::alignedFree(const_cast<void*>(face[f]));
+            }
+        }
+        delete bytesPtr;
+        bytesPtr = NULL;
+    }
+
     return t;
 }
 
@@ -1442,12 +1487,23 @@ static void createMipMapTexture(
 }
 
 
-static void brightenImage(uint8* byte, int n, double brighten, int skipAlpha) {
+static void brightenImage(TextureFormat::Code fmt, void* _byte, int n, float brighten) {
+
+    debugAssert(
+        (fmt == TextureFormat::CODE_RGB8) ||
+        (fmt == TextureFormat::CODE_RGBA8));
+
+    uint8* byte = static_cast<uint8*>(_byte);
 
     // Make a lookup table
     uint8 bright[256];
     for (int i = 0; i < 256; ++i) {
         bright[i] = iClamp(iRound(i * brighten), 0, 255);
+    }
+
+    int skipAlpha = 0;
+    if (fmt == TextureFormat::CODE_RGBA8) {
+        skipAlpha = 1;
     }
 
     for (int i = 0; i < n; i += skipAlpha) {

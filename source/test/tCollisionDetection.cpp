@@ -130,6 +130,7 @@ void testCollisionDetection() {
         Vector3 loc, normal;
 
         float t = CollisionDetection::collisionTimeForMovingPointFixedBox(pos, dir, myBox, loc, normal);
+        (void)t;
         debugAssert(normal.fuzzyEq(Vector3(0,0,1)));
     }
 

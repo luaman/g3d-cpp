@@ -302,12 +302,12 @@ void testTextInput() {
 
 #define CHECK_EXC_POS(e, lnum, chnum)                                        \
     do {                                                                     \
-        alwaysAssertM((e).line == (lnum) && (e).character == (chnum), "");   \
+        alwaysAssertM((int)(e).line == (int)(lnum) && (int)(e).character == (int)(chnum), "");   \
     } while (0)
 #define CHECK_TOKEN_POS(t, lnum, chnum)                                      \
     do {                                                                     \
-        alwaysAssertM((t).line() == (lnum)                                   \
-                      && (t).character() == (chnum), "");                    \
+        alwaysAssertM((int)(t).line() == (int)(lnum)                         \
+                      && (int)(t).character() == (int)(chnum), "");          \
     } while (0)
 #define CHECK_TOKEN_TYPE(t, typ, etyp)                                       \
     do {                                                                     \
@@ -432,7 +432,7 @@ void testTextInput() {
 
     {
         TextInput ti(TextInput::FROM_STRING, "[ foo \n  bar\n");
-        bool got_exc;
+        bool got_exc = false;
         try {
             ti.readSymbols("[", "foo", "]");
         } catch (TextInput::WrongSymbol e) {

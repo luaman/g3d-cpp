@@ -266,7 +266,7 @@ public:
 void measureMemsetPerformance() {
     printf("----------------------------------------------------------\n");
 
-    uint64 native, g3d;
+    uint64 native = 0, g3d = 0;
 
     int n = 1024 * 1024;
     void* m1 = malloc(n);
@@ -292,7 +292,7 @@ void measureMemsetPerformance() {
 
 void measureNormalizationPerformance() {
     printf("----------------------------------------------------------\n");
-    uint64 raw, opt, overhead;
+    uint64 raw = 0, opt = 0, overhead = 0;
     int n = 1024 * 1024;
 
     double y;
@@ -459,6 +459,9 @@ void measureRDPushPopPerformance(RenderDevice* rd) {
 
 
 int main(int argc, char* argv[]) {
+    (void)argc;
+    (void)argv;
+
     RenderDevice* renderDevice = NULL;
 
     NetworkDevice* networkDevice = new NetworkDevice();

@@ -61,7 +61,7 @@ void testReliableConduit(NetworkDevice* nd) {
 		while (!serverSide->waitingMessageType());
 
 		Message b;
-		debugAssert(serverSide->waitingMessageType() == type);
+		debugAssert((int)serverSide->waitingMessageType() == type);
 		serverSide->receive(b);
 
 		debugAssert(a == b);
@@ -71,7 +71,7 @@ void testReliableConduit(NetworkDevice* nd) {
 
 		// Wait for message
 		while (! clientSide->waitingMessageType());
-		debugAssert(clientSide->waitingMessageType() == type);
+		debugAssert((int)clientSide->waitingMessageType() == type);
 		clientSide->receive(b);
 
 		debugAssert(a == b);

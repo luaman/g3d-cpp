@@ -103,7 +103,8 @@ void Demo::onInit() {
 
     if (modelNameArray.size() == 0) {
         const char* choice[] = {"Ok"};
-        prompt("MD2 Demo Error", "No MD2 models found in data/players.  (Download some from polycount.com and expand them into the data directory)", choice, true);
+        prompt("MD2 Demo Error", "No MD2 models found in data/players.  "
+            "(Download some from polycount.com and expand them into the data directory)", choice, true);
         app->endProgram = true;
         return;
     }
@@ -299,9 +300,9 @@ void Demo::loadSkins(const std::string& dir, double brighten) {
         getFiles(dir + base + ".*", textureName);
     }
 
+    // Now load the skins themselves
 	Texture::PreProcess preProcess;
 	preProcess.brighten = brighten;
-    // Now load the skins themselves
     for (int i = 0; i < textureName.size(); ++i) {
         std::string ext      = filenameExt(textureName[i]);
 

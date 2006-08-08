@@ -52,6 +52,7 @@
 				ProgramDataBaseFileName=".\../temp/debug/glg3d/"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"

@@ -39,11 +39,11 @@ public:
 void perfQueue() {
     printf("Queue Performance:\n");
 
-    uint64 g3dStreamSmall, g3dEnquequeFSmall, g3dEnquequeBSmall;
-    uint64 stdStreamSmall, stdEnquequeFSmall, stdEnquequeBSmall;
+    uint64 g3dStreamSmall = 0, g3dEnquequeFSmall = 0, g3dEnquequeBSmall = 0;
+    uint64 stdStreamSmall = 0, stdEnquequeFSmall = 0, stdEnquequeBSmall = 0;
 
-    uint64 g3dStreamLarge, g3dEnquequeFLarge, g3dEnquequeBLarge;
-    uint64 stdStreamLarge, stdEnquequeFLarge, stdEnquequeBLarge;
+    uint64 g3dStreamLarge = 0, g3dEnquequeFLarge = 0, g3dEnquequeBLarge = 0;
+    uint64 stdStreamLarge = 0, stdEnquequeFLarge = 0, stdEnquequeBLarge = 0;
 
     int iterations = 1000000;
     int enqueuesize = 10000;
