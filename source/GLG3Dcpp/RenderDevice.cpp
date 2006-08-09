@@ -201,7 +201,7 @@ bool RenderDevice::supportsOpenGLExtension(
 
 
 bool RenderDevice::init(
-    const GWindowSettings&      _settings,
+    const GWindow::Settings&      _settings,
     Log*                        log) {
 
     deleteWindow = true;
@@ -226,7 +226,7 @@ bool RenderDevice::init(GWindow* window, Log* log) {
     swapGLBuffersPending = false;
     _window = window;
 
-    GWindowSettings settings;
+    GWindow::Settings settings;
     window->getSettings(settings);
     
     // Load the OpenGL extensions if they have not already been loaded.
@@ -370,7 +370,7 @@ bool RenderDevice::init(GWindow* window, Log* log) {
     if (debugLog) {
     debugLog->section("Video Status");
 
-    GWindowSettings actualSettings;
+    GWindow::Settings actualSettings;
     window->getSettings(actualSettings);
 
     // This call is here to make GCC realize that isOk is used.
@@ -476,7 +476,7 @@ void RenderDevice::setVideoMode() {
 
     // Reset all state
 
-    GWindowSettings settings;
+    GWindow::Settings settings;
     _window->getSettings(settings);
 
     // Set the refresh rate
@@ -3342,7 +3342,7 @@ void RenderDevice::describeSystem(
     t.writeNewline();
 
     GWindow* w = window();
-    GWindowSettings settings;
+    GWindow::Settings settings;
     w->getSettings(settings);
 
     t.writeSymbols("Window", "{");

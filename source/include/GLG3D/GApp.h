@@ -4,7 +4,7 @@
  @maintainer Morgan McGuire, morgan@graphics3d.com
 
  @created 2003-11-03
- @edited  2006-08-04
+ @edited  2006-08-10
  */
 
 #ifndef G3D_GAPP_H
@@ -13,7 +13,7 @@
 #include "G3D/Stopwatch.h"
 #include "GLG3D/GFont.h"
 #include "G3D/GCamera.h"
-#include "GLG3D/ManualCameraController.h"
+#include "GLG3D/FirstPersonManipulator.h"
 #include "GLG3D/RenderDevice.h"
 #include "G3D/NetworkDevice.h"
 #include "GLG3D/GWindow.h"

@@ -3,8 +3,12 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-02-10
-  @edited  2006-02-24
+  @edited  2006-08-10
 */
+
+#include "G3D/platform.h"
+
+#ifndef G3D_WIN32
 
 #include "G3D/Log.h"
 #include "G3D/g3derror.h"
@@ -700,3 +704,5 @@ void SDLWindow::reallyMakeCurrent() const {
 }
 
 } // namespace
+
+#endif // ifndef G3D_WIN32

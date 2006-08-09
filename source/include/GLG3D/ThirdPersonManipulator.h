@@ -15,7 +15,7 @@
 #include "G3D/LineSegment.h"
 #include "G3D/ConvexPolyhedron.h"
 #include "G3D/ReferenceCount.h"
-#include "GLG3D/ManualCameraController.h"
+#include "GLG3D/FirstPersonManipulator.h"
 
 namespace G3D {
 

@@ -14,7 +14,7 @@
 #include "G3D/fileutils.h"
 #include "G3D/Log.h"
 #include "G3D/NetworkDevice.h"
-#include "GLG3D/ManualCameraController.h"
+#include "GLG3D/FirstPersonManipulator.h"
 #include "GLG3D/UserInput.h"
 #include "GLG3D/GWindow.h"
 #include "GLG3D/Shader.h"

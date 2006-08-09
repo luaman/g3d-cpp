@@ -10,7 +10,7 @@
 #include "G3D/platform.h"
 
 #include "G3D/Rect2D.h"
-#include "GLG3D/ManualCameraController.h"
+#include "GLG3D/FirstPersonManipulator.h"
 #include "GLG3D/GWindow.h"
 #include "GLG3D/UserInput.h"
 
