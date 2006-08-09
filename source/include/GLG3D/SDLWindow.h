@@ -54,7 +54,7 @@ private:
     std::string                 _version;
 
     /** The x, y fields are not updated when the window moves. */
-    GWindowSettings             _settings;
+    GWindow::Settings           _settings;
 
     bool                        _inputCapture;
 
@@ -78,11 +78,11 @@ protected:
 
 public:
 
-    SDLWindow(const GWindowSettings& settings);
+    SDLWindow(const GWindow::Settings& settings);
 
     virtual ~SDLWindow();
 
-    virtual void getSettings(GWindowSettings& settings) const;
+    virtual void getSettings(GWindow::Settings& settings) const;
 
     virtual int width() const;
 

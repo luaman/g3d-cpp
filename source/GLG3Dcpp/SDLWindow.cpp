@@ -124,7 +124,7 @@ static bool SDL_handleErrorCheck_(
 #endif
 
 
-SDLWindow::SDLWindow(const GWindowSettings& settings) {
+SDLWindow::SDLWindow(const GWindow::Settings& settings) {
 
 	if (SDL_Init(SDL_INIT_NOPARACHUTE | SDL_INIT_VIDEO | 
                  SDL_INIT_JOYSTICK) < 0 ) {
@@ -362,7 +362,7 @@ SDLWindow::~SDLWindow() {
 }
 
 
-void SDLWindow::getSettings(GWindowSettings& settings) const {
+void SDLWindow::getSettings(GWindow::Settings& settings) const {
     settings = _settings;
 }
 
