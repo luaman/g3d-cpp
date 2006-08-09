@@ -395,19 +395,11 @@ SOURCE=.\include\G3D\Color3.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\include\G3D\Color3.inl
-# End Source File
-# Begin Source File
-
 SOURCE=.\include\G3D\Color3uint8.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\include\G3D\Color4.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\G3D\Color4.inl
 # End Source File
 # Begin Source File
 
@@ -468,10 +460,6 @@ SOURCE=.\include\G3D\G3DGameUnits.h
 # Begin Source File
 
 SOURCE=.\include\G3D\g3dmath.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\G3D\g3dmath.inl
 # End Source File
 # Begin Source File
 
@@ -551,10 +539,6 @@ SOURCE=.\include\G3D\Quat.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\include\G3D\Quat.inl
-# End Source File
-# Begin Source File
-
 SOURCE=.\include\G3D\Queue.h
 # End Source File
 # Begin Source File
@@ -619,10 +603,6 @@ SOURCE=.\include\G3D\Vector2.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\include\G3D\Vector2.inl
-# End Source File
-# Begin Source File
-
 SOURCE=.\include\G3D\Vector2int16.h
 # End Source File
 # Begin Source File
@@ -631,19 +611,11 @@ SOURCE=.\include\G3D\Vector3.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\include\G3D\Vector3.inl
-# End Source File
-# Begin Source File
-
 SOURCE=.\include\G3D\Vector3int16.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\include\G3D\Vector4.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\G3D\Vector4.inl
 # End Source File
 # Begin Source File
 

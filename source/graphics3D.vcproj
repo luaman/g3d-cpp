@@ -1634,19 +1634,11 @@
 				>
 			</File>
 			<File
-				RelativePath="include\G3D\Color3.inl"
-				>
-			</File>
-			<File
 				RelativePath="include\G3D\Color3uint8.h"
 				>
 			</File>
 			<File
 				RelativePath="include\G3D\Color4.h"
-				>
-			</File>
-			<File
-				RelativePath="include\G3D\Color4.inl"
 				>
 			</File>
 			<File
@@ -1707,10 +1699,6 @@
 			</File>
 			<File
 				RelativePath="include\G3D\g3dmath.h"
-				>
-			</File>
-			<File
-				RelativePath="include\G3D\g3dmath.inl"
 				>
 			</File>
 			<File
@@ -1790,10 +1778,6 @@
 				>
 			</File>
 			<File
-				RelativePath="include\G3D\Quat.inl"
-				>
-			</File>
-			<File
 				RelativePath="include\G3D\Queue.h"
 				>
 			</File>
@@ -1858,10 +1842,6 @@
 				>
 			</File>
 			<File
-				RelativePath="include\G3D\Vector2.inl"
-				>
-			</File>
-			<File
 				RelativePath="include\G3D\Vector2int16.h"
 				>
 			</File>
@@ -1870,19 +1850,11 @@
 				>
 			</File>
 			<File
-				RelativePath="include\G3D\Vector3.inl"
-				>
-			</File>
-			<File
 				RelativePath="include\G3D\Vector3int16.h"
 				>
 			</File>
 			<File
 				RelativePath="include\G3D\Vector4.h"
-				>
-			</File>
-			<File
-				RelativePath="include\G3D\Vector4.inl"
 				>
 			</File>
 			<File
