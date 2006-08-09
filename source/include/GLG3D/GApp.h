@@ -158,9 +158,8 @@ public:
     /**
      When in debugMode, this allows first person (Quake game-style) control
      using the arrow keys or W,A,S,D and the mouse.
-     @deprecated Will become a FirstPersonManipulatorRef in 7.00
      */
-    FirstPersonManipulator  debugController;
+    FirstPersonManipulatorRef debugController;
 
     /**
      Strings that have been printed with debugPrint.

@@ -106,14 +106,14 @@ GApp::GApp(const Settings& settings, GWindow* window) {
 
     userInput = new UserInput(_window);
 
-    debugController.init(renderDevice, userInput);
-    debugController.setMoveRate(10);
-    debugController.setPosition(Vector3(0, 0, 4));
-    debugController.lookAt(Vector3::zero());
-    debugController.setActive(true);
-    debugCamera.setPosition(debugController.position());
+    debugController->init(renderDevice, userInput);
+    debugController->setMoveRate(10);
+    debugController->setPosition(Vector3(0, 0, 4));
+    debugController->lookAt(Vector3::zero());
+    debugController->setActive(true);
+    debugCamera.setPosition(debugController->position());
     debugCamera.lookAt(Vector3::zero());
-
+ 
     autoResize                  = true;
     _debugMode                  = false;
     debugShowText               = true;
@@ -160,7 +160,7 @@ void GApp::setDebugMode(bool b) {
     if (! b) {
         _debugControllerWasActive = debugMode();
     } else {
-        debugController.setActive(_debugControllerWasActive);
+        debugController->setActive(_debugControllerWasActive);
     }
     _debugMode = b;
 }
@@ -398,7 +398,7 @@ void GApplet::beginRun() {
     onInit();
 
     // Move the controller to the camera's location
-    app->debugController.setFrame(app->debugCamera.getCoordinateFrame());
+    app->debugController->setFrame(app->debugCamera.getCoordinateFrame());
 
     now = System::time() - 0.001;
 }
@@ -425,8 +425,8 @@ void GApplet::oneFrame() {
 
     // Simulation
     app->m_simulationWatch.tick();
-		app->debugController.doSimulation(clamp(timeStep, 0.0, 0.1));
-		app->debugCamera.setCoordinateFrame(app->debugController.frame());
+		app->debugController->doSimulation(clamp(timeStep, 0.0, 0.1));
+		app->debugCamera.setCoordinateFrame(app->debugController->frame());
 
 		double rate = simTimeRate();    
         RealTime rdt = timeStep;
@@ -564,8 +564,7 @@ void GApplet::onUserInput(UserInput* userInput) {
                     ! (app->userInput->keyDown(SDLK_RALT) || 
                        app->userInput->keyDown(SDLK_LALT))) {
 
-                    app->debugController.setActive
-                        (! app->debugController.active());
+                    app->debugController->setActive(! app->debugController->active());
                 }
                 break;
 

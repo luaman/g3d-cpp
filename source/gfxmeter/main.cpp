@@ -85,7 +85,7 @@ void App::showSplashScreen() {
 
 void App::main() {
 	setDebugMode(false);
-	debugController.setActive(false);
+	debugController->setActive(false);
 
     //window()->swapGLBuffers();while(true);
 

@@ -30,6 +30,7 @@
    <P>
    Changes in 7.00:
    <ul>
+     <li> Removed G3D::FirstPersonManipulator's constructor--use the static G3D::FirstPersonManipulator::create method now.
      <li> Changed BSPMap leaf bounds from Box to AABox--50% improvement in frustum culling speed
 	 <li> Optimized BSPMap rendering performance
      <li> Removed all deprecated APIs
@@ -42,6 +43,7 @@
 	 <li> Removed CoordinateFrame::getStrafeVector (use rightVector)
 	 <li> Removed static constants (use equivalent lower-case methods)
 	 <li> Removed Cylinder::getPoint1 (use point)
+     <li> Fix: Matrix and CoordinateFrame serializers inside G3D::AnyVal dropped data
    </ul>
 
    <P>

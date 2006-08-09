@@ -214,10 +214,10 @@ void Demo::onGraphics(RenderDevice* rd) {
 
 void App::main() {
 	setDebugMode(true);
-	debugController.setActive(true);
+	debugController->setActive(true);
     debugShowRenderingStats = true;
 
-    debugController.setMouseMode(FirstPersonManipulator::MOUSE_DIRECT_RIGHT_BUTTON);
+    debugController->setMouseMode(FirstPersonManipulator::MOUSE_DIRECT_RIGHT_BUTTON);
 
     // Load objects here
     sky = Sky::fromFile(NULL, dataDir + "sky/");

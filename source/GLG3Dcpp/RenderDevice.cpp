@@ -230,7 +230,7 @@ bool RenderDevice::init(GWindow* window, Log* log) {
     window->getSettings(settings);
     
     // Load the OpenGL extensions if they have not already been loaded.
-    GLCaps::loadExtensions(log);
+    GLCaps::init();
 
     debugLog = log;
 

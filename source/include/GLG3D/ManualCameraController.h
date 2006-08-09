@@ -70,21 +70,9 @@ private:
 
     MouseMode                   m_mouseMode;
 
-public:
-
-    // G3D_DEPRECATED removed from in front of the constructor below -
-    // doesn't compile on linux
-
-    /** @deprecated Use create. */
     FirstPersonManipulator();
 
-    // G3D_DEPRECATED removed from in front of the constructor below -
-    // doesn't compile on linux
-
-    /** Creates and initializes.
-        @deprecated Use create.
-      */
-    FirstPersonManipulator(class RenderDevice*, class UserInput*);
+public:
     
     static FirstPersonManipulatorRef create();
         

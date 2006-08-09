@@ -3,7 +3,7 @@
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
   @created 2004-03-28
-  @edited  2006-05-10
+  @edited  2006-08-10
 */
 
 #include "G3D/TextOutput.h"
@@ -175,10 +175,8 @@ std::string GLCaps::getDriverVersion() {
 }
 
 void GLCaps::init() {
-    // TODO for 7.0: Call loadExtensions followed by checkAllBugs.  Remove
-    // checkAllBugs from the end of loadExtensions.
-
     loadExtensions(Log::common());
+    checkAllBugs();
 }
 
 // We're going to need exactly the same code for each of 
@@ -527,8 +525,6 @@ void GLCaps::loadExtensions(Log* debugLog) {
         _numTextureUnits  = iMax(1, _numTextureUnits);
     }
     debugAssertGLOk();
-
-    checkAllBugs();
 
     _initialized = true;
 }

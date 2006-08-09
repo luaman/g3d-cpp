@@ -157,6 +157,13 @@ private:
     /** Runs all of the checkBug_ methods. Called from loadExtensions(). */
     static void checkAllBugs();
 
+    /** Loads OpenGL extensions (e.g. glBindBufferARB).
+    Call this once at the beginning of the program,
+    after a video device is created.  This is called
+    for you if you use G3D::RenderDevice.    
+    */
+    static void loadExtensions(class Log* debugLog = NULL);
+
 public:
 
     /** Maximum number of texture coordinates supported
@@ -169,15 +176,6 @@ public:
         after a video device is created.  This is called
         for you if you use G3D::RenderDevice.*/
     static void init();
-
-    /** Loads OpenGL extensions (e.g. glBindBufferARB).
-        Call this once at the beginning of the program,
-        after a video device is created.  This is called
-        for you if you use G3D::RenderDevice.
-        
-        @deprecated Use GLCaps::init
-        */
-    static void G3D_DEPRECATED loadExtensions(class Log* debugLog = NULL);
 
     static bool supports(const std::string& extName);
 

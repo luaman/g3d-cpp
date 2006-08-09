@@ -4,7 +4,7 @@
   @maintainer Morgan McGuire, morgan@cs.brown.edu
 
   @created 2002-07-28
-  @edited  2006-04-22
+  @edited  2006-08-10
 */
 
 #include "G3D/platform.h"
@@ -22,16 +22,7 @@ FirstPersonManipulatorRef FirstPersonManipulator::create() {
 
 FirstPersonManipulator::FirstPersonManipulator() : 
     _active(false),
-    m_mouseMode(MOUSE_DIRECT) {}
-
-
-
-FirstPersonManipulator::FirstPersonManipulator(
-    RenderDevice* rd, UserInput* ui) : 
-    _active(false),
     m_mouseMode(MOUSE_DIRECT) {
-
-    init(rd, ui);
 }
 
 
