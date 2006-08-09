@@ -67,7 +67,7 @@ void perfAABSPTree() {
 
     tree.balance();
 
-    uint64 bspcount, arraycount, boxcount;
+    uint64 bspcount = 0, arraycount = 0, boxcount = 0;
 
     // Run twice to get cache issues out of the way
     for (int it = 0; it < 2; ++it) {

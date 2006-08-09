@@ -116,13 +116,13 @@ void testTable() {
 
 template<class K, class V>
 void perfTest(const char* description, const K* keys, const V* vals, int M) {
-    uint64 tableSet, tableGet, tableRemove;
-    uint64 mapSet, mapGet, mapRemove;
+    uint64 tableSet = 0, tableGet = 0, tableRemove = 0;
+    uint64 mapSet = 0, mapGet = 0, mapRemove = 0;
 #   ifdef HAS_HASH_MAP
-    uint64 hashMapSet, hashMapGet, hashMapRemove;
+    uint64 hashMapSet = 0, hashMapGet = 0, hashMapRemove = 0;
 #   endif
 
-    uint64 overhead;
+    uint64 overhead = 0;
 
     // Run many times to filter out startup behavior
     for (int j = 0; j < 3; ++j) {
