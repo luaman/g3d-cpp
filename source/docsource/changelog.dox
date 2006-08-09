@@ -30,6 +30,8 @@
    <P>
    Changes in 7.00:
    <ul>
+     <li> G3D::Quat::unitize now normalizes in place
+     <li> Added G3D::Quat::operator*=
      <li> Removed G3D::FirstPersonManipulator's constructor--use the static G3D::FirstPersonManipulator::create method now.
      <li> Changed BSPMap leaf bounds from Box to AABox--50% improvement in frustum culling speed
 	 <li> Optimized BSPMap rendering performance

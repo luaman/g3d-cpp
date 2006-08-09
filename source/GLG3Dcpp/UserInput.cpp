@@ -186,6 +186,11 @@ void UserInput::endEvents() {
 }
 
 
+Vector2 UserInput::getXY() const {
+    return Vector2(getX(), getY());
+}
+
+
 float UserInput::getX() const {
 
 	if (left && !right) {

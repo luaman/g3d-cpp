@@ -151,16 +151,6 @@ public:
     /** Largest representable vector */
     static const Vector2& maxFinite();
 
-
-
-    // Deprecated. See Matrix3::identity() for details.
-    /** @deprecated Use Vector2::zero() */
-    static const Vector2 ZERO;
-    /** @deprecated Use Vector2::unitX() */
-    static const Vector2 UNIT_S;
-    /** @deprecated Use Vector2::unitY() */
-    static const Vector2 UNIT_T;
-
     std::string toString() const;
 
     // 2-char swizzles

@@ -241,9 +241,7 @@ public:
     /**
      @deprecated
      */
-    Vector2 G3D_DEPRECATED getXY() const {
-        return Vector2(getX(), getY());
-    }
+    Vector2 G3D_DEPRECATED getXY() const;
 
     inline Vector2 mouseXY() const {
         return guiMouse;

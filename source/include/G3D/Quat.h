@@ -177,6 +177,14 @@ public:
         return Quat(x * s, y * s, z * s, w * s);
     }
 
+    inline Quat& operator*=(float s) {
+        x *= s;
+        y *= s;
+        z *= s;
+        w *= s;
+        return *this;
+    }
+
 	/** @cite Based on Watt & Watt, page 360 */
     friend Quat operator* (float s, const Quat& q);
 
@@ -281,17 +289,10 @@ public:
         return (log() * x).exp();
     }
 
-
-    /**
-     @deprecated
-     Use toUnit()
-     */
-    inline Quat unitize() const {
+    inline void unitize() {
         float mag2 = dot(*this);
-        if (G3D::fuzzyEq(mag2, 1.0f)) {
-            return *this;
-        } else {
-            return *this / sqrtf(mag2);
+        if (! G3D::fuzzyEq(mag2, 1.0f)) {
+            *this *= rsq(mag2);
         }
     }
 
@@ -300,7 +301,9 @@ public:
      the magnitude.
      */
     inline Quat toUnit() const {
-        return unitize();
+        Quat x = *this;
+        x.unitize();
+        return x;
     }
 
     /**

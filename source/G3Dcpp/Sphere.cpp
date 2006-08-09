@@ -179,7 +179,7 @@ float Sphere::volume() const {
 }
 
 
-float Sphere::surfaceArea() const {
+float Sphere::area() const {
     return (float)pi() * 4.0f * powf((float)radius, 2.0f);
 }
 
