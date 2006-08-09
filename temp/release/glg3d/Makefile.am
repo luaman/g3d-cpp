@@ -15,7 +15,7 @@ libGLG3D_a_SOURCES= ../../../source/GLG3Dcpp/DDSTexture.cpp \
                         ../../../source/GLG3Dcpp/LightingParameters.cpp \
                         ../../../source/GLG3Dcpp/MD2Model.cpp \
                         ../../../source/GLG3Dcpp/MD2Model_load.cpp \
-                        ../../../source/GLG3Dcpp/ThirdPersonManipulator.cpp \
+                        ../../../source/GLG3Dcpp/FirstPersonManipulator.cpp \
                         ../../../source/GLG3Dcpp/Milestone.cpp \
                         ../../../source/GLG3Dcpp/PixelProgram.cpp \
                         ../../../source/GLG3Dcpp/PosedModel.cpp \
