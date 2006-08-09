@@ -55,13 +55,13 @@ public:
 private:
 
 	/** m/s */
-	double                      maxMoveRate;
+	float                       maxMoveRate;
 
 	/** rad/s */
-	double                      maxTurnRate;
+	float                       maxTurnRate;
 
-	double                      yaw;
-    double                      pitch;
+	float                       m_yaw;
+    float                       m_pitch;
 	Vector3                     translation;
 
     bool                        _active;
@@ -76,12 +76,6 @@ public:
     
     static FirstPersonManipulatorRef create();
         
-
-    /** You need to call setActive(true) before the controller will work. 
-        @deprecated Not needed anymore
-      */
-    void G3D_DEPRECATED init(class RenderDevice* device, class UserInput* input);
-
     /** Deactivates the controller */
     virtual ~FirstPersonManipulator();
 
@@ -113,28 +107,18 @@ public:
     /** Invoke immediately before entering the main game loop. */
     void reset();
 
-	/**
-	 Increments the ManualCameraController's orientation and position.
-     Invoke once per simulation step.
-     @deprecated
-	 */
-	void G3D_DEPRECATED doSimulation(
-        double                  elapsedTime);
-
 	void setPosition(const Vector3& t) {
 		translation = t;
 	}
 
     void lookAt(const Vector3& position);
 
-	/** @deprecated Rename to yaw() */
-    double getYaw() const {
-        return yaw;
+    float yaw() const {
+        return m_yaw;
     }
 
-	/** @deprecated Rename to pitch() */
-    double getPitch() const {
-        return pitch;
+    float pitch() const {
+        return m_pitch;
     }
 
 	/** @deprecated Rename to translation() */

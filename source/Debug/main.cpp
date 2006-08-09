@@ -94,8 +94,8 @@ void Demo::onInit()  {
 //    manipulator->setFrame(obj);
 //    manipulator->setControlFrame(CoordinateFrame());
 
-//    models.append(IFSModel::create("D:/games/data/ifs/square.ifs")->pose());
-//    models.append(IFSModel::create("D:/games/cpp/source/data/ifs/p51-mustang.ifs")->pose(Vector3(0,2,0)));
+    models.append(IFSModel::create("c:/projects/data/ifs/square.ifs")->pose());
+    models.append(IFSModel::create("c:/projects/cpp/source/data/ifs/p51-mustang.ifs")->pose(Vector3(0,2,0)));
 
     // Local control
     manipulator->setFrame(obj);
@@ -167,6 +167,7 @@ void Demo::onGraphics(RenderDevice* rd) {
     debugAssert(GLCaps::supports_two_sided_stencil());
 
 	app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
+debugAssert(isFinite(app->debugCamera.getCoordinateFrame().rotation[0][0]));
 
 	// Can now render from the texture
     
@@ -220,7 +221,7 @@ void App::main() {
     debugController->setMouseMode(FirstPersonManipulator::MOUSE_DIRECT_RIGHT_BUTTON);
 
     // Load objects here
-    sky = Sky::fromFile(NULL, dataDir + "sky/");
+    sky = Sky::fromFile(dataDir + "sky/");
     
     applet->run();
 

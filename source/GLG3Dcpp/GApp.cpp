@@ -39,6 +39,8 @@ GApp::GApp(const Settings& settings, GWindow* window) {
     _debugControllerWasActive = false;
     m_moduleManager = GModuleManager::create();
 
+    debugController = FirstPersonManipulator::create();
+
     if (settings.dataDir == "<AUTO>") {
         dataDir = demoFindData(false);
     } else {
@@ -106,7 +108,7 @@ GApp::GApp(const Settings& settings, GWindow* window) {
 
     userInput = new UserInput(_window);
 
-    debugController->init(renderDevice, userInput);
+    debugController->onUserInput(userInput);
     debugController->setMoveRate(10);
     debugController->setPosition(Vector3(0, 0, 4));
     debugController->lookAt(Vector3::zero());
@@ -425,7 +427,8 @@ void GApplet::oneFrame() {
 
     // Simulation
     app->m_simulationWatch.tick();
-		app->debugController->doSimulation(clamp(timeStep, 0.0, 0.1));
+        // TODO: Replace with module manager calls
+		app->debugController->onSimulation(clamp(timeStep, 0.0, 0.1),clamp(timeStep, 0.0, 0.1),clamp(timeStep, 0.0, 0.1));
 		app->debugCamera.setCoordinateFrame(app->debugController->frame());
 
 		double rate = simTimeRate();    

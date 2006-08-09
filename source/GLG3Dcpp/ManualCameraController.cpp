@@ -21,6 +21,10 @@ FirstPersonManipulatorRef FirstPersonManipulator::create() {
 }
 
 FirstPersonManipulator::FirstPersonManipulator() : 
+    maxMoveRate(10),
+    maxTurnRate(20),
+    m_yaw(0),
+    m_pitch(0),
     _active(false),
     m_mouseMode(MOUSE_DIRECT) {
 }
@@ -28,7 +32,8 @@ FirstPersonManipulator::FirstPersonManipulator() :
 
 void FirstPersonManipulator::getFrame(CoordinateFrame& c) const {
 	c.translation = translation;
-    c.rotation = Matrix3::fromEulerAnglesZYX(0, -yaw, -pitch);
+    c.rotation = Matrix3::fromEulerAnglesZYX(0, -m_yaw, -m_pitch);
+    debugAssert(isFinite(c.rotation[0][0]));
 }
 
 
@@ -36,12 +41,6 @@ CoordinateFrame FirstPersonManipulator::frame() const {
 	CoordinateFrame c;
 	getFrame(c);
 	return c;
-}
-
-
-void FirstPersonManipulator::init(class RenderDevice* device, class UserInput* input) {
-    userInput    = input;
-    reset();
 }
 
 
@@ -73,6 +72,7 @@ void FirstPersonManipulator::setMouseMode(FirstPersonManipulator::MouseMode m) {
     }
 }
 
+
 bool FirstPersonManipulator::active() const {
     return _active;
 }
@@ -80,9 +80,9 @@ bool FirstPersonManipulator::active() const {
 
 void FirstPersonManipulator::reset() {
     _active      = false;
-    yaw         = -halfPi();
-    pitch       = 0;
-	translation = Vector3::zero();
+    m_yaw        = -halfPi();
+    m_pitch      = 0;
+	translation  = Vector3::zero();
     setMoveRate(10);
 	setTurnRate(pi() * 5);
 }
@@ -135,15 +135,8 @@ void FirstPersonManipulator::lookAt(
 
     const Vector3 look = (position - translation);
 
-    yaw   = aTan2(look.x, -look.z);
-    pitch = -aTan2(look.y, distance(look.x, look.z));
-}
-
-
-void FirstPersonManipulator::doSimulation(
-    double              elapsedTime) {
-
-    onSimulation(elapsedTime, elapsedTime, elapsedTime);
+    m_yaw   = aTan2(look.x, -look.z);
+    m_pitch = -aTan2(look.y, distance(look.x, look.z));
 }
 
 
@@ -272,12 +265,15 @@ void FirstPersonManipulator::onSimulation(RealTime rdt, SimTime sdt, SimTime idt
         delta.y = maxTurn * G3D::sign(delta.y);
     }
 
-    yaw   += delta.x;
-    pitch += delta.y;
+    m_yaw   += delta.x;
+    m_pitch += delta.y;
 
     // As a patch for a setCoordinateFrame bug, we prevent 
     // the camera from looking exactly along the y-axis.
-    pitch = clamp(pitch, -halfPi() + 0.001, halfPi() - 0.001);
+    m_pitch = clamp(m_pitch, (float)-halfPi() + 0.001f, (float)halfPi() - 0.001f);
+
+    debugAssert(isFinite(m_yaw));
+    debugAssert(isFinite(m_pitch));
 }
 
 
