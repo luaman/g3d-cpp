@@ -1,66 +1,51 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="7.10"
 	Name="doc"
-	ProjectGUID="{3C597968-6B0C-41C4-BF26-18C3722883EB}"
-	Keyword="MakeFileProj"
-	>
+	SccProjectName=""
+	SccLocalPath=""
+	Keyword="MakeFileProj">
 	<Platforms>
 		<Platform
-			Name="Win32"
-		/>
+			Name="Win32"/>
 	</Platforms>
-	<ToolFiles>
-	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\doc___Win32_Debug"
 			IntermediateDirectory=".\doc___Win32_Debug"
 			ConfigurationType="10"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			>
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
+				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCMIDLTool"
 				TypeLibraryName=".\doc___Win32_Debug/doc.tlb"
-				HeaderFileName=""
-			/>
+				HeaderFileName=""/>
 			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="10"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="false"
-			>
+			ATLMinimizesCRunTimeLibraryUsage="FALSE">
 			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
+				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCMIDLTool"
 				TypeLibraryName=".\Release/doc.tlb"
-				HeaderFileName=""
-			/>
+				HeaderFileName=""/>
 			<Tool
-				Name="VCPostBuildEventTool"
-			/>
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -68,163 +53,125 @@
 	<Files>
 		<Filter
 			Name="Build Scripts"
-			>
+			Filter="">
 			<File
-				RelativePath="..\build.py"
-				>
+				RelativePath="..\build.py">
 			</File>
 			<File
-				RelativePath="..\buildlib.py"
-				>
+				RelativePath="..\buildlib.py">
 			</File>
 			<File
-				RelativePath="Doxyfile"
-				>
+				RelativePath="Doxyfile">
 			</File>
 			<File
-				RelativePath="..\g3dinstaller.nsi"
-				>
+				RelativePath="..\g3dinstaller.nsi">
 			</File>
 		</Filter>
 		<Filter
 			Name="Guide"
-			>
+			Filter="">
 			<File
-				RelativePath="docsource\changelog.dox"
-				>
+				RelativePath="docsource\changelog.dox">
 			</File>
 			<File
-				RelativePath="docsource\contributors.dox"
-				>
+				RelativePath="docsource\contributors.dox">
 			</File>
 			<File
-				RelativePath="docsource\error.dox"
-				>
+				RelativePath="docsource\error.dox">
 			</File>
 			<File
-				RelativePath="docsource\faq.dox"
-				>
+				RelativePath="docsource\faq.dox">
 			</File>
 			<File
-				RelativePath="docsource\frequent.dox"
-				>
+				RelativePath="docsource\frequent.dox">
 			</File>
 			<File
-				RelativePath="docsource\guide-app.dox"
-				>
+				RelativePath="docsource\guide-app.dox">
 			</File>
 			<File
-				RelativePath="docsource\guide-brown.dox"
-				>
+				RelativePath="docsource\guide-brown.dox">
 			</File>
 			<File
-				RelativePath="docsource\guide-collision.dox"
-				>
+				RelativePath="docsource\guide-collision.dox">
 			</File>
 			<File
-				RelativePath="docsource\guide-compiling.dox"
-				>
+				RelativePath="docsource\guide-compiling.dox">
 			</File>
 			<File
-				RelativePath="docsource\guide-concepts.dox"
-				>
+				RelativePath="docsource\guide-concepts.dox">
 			</File>
 			<File
-				RelativePath="docsource\guide-debug.dox"
-				>
+				RelativePath="docsource\guide-debug.dox">
 			</File>
 			<File
-				RelativePath="docsource\guide-effects.dox"
-				>
+				RelativePath="docsource\guide-effects.dox">
 			</File>
 			<File
-				RelativePath="docsource\guide-fbo.dox"
-				>
+				RelativePath="docsource\guide-fbo.dox">
 			</File>
 			<File
-				RelativePath="docsource\guide-files.dox"
-				>
+				RelativePath="docsource\guide-files.dox">
 			</File>
 			<File
-				RelativePath="docsource\guide-install.dox"
-				>
+				RelativePath="docsource\guide-install.dox">
 			</File>
 			<File
-				RelativePath="docsource\guide-intro.dox"
-				>
+				RelativePath="docsource\guide-intro.dox">
 			</File>
 			<File
-				RelativePath="docsource\guide-macosx.dox"
-				>
+				RelativePath="docsource\guide-macosx.dox">
 			</File>
 			<File
-				RelativePath="docsource\guide-meshes.dox"
-				>
+				RelativePath="docsource\guide-meshes.dox">
 			</File>
 			<File
-				RelativePath="docsource\guide-network.dox"
-				>
+				RelativePath="docsource\guide-network.dox">
 			</File>
 			<File
-				RelativePath="docsource\guide-opengl.dox"
-				>
+				RelativePath="docsource\guide-opengl.dox">
 			</File>
 			<File
-				RelativePath="docsource\guide-physics.dox"
-				>
+				RelativePath="docsource\guide-physics.dox">
 			</File>
 			<File
-				RelativePath="docsource\guide-shaders.dox"
-				>
+				RelativePath="docsource\guide-shaders.dox">
 			</File>
 			<File
-				RelativePath="docsource\guide-tutorial.dox"
-				>
+				RelativePath="docsource\guide-tutorial.dox">
 			</File>
 			<File
-				RelativePath="docsource\guide-ui.dox"
-				>
+				RelativePath="docsource\guide-ui.dox">
 			</File>
 			<File
-				RelativePath="docsource\guide-var.dox"
-				>
+				RelativePath="docsource\guide-var.dox">
 			</File>
 			<File
-				RelativePath="docsource\guide-video.dox"
-				>
+				RelativePath="docsource\guide-video.dox">
 			</File>
 			<File
-				RelativePath="docsource\guide-welcome.dox"
-				>
+				RelativePath="docsource\guide-welcome.dox">
 			</File>
 			<File
-				RelativePath="docsource\license.dox"
-				>
+				RelativePath="docsource\license.dox">
 			</File>
 			<File
-				RelativePath="docsource\topic-index.dox"
-				>
+				RelativePath="docsource\topic-index.dox">
 			</File>
 		</Filter>
 		<File
-			RelativePath="html\footer.html"
-			>
+			RelativePath="html\footer.html">
 		</File>
 		<File
-			RelativePath="html\gettingstarted.html"
-			>
+			RelativePath="html\gettingstarted.html">
 		</File>
 		<File
-			RelativePath="html\header.html"
-			>
+			RelativePath="html\header.html">
 		</File>
 		<File
-			RelativePath="..\readme.html"
-			>
+			RelativePath="..\readme.html">
 		</File>
 		<File
-			RelativePath="docsource\upgrade.dox"
-			>
+			RelativePath="docsource\upgrade.dox">
 		</File>
 	</Files>
 	<Globals>

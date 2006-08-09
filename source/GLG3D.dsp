@@ -103,6 +103,10 @@ SOURCE=.\GLG3Dcpp\edgeFeatures.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\GLG3Dcpp\FirstPersonManipulator.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\GLG3Dcpp\Framebuffer.cpp
 # End Source File
 # Begin Source File
@@ -152,10 +156,6 @@ SOURCE=.\GLG3Dcpp\IFSModel.cpp
 # Begin Source File
 
 SOURCE=.\GLG3Dcpp\LightingParameters.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\GLG3Dcpp\ManualCameraController.cpp
 # End Source File
 # Begin Source File
 
@@ -263,6 +263,10 @@ SOURCE=.\include\GLG3D\edgeFeatures.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\include\GLG3D\FirstPersonManipulator.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\include\GLG3D\Framebuffer.h
 # End Source File
 # Begin Source File
@@ -315,19 +319,11 @@ SOURCE=.\include\GLG3D\GWindow.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\include\GLG3D\GWindowSettings.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\include\GLG3D\IFSModel.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\include\GLG3D\LightingParameters.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\include\GLG3D\ManualCameraController.h
 # End Source File
 # Begin Source File
 
