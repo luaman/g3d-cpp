@@ -51,8 +51,8 @@ typedef ReferenceCountedPointer<class Framebuffer> FramebufferRef;
  Framebuffer Example:
 
  <PRE>
-// Create Texture
-	static TextureRef tex = Texture::createEmpty(256, 256, "Rendered Texture", TextureFormat::RGB8, Texture::CLAMP, Texture::NO_INTERPOLATION, Texture::DIM_2D);
+    // Create Texture
+	static TextureRef tex = Texture::createEmpty(256, 256, "Rendered Texture", TextureFormat::RGB8, Texture::CLAMP, Texture::NEAREST_NO_MIPMAP, Texture::DIM_2D);
 
 	// Create a framebuffer that uses this texture as the color buffer
 	static FramebufferRef fb = Framebuffer::create("Offscreen target");

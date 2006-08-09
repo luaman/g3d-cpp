@@ -490,7 +490,6 @@ static bool isMipMapformat(Texture::InterpolateMode i) {
 
     case Texture::BILINEAR_NO_MIPMAP:
     case Texture::NEAREST_NO_MIPMAP:
-    case Texture::NO_INTERPOLATION:
         return false;
     }
 
@@ -1208,7 +1207,6 @@ static void setTexParameters(
     bool hasMipMaps = 
         (target != GL_TEXTURE_RECTANGLE_EXT) &&
         (settings.interpolateMode != Texture::BILINEAR_NO_MIPMAP) &&
-        (settings.interpolateMode != Texture::NO_INTERPOLATION) &&
         (settings.interpolateMode != Texture::NEAREST_NO_MIPMAP);
 
     if (hasMipMaps &&
@@ -1254,7 +1252,6 @@ static void setTexParameters(
         glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
         break;
 
-    case Texture::NO_INTERPOLATION:
     case Texture::NEAREST_NO_MIPMAP:
         glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
         glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

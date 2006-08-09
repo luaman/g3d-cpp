@@ -88,6 +88,7 @@ configured to create compile time errors to help you catch bugs.  These will app
 <tr><td>G3D::Texture::wrapMode</td><td>G3D::Texture::settings().wrapMode</td></tr>
 <tr><td>G3D::Texture::parameters</td><td>G3D::Texture::settings</td></tr>
 <tr><td>G3D::GWindowSettings</td><td>G3D::GWindow::Settings</td></tr>
+<tr><td>G3D::Texture::NO_INTERPOLATION</td><td>G3D::Texture::NEAREST_NO_MIPMAP</td></tr>
 </table>
 </p>
 
