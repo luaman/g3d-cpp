@@ -13,10 +13,6 @@
 
 namespace G3D {
 
-void GWindow::loadExtensions() {
-    GLCaps::init();
-}
-
 void GWindow::executeLoopBody() {
     if (notDone()) {
         if (loopBodyStack.last().isGApplet) {

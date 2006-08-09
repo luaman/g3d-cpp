@@ -1105,10 +1105,6 @@
 				>
 			</File>
 			<File
-				RelativePath="include\GLG3D\GWindowSettings.h"
-				>
-			</File>
-			<File
 				RelativePath="include\GLG3D\IFSModel.h"
 				>
 			</File>

@@ -89,7 +89,11 @@ configured to create compile time errors to help you catch bugs.  These will app
 </table>
 </p>
 
-
+<hr noshade>
+<p><b>GApp::debugController is now a reference</b></p>
+<p>
+This means that <code>app->debugController.setActive</code> etc. calls are now <code>app->debugController->setActive</code>.
+</p>
 
 <hr noshade>
 <p><b>c:\program files\microsoft visual studio\vc98\include\winsock2.h(99) : error C2011: 'fd_set' : 'struct' type redefinition</b></p>

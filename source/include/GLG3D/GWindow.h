@@ -65,6 +65,10 @@ class Rect2D;
  It is common to accept a GWindowSettings as an argument to the 
  constructor.
 
+ Subclasses are required to call GLCaps::init
+        from the end of their constructor/create function to
+        finish initializing OpenGL. 
+
  <B>Input</B>
  This class will be extended with UI events and constants 
  in a future revision.  For now it is limited to rendering
@@ -218,14 +222,6 @@ protected:
 
     /** Subclasses should call from their idle function. */
     void executeLoopBody();
-
-    /** Subclasses are required to call this
-        from the end of their constructor/create function to
-        finish initializing OpenGL. 
-
-        @deprecated Call GLCaps::init instead.
-    */
-    void G3D_DEPRECATED loadExtensions();
 
     int                     m_inputCaptureCount;
     int                     m_mouseHideCount;
