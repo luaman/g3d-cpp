@@ -27,7 +27,6 @@
 #include "GLG3D/PixelProgram.h"
 #include "GLG3D/Shader.h"
 #include "GLG3D/VARArea.h"
-#include "GLG3D/GWindowSettings.h"
 #include "GLG3D/GWindow.h"
 #include "GLG3D/GLCaps.h"
 #include "GLG3D/VAR.h"

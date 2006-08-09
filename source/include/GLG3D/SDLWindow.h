@@ -10,7 +10,6 @@
 #define G3D_SDLWINDOW_H
 
 #include "G3D/platform.h"
-#include "GLG3D/GWindowSettings.h"
 #include "GLG3D/GWindow.h"
 #include "GLG3D/glcalls.h"
 
