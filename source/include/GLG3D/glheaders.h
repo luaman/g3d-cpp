@@ -26,31 +26,31 @@
 // extensions for multitexture dynamically.  We should be able to
 // load both platforms dynamically, but the Wildcat drivers on Linux
 // don't support dynamic loading of multitexture.
-#define G3D_GL_ARB_multitexture_static
+#    define G3D_GL_ARB_multitexture_static
 #endif
 
-#include "../GL/gl.h"
-#include "../GL/glext.h"
+#include "GLG3D/GL/gl.h"
+#include "GLG3D/GL/glext.h"
 
 #ifdef G3D_WIN32
-    #include "../GL/wglext.h"
+    #include "GLG3D/GL/wglext.h"
 #endif
 
 #if defined(G3D_LINUX)
     #ifdef __glxext_h_
     #error Picked up wrong version of glxext
     #endif
-	#include "../GL/glxext.h"
-//	#include "../GL/glx.h"
+	#include "GLG3D/GL/glxext.h"
+//	#include "GLG3D/GL/glx.h"
 #endif
 
-#include "../GL/glext.h"
+#include "GLG3D/GL/glext.h"
 
 #ifdef G3D_OSX
-#include <OpenGL/glu.h>
-#include <OpenGL/OpenGL.h>
+#    include <OpenGL/glu.h>
+#    include <OpenGL/OpenGL.h>
 #else
-#include <GL/glu.h>
+#    include <GL/glu.h>
 #endif
 
 // OpenGL extensions

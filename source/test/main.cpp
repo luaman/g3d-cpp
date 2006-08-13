@@ -13,7 +13,7 @@
  @edited  2006-08-10
  */
 
-#include "../include/G3DAll.h"
+#include "G3D/G3DAll.h"
 #include <iostream>
 
 using namespace G3D;
