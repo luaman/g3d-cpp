@@ -11,7 +11,7 @@
   @author Morgan McGuire, matrix@graphics3d.com
  */
 
-#include <G3DAll.h>
+#include <G3D/G3DAll.h>
 
 #if G3D_VER < 70000
     #error Requires G3D 7.00

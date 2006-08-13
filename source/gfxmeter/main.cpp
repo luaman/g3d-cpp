@@ -6,10 +6,10 @@
   @author Morgan McGuire, matrix@graphics3d.com
  */
 
-#include "../include/G3DAll.h"
+#include "G3D/G3DAll.h"
 
-#if G3D_VER < 61000
-    #error Requires G3D 6.10
+#if G3D_VER < 70000
+    #error Requires G3D 7.00
 #endif
 
 #include "Report.h"

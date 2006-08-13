@@ -4,7 +4,7 @@
   Measures the performance of rendering in various modes on this machine.
 
  */
-#include "../include/G3DAll.h"
+#include "G3D/G3DAll.h"
 
 // All return FPS
 float measureBeginEndPerformance(class Model&);

@@ -7,7 +7,7 @@
 #ifndef REPORT_H
 #define REPORT_H
 
-#include "../include/G3DAll.h"
+#include "G3D/G3DAll.h"
 
 class MD2 {
 public:
