@@ -1,4 +1,4 @@
-#include "../include/G3DAll.h"
+#include "G3D/G3DAll.h"
 
 static void testAABoxCulledBy() {
     const uint32 b00000000 = 0;

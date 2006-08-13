@@ -1,4 +1,4 @@
-#include "../include/G3DAll.h"
+#include "G3D/G3DAll.h"
 
 static void mul(float (&A)[3][3], float (&B)[3][3], float (&C)[3][3]) {
     for (int r = 0; r < 3; ++r) {

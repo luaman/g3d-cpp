@@ -1,6 +1,6 @@
-#include "../include/G3DAll.h"
+#include "G3D/G3DAll.h"
 #ifdef G3D_LINUX
-#include <pthread.h>
+#     include <pthread.h>
 #endif
 
 class WKFoo : public ReferenceCountedObject {

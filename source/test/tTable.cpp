@@ -1,7 +1,6 @@
-#include "../include/G3DAll.h"
+#include "G3D/G3DAll.h"
 #include <map>
 
-// TODO: remove the  && (_MSC_VER < 1400)
 #if defined(G3D_WIN32) && (_MSC_VER >= 1300)
 #   define HAS_HASH_MAP
 #endif

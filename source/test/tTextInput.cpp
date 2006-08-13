@@ -1,4 +1,4 @@
-#include "../include/G3DAll.h"
+#include "G3D/G3DAll.h"
 
 void testTextInput() {
     printf("TextInput\n");

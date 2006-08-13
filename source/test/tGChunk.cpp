@@ -1,6 +1,6 @@
-#include "../include/G3DAll.h"
+#if 0
+#include "../include/G3D/G3DAll.h"
 #include "../contrib/GChunk/GChunk.h"
-
 
 void testGChunk() {
     printf("GChunk ");
@@ -84,3 +84,4 @@ void testGChunk() {
     printf("passed\n");
 }
 
+#endif

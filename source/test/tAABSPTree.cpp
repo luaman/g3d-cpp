@@ -1,5 +1,4 @@
-#include "../include/G3DAll.h"
-
+#include "G3D/G3DAll.h"
 
 static void testSerialize() {
     AABSPTree<Vector3> tree;

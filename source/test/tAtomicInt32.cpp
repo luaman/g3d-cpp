@@ -1,4 +1,4 @@
-#include "../include/G3DAll.h"
+#include "G3D/G3DAll.h"
 
 void testAtomicInt32() {
     printf("G3D::AtomicInt32 ");
