@@ -48,10 +48,12 @@
 	 <li> Removed CoordinateFrame::getStrafeVector (use rightVector)
 	 <li> Removed static constants (use equivalent lower-case methods)
 	 <li> Removed Cylinder::getPoint1 (use point)
+	 <li> Fix: Fixed all warnings on gcc-4.1 and VC8.
      <li> Fix: Matrix and CoordinateFrame serializers inside G3D::AnyVal dropped data
 	 <li> Fix: [ 1535759 ] valgrind finds initialization/deletion errors in TextOutput, Matrix [Chris Demetriou]
 	 <li> Fix: Patched MD2Model to automatically reduce animation times to less than 100000; large time were overflowing double->int conversion and causing animations to appear scrambled.
 	 <li> Fix: [ 1535292 ] global Table hashCode overloads broken [Chris Demetriou]
+	 <li> Fix: [ 1535736 ] Fixed System.cpp memory allocator to compile on 64-bit machines correctly [Chris Demetriou]
    </ul>
 
    <P>

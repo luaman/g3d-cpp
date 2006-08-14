@@ -212,7 +212,7 @@ BinaryInput::BinaryInput(
 		debugAssert(freeBuffer);
         buffer = (uint8*)System::malloc(length);
 
-        uint32 L = length;
+        unsigned long L = length;
         // Decompress with zlib
         int result = uncompress(buffer, (unsigned long*)&L, data + 4, dataLen - 4);
         length = L;

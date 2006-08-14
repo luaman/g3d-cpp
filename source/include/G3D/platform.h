@@ -75,27 +75,7 @@
 #   ifndef __GNUC__
 #       error G3D only supports the gcc compiler on Linux.
 #   endif
-
-#   ifndef __i386__
-#       error G3D only supports x86 machines on Linux.
-#   endif
-
-#   define G3D_DEPRECATED __attribute__((__deprecated__))
-
-#   ifndef __cdecl
-#       define __cdecl __attribute__((cdecl))
-#   endif
-
-#   ifndef __stdcall
-#       define __stdcall __attribute__((stdcall))
-#   endif
-
-#   define G3D_CHECK_PRINTF_METHOD_ARGS   __attribute__((__format__(__printf__, 2, 3)))
-#   define G3D_CHECK_VPRINTF_METHOD_ARGS  __attribute__((__format__(__printf__, 2, 0)))
-#   define G3D_CHECK_PRINTF_ARGS          __attribute__((__format__(__printf__, 1, 2)))
-#   define G3D_CHECK_VPRINTF_ARGS         __attribute__((__format__(__printf__, 1, 0)))
 #endif
-
 
 #ifdef G3D_OSX
     #ifndef __GNUC__
@@ -110,32 +90,23 @@
 		#define G3D_OSX_UNKNOWN
 	#endif
 
-#   ifndef __cdecl
-#       define __cdecl __attribute__((cdecl))
-#   endif
-
-#   ifndef __stdcall
-#       define __stdcall __attribute__((stdcall))
-#   endif
-
-#   define G3D_DEPRECATED __attribute__((__deprecated__))
-
-#   define G3D_CHECK_PRINTF_METHOD_ARGS   __attribute__((__format__(__printf__, 2, 3)))
-#   define G3D_CHECK_VPRINTF_METHOD_ARGS  __attribute__((__format__(__printf__, 2, 0)))
-#   define G3D_CHECK_PRINTF_ARGS          __attribute__((__format__(__printf__, 1, 2)))
-#   define G3D_CHECK_VPRINTF_ARGS         __attribute__((__format__(__printf__, 1, 0)))
 #endif
 
 
 #ifdef G3D_WIN32
-// Microsoft Visual C++ 7.1	_MSC_VER = 1310
-// Microsoft Visual C++ 7.0	_MSC_VER = 1300
-// Microsoft Visual C++ 6.0	_MSC_VER = 1200
-// Microsoft Visual C++ 5.0	_MSC_VER = 1100
+// Microsoft Visual C++ 8.0 ("Express")       = 1400
+// Microsoft Visual C++ 7.1	("2003") _MSC_VER = 1310
+// Microsoft Visual C++ 7.0	("2002") _MSC_VER = 1300
+// Microsoft Visual C++ 6.0	_MSC_VER          = 1200
+// Microsoft Visual C++ 5.0	_MSC_VER          = 1100
+
+#	if (_MSC_VER <= 1200)
+		typedef int intptr_t;
+#   endif
 
     // Old versions of MSVC (6.0 and previous) don't
     // support C99 for loop scoping rules.  This fixes them.
-#   if (_MSC_VER <= 1200)
+#    if (_MSC_VER <= 1200)
         // This trick will generate a warning; disable the warning
 #       pragma warning (disable : 4127)
 #       define for if (false) {} else for
@@ -251,7 +222,39 @@
 #       pragma warning (disable : 4018)
 #   endif
 
+#endif  // win32
+
+#ifdef __GNUC__
+#   define G3D_DEPRECATED __attribute__((__deprecated__))
+
+#   ifdef __i386__
+
+#       ifndef __cdecl
+#           define __cdecl __attribute__((cdecl))
+#       endif
+
+#       ifndef __stdcall
+#           define __stdcall __attribute__((stdcall))
+#       endif
+
+#   elif defined(__x86_64__)
+
+#       ifndef __cdecl
+#           define __cdecl
+#       endif
+
+#       ifndef __stdcall
+#           define __stdcall
+#       endif
+
+#   endif
+
+#   define G3D_CHECK_PRINTF_METHOD_ARGS   __attribute__((__format__(__printf__, 2, 3)))
+#   define G3D_CHECK_VPRINTF_METHOD_ARGS  __attribute__((__format__(__printf__, 2, 0)))
+#   define G3D_CHECK_PRINTF_ARGS          __attribute__((__format__(__printf__, 1, 2)))
+#   define G3D_CHECK_VPRINTF_ARGS         __attribute__((__format__(__printf__, 1, 0)))
 #endif
+
 
 /** 
   @def STR(expression)

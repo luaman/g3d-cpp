@@ -15,7 +15,7 @@
   @cite Michael Herf http://www.stereopsis.com/memcpy.html
 
   @created 2003-01-25
-  @edited  2006-05-17
+  @edited  2006-08-17
  */
 
 #include "G3D/platform.h"
@@ -1050,6 +1050,11 @@ RealTime System::time() {
 
 
 ////////////////////////////////////////////////////////////////
+
+#define REALPTR_TO_USERPTR(x)   ((uint8*)(x) + sizeof (void *))
+#define USERPTR_TO_REALPTR(x)   ((uint8*)(x) - sizeof (void *))
+#define REALBLOCK_SIZE(x)       ((x) + sizeof (void *))
+
 class BufferPool {
 public:
 
@@ -1273,7 +1278,7 @@ public:
             // In one of our heaps.
 
             // See how big the block really was
-            size_t realSize = ((uint32*)ptr)[-1];
+            size_t realSize = *(uint32*)USERPTR_TO_REALPTR(ptr);
             if (bytes <= realSize) {
                 // The old block was big enough.
                 return ptr;
@@ -1330,42 +1335,42 @@ public:
             }
         }
 
-        bytesAllocated += 4 + bytes;
+        bytesAllocated += REALBLOCK_SIZE(bytes);
         unlock();
 
         // Heap allocate
 
         // Allocate 4 extra bytes for our size header (unfortunate,
         // since malloc already added its own header).
-        void* ptr = ::malloc(bytes + 4);
+        void* ptr = ::malloc(REALBLOCK_SIZE(bytes));
 
         if (ptr == NULL) {
             // Flush memory pools to try and recover space
             flushPool(smallPool, smallPoolSize);
             flushPool(medPool, medPoolSize);
-            ptr = ::malloc(bytes + 4);
+            ptr = ::malloc(REALBLOCK_SIZE(bytes + 4));
         }
 
 
         if (ptr == NULL) {
             if ((System::outOfMemoryCallback != NULL) &&
-                (System::outOfMemoryCallback(bytes + 4, true) == true)) {
+                (System::outOfMemoryCallback(REALBLOCK_SIZE(bytes), true) == true)) {
                 // Re-attempt the malloc
-                ptr = ::malloc(bytes + 4);
+                ptr = ::malloc(REALBLOCK_SIZE(bytes));
             }
         }
 
         if (ptr == NULL) {
             if (System::outOfMemoryCallback != NULL) {
                 // Notify the application
-                System::outOfMemoryCallback(bytes + 4, false);
+                System::outOfMemoryCallback(REALBLOCK_SIZE(bytes), false);
             }
             return NULL;
         }
 
         *(uint32*)ptr = bytes;
 
-        return (uint8*)ptr + 4;
+        return REALPTR_TO_USERPTR(ptr);
     }
 
 
@@ -1384,7 +1389,7 @@ public:
             return;
         }
 
-        uint32 bytes = ((uint32*)ptr)[-1];
+        uint32 bytes = *(uint32*)USERPTR_TO_REALPTR(ptr);
 
         lock();
         if (bytes <= smallBufferSize) {
@@ -1402,11 +1407,11 @@ public:
                 return;
             }
         }
-        bytesAllocated -= bytes + 4;
+        bytesAllocated -= REALBLOCK_SIZE(bytes);
         unlock();
 
         // Free; the buffer pools are full or this is too big to store.
-        ::free((uint8*)ptr - 4);
+        ::free(USERPTR_TO_REALPTR(ptr));
     }
 
     std::string performance() const {

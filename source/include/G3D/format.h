@@ -19,16 +19,7 @@
 #include <cstdarg>
 #include <assert.h>
 #ifndef G3D_WIN32
-    // Don't include varargs.h for some random
-    // gcc reason
-    //#include <varargs.h>
-    #include <stdarg.h>
-#endif
-
-#ifndef _MSC_VER
-    #ifndef __cdecl
-        #define __cdecl __attribute__((cdecl))
-    #endif
+#    include <stdarg.h>
 #endif
 
 namespace G3D {

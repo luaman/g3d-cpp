@@ -4,7 +4,7 @@
  @author Morgan McGuire, graphics3d.com
 
  @created 2000-09-09
- @edited  2006-04-30
+ @edited  2006-08-14
 */
 
 #include "G3D/format.h"
@@ -54,7 +54,15 @@ std::string vformat(const char *fmt, va_list argPtr) {
     const int bufSize = 161;
 	char stackBuffer[bufSize];
 
-    int actualSize = _vscprintf(fmt, argPtr) + 1;
+#	if  _MSC_VER <= 1400
+        // MSVC 7 does not support va_copy
+        int actualSize = _vscprintf(fmt, argPtr) + 1;
+#   else
+        va_list argPtrCopy;
+        va_copy(argPtrCopy, argPtr);
+        int actualSize = _vscprintf(fmt, argPtrCopy) + 1;
+        va_end(argPtrCopy);
+#   endif
 
     if (actualSize > bufSize) {
 
@@ -93,7 +101,18 @@ std::string vformat(const char *fmt, va_list argPtr) {
     const int bufSize = 161;
 	char stackBuffer[bufSize];
 
-    int actualWritten = vsnprintf(stackBuffer, bufSize, fmt, argPtr);
+#	ifdef _MSC_VER
+		// MSVC6 doesn't support va_copy, however it also seems to compile
+		// correctly if we just pass our argument list along.  Note that 
+		// this whole code block is only compiled if we're on MSVC6 anyway
+		int actualWritten = vsnprintf(stackBuffer, bufSize, fmt, argPtr);
+#	else
+		int actualWritten = vsnprintf(stackBuffer, bufSize, fmt, argPtrCopy);
+		va_list argPtrCopy;
+		va_copy(argPtrCopy, argPtr);
+		int actualWritten = vsnprintf(stackBuffer, bufSize, fmt, argPtrCopy);
+		va_end(argPtrCopy);
+#	endif
 
     // Not a big enough buffer, bufSize characters written
     if (actualWritten == -1) {
@@ -133,7 +152,10 @@ std::string vformat(const char* fmt, va_list argPtr) {
     const int bufSize = 161;
     char stackBuffer[bufSize];
 
-    int numChars = vsnprintf(stackBuffer, bufSize, fmt, argPtr);
+    va_list argPtrCopy;
+    va_copy(argPtrCopy, argPtr);
+    int numChars = vsnprintf(stackBuffer, bufSize, fmt, argPtrCopy);
+    va_end(argPtrCopy);
 
     if (numChars >= bufSize) {
       // We didn't allocate a big enough string.

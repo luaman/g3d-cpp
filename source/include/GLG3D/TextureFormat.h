@@ -301,17 +301,17 @@ public:
 }
 
 inline unsigned int hashCode(const G3D::TextureFormat* f) {
-#   if defined(G3D_WIN32)
+//#   if defined(G3D_WIN32)
         // Disable 64-bit pointer truncation warning
-#       pragma warning (push)
-#       pragma warning (disable : 4311)
-#   endif	
+//#       pragma warning (push)
+//#       pragma warning (disable : 4311)
+//#   endif	
     
-    return reinterpret_cast<unsigned int>(f);
+    return reinterpret_cast<intptr_t>(f);
 
-#   if defined(G3D_WIN32)
-#       pragma warning (pop)
-#   endif	
+//#   if defined(G3D_WIN32)
+//#       pragma warning (pop)
+//#   endif	
 }
 
 #endif
