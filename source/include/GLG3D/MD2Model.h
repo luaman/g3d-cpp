@@ -126,12 +126,20 @@ public:
         /**
          Time since the start of the animation. Animations
          loop, so times after the final animation frame time
-         are allowed.
+         are allowed.  This must be less than 100000.0.
          */
         GameTime            time;
 
-        inline Pose() : animation(STAND), time(0) {}
-        inline Pose(Animation a, GameTime t = 0) : animation(a), time(t) {}
+        inline Pose() : preFrameNumber(0), animation(STAND), time(0) {}
+        inline Pose(Animation a, GameTime t = 0) : preFrameNumber(0), animation(a), time(t) {
+			static const GameTime t0 = 100000.0;
+			while (time > t0) {
+				// We've been handed a number too big to operate on
+				// as an int32 when we go to frame numbers, probably
+				// because the caller handed in the current System::time.
+				time -= t0;
+			}
+		}
         
         bool operator==(const Pose& other) const;
         bool operator!=(const Pose& other) const;

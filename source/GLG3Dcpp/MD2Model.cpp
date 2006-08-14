@@ -98,7 +98,7 @@ const Array<MeshAlg::Vertex>& MD2Model::weldedVertices() const {
 
 void MD2Model::computeFrameNumbers(const MD2Model::Pose& pose, int& kf0, int& kf1, double& alpha) {
 
-    if (pose.time < 0) {
+    if (pose.time < 0.0) {
         Animation a = pose.animation;
         
         if (pose.animation == JUMP) {
@@ -126,6 +126,8 @@ void MD2Model::computeFrameNumbers(const MD2Model::Pose& pose, int& kf0, int& kf
         return;
     }
 
+
+	debugAssert(pose.time > 0.0);
 
     // Assume time is positive
     if (pose.animation == JUMP) {

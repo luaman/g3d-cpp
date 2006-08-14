@@ -1,8 +1,6 @@
 /**
   @file gfxmeter/main.cpp
 
-  slow/shadow map (radeon)
-
   @author Morgan McGuire, matrix@graphics3d.com
  */
 

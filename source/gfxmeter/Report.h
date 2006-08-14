@@ -44,7 +44,9 @@ public:
     }
 
     void doSimulation(GameTime dt) {
-        pose = MD2Model::Pose(MD2Model::STAND, System::time());
+		GameTime t = System::time();
+		debugAssert(t > 0);
+        pose = MD2Model::Pose(MD2Model::STAND, t);
         /*
         pose.doSimulation(dt,
             false, false, false, 
