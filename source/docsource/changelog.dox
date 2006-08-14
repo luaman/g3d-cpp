@@ -30,6 +30,9 @@
    <P>
    Changes in 7.00:
    <ul>
+     <li> Renamed graphics3d.h to G3D/G3D.h
+     <li> Renamed GLG3D.h to GLG3D/GLG3D.h
+     <li> Renamed G3DAll.h to G3D/G3DAll.h
      <li> G3D::Quat::unitize now normalizes in place
      <li> Added G3D::Quat::operator*=
      <li> Removed G3D::FirstPersonManipulator's constructor--use the static G3D::FirstPersonManipulator::create method now.
