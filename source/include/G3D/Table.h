@@ -4,11 +4,9 @@
   Templated hash table class.
 
   @maintainer Morgan McGuire, matrix@graphics3d.com
-  @cite Bug fix by Darius Jazayeri, jazayeri@MIT.EDU
-
   @created 2001-04-22
-  @edited  2005-09-12
-  Copyright 2000-2005, Morgan McGuire.
+  @edited  2006-10-14
+  Copyright 2000-2006, Morgan McGuire.
   All rights reserved.
  */
 
@@ -42,6 +40,10 @@ public:
     virtual ~Hashable() {}
 };
 }
+
+
+// The hashCodes can be broken by inline global 'hashCode' functions
+// added to other files that are not implemented.
 
 /**
  Int hashing function for use with Table.
@@ -471,7 +473,7 @@ public:
      key into a table is O(1), but may cause a potentially slow rehashing.
      */
     void set(const Key& key, const Value& value) {
-        unsigned int code = ::hashCode(key);
+        unsigned int code = hashCode(key);
         unsigned int b = code % numBuckets;
         
         // Go to the bucket
@@ -524,7 +526,10 @@ public:
     */
    void remove(const Key& key) {
       
-      unsigned int code = ::hashCode(key);
+	  // Intentionally not "::hashCode".  
+	  // See bug ticket [ 1535292 ] global hashCode overloads broken;
+      // http://sourceforge.net/tracker/index.php?func=detail&aid=1535292&group_id=76879&atid=548562
+      unsigned int code = hashCode(key);
       unsigned int b = code % numBuckets;
 
       // Go to the bucket
@@ -564,7 +569,7 @@ public:
     */
    Value& get(const Key& key) const {
 
-       unsigned int code = ::hashCode(key);
+       unsigned int code = hashCode(key);
       unsigned int b = code % numBuckets;
 
       Node* node = bucket[b];
@@ -587,7 +592,7 @@ public:
     If the key is not present, returns false.
     */
    bool get(const Key& key, Value& val) const {
-	  unsigned int code = ::hashCode(key);
+	  unsigned int code = hashCode(key);
       unsigned int b = code % numBuckets;
 
       Node* node = bucket[b];
@@ -609,7 +614,7 @@ public:
     Returns true if key is in the table.
     */
    bool containsKey(const Key& key) const {
-       unsigned int code = ::hashCode(key);
+       unsigned int code = hashCode(key);
        unsigned int b = code % numBuckets;
 
        Node* node = bucket[b];

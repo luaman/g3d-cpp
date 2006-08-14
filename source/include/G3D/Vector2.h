@@ -205,11 +205,6 @@ inline Vector2 operator*(int s, const Vector2& v) {
 }
 
 
-inline unsigned int hashCode(const G3D::Vector2& v) {
-     return v.hashCode();
-}
-
-
 inline Vector2::Vector2 () : x(0.0f), y(0.0f) {
 }
 
@@ -429,7 +424,8 @@ inline G3D::Vector2 operator*(int s, const G3D::Vector2& v) {
 }
 
 
-inline unsigned int hashCode(const G3D::Vector2& v);
-
+inline unsigned int hashCode(const G3D::Vector2& v) {
+    return v.hashCode();
+}
 
 #endif
