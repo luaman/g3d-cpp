@@ -3,9 +3,9 @@
 
   @maintainer Morgan McGuire, morgan@graphics3d.com
   @created 2004-06-21
-  @edited  2004-10-21
+  @edited  2006-08-14
 
-  Copyright 2000-2004, Morgan McGuire.
+  Copyright 2000-2006, Morgan McGuire.
   All rights reserved.
  */
 
@@ -15,23 +15,26 @@
 
 namespace G3D {
 
-TextOutput::TextOutput(const TextOutput::Options& opt) {
+TextOutput::TextOutput(const TextOutput::Options& opt) :
+	startingNewLine(true),
+    currentColumn(0),
+	inDQuote(false),
+	filename(""),
+	indentLevel(0)
+{
     setOptions(opt);
-    filename = "";
-    setIndentLevel(0);
-    startingNewLine = true;
-    currentColumn = 0;
-    inDQuote = false;
 }
 
 
-TextOutput::TextOutput(const std::string& fil, const TextOutput::Options& opt) {
+TextOutput::TextOutput(const std::string& fil, const TextOutput::Options& opt) :
+    startingNewLine(true),
+    currentColumn(0),
+	inDQuote(false),
+	filename(fil),
+	indentLevel(0) 
+{
+
     setOptions(opt);
-    filename = fil;
-    setIndentLevel(0);
-    startingNewLine = true;
-    currentColumn = 0;
-    inDQuote = false;
 }
 
 

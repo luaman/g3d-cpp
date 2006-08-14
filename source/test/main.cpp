@@ -10,7 +10,7 @@
 
  @maintainer Morgan McGuire, matrix@graphics3d.com
  @created 2002-01-01
- @edited  2006-08-10
+ @edited  2006-08-14
  */
 
 #include "G3D/G3DAll.h"
@@ -69,9 +69,9 @@ void perfBinaryIO();
 
 void testTextInput();
 
+void testTable();
 void testAdjacency();
 
-void testTable();
 void perfTable();
 
 void testAtomicInt32();
@@ -82,11 +82,13 @@ void testGThread();
 
 
 void testConvexPolygon2D() {
+    printf("ConvexPolygon2D\n");
     Array<Vector2> v;
     v.append(Vector2(0, 0), Vector2(1,1), Vector2(2, 0));
     ConvexPolygon2D C(v);
     debugAssert(! C.contains(Vector2(10, 2)));
     debugAssert(C.contains(Vector2(1, 0.5)));
+    printf("  passed\n");
 }
 
 
@@ -529,6 +531,8 @@ int main(int argc, char* argv[]) {
 
     printf("\n\nTests:\n\n");
 
+    testTable();
+
     testCollisionDetection();    
 
     testCoordinateFrame();
@@ -551,17 +555,15 @@ int main(int argc, char* argv[]) {
 
     testQueue();
 
-    //testMatrix();
+	// Don't run contrib tests until the new 7.00 build system is in place
+    // testMatrix();
+    // testGChunk();
 
     testArray();
 
     testMeshAlgTangentSpace();
 
-    //testGChunk();
-
-    printf("ConvexPolygon2D\n");
     testConvexPolygon2D();
-    printf("  passed\n");
 
     testPlane();
     printf("  passed\n");
@@ -585,8 +587,6 @@ int main(int argc, char* argv[]) {
 
     testTextInput();
     printf("  passed\n");
-
-    testTable();
 
     testBox();
     printf("  passed\n");

@@ -53,9 +53,66 @@ public:
     }
 };
 
+
+
+class TableKeyWithGlobalFns {
+public:
+    int data;
+    TableKeyWithGlobalFns() { }
+    TableKeyWithGlobalFns(int data) : data(data) { }
+};
+
+unsigned int hashCode(const TableKeyWithGlobalFns& key)
+{
+    return key.data;
+}
+
+bool operator==(const TableKeyWithGlobalFns& lhs, const TableKeyWithGlobalFns& rhs)
+{
+    return (lhs.data == rhs.data);
+}
+
+
 void testTable() {
 
     printf("G3D::Table  ");
+
+
+    // Test ops involving HashCode / lookup for a table with a key
+    // that uses a global overload of hashCode.
+    {
+        Table<TableKeyWithGlobalFns, int> table;
+        bool exists;
+        int val;
+
+        table.set(1, 1);
+        table.set(2, 2);
+        table.set(3, 3);
+
+        table.remove(2);
+
+        val = table.get(3);
+        debugAssert(val == 3);
+
+        exists = table.get(1, val);
+        debugAssert(exists && val == 1);
+        exists = table.get(2, val);
+        debugAssert(!exists);
+        exists = table.get(3, val);
+        debugAssert(exists && val == 3);
+
+       exists = table.containsKey(1);
+        debugAssert(exists);
+        exists = table.containsKey(2);
+        debugAssert(!exists);
+
+       table.remove(1);
+        table.remove(3);
+
+        debugAssert(table.size() == 0);
+    }
+
+
     // Basic get/set
     {
         Table<int, int> table;

@@ -589,7 +589,7 @@ void Matrix::Impl::setSize(int newRows, int newCols) {
     }
 
     // Construct the row pointers
-    delete elt;
+    delete[] elt;
     elt = new T*[R];
 
     for (int r = 0; r < R; ++ r) {
@@ -599,7 +599,7 @@ void Matrix::Impl::setSize(int newRows, int newCols) {
 
 
 Matrix::Impl::~Impl() {
-    delete elt;
+    delete[] elt;
     System::alignedFree(data);
 }
 
