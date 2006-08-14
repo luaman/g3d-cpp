@@ -50,6 +50,7 @@
 	 <li> Removed Cylinder::getPoint1 (use point)
      <li> Fix: Matrix and CoordinateFrame serializers inside G3D::AnyVal dropped data
 	 <li> Fix: [ 1535759 ] valgrind finds initialization/deletion errors in TextOutput, Matrix [Chris Demetriou]
+	 <li> Fix: Patched MD2Model to automatically reduce animation times to less than 100000; large time were overflowing double->int conversion and causing animations to appear scrambled.
    </ul>
 
    <P>

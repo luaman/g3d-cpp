@@ -157,7 +157,7 @@ public:
 
     /**
      Sum of the per-channel bits, plus any additional bits required
-     for byte alignment.
+     for alignment to the nearest byte boundary.
      */
     int                 packedBitsPerTexel;
     
@@ -179,43 +179,24 @@ public:
 private:
 
     TextureFormat(
-        int             _numComponents,
-        bool            _compressed,
-        GLenum          _glFormat,
-        GLenum          _glBaseFormat,
-        int             _luminanceBits,
-        int             _alphaBits,
-        int             _redBits,
-        int             _greenBits,
-        int             _blueBits,
-        int             _depthBits,
-        int             _stencilBits,
-        int             _hardwareBitsPerTexel,
-        int             _packedBitsPerTexel,
-        bool            _opaque,
-        bool            _floatingPoint,
-        Code            _code,
-        ColorSpace      _colorSpace,
-        BayerPattern    _bayerPattern = BAYER_PATTERN_NONE) : 
-        numComponents(_numComponents),
-        compressed(_compressed),
-        code(_code),
-        colorSpace(_colorSpace),
-        bayerPattern(_bayerPattern),
-        OpenGLFormat(_glFormat),
-        OpenGLBaseFormat(_glBaseFormat),
-        luminanceBits(_luminanceBits),
-        alphaBits(_alphaBits),
-        redBits(_redBits),
-        greenBits(_greenBits),
-        blueBits(_blueBits),
-        stencilBits(_stencilBits),
-        depthBits(_depthBits),
-        packedBitsPerTexel(_packedBitsPerTexel),
-        hardwareBitsPerTexel(_hardwareBitsPerTexel),
-        opaque(_opaque),
-        floatingPoint(_floatingPoint) {
-    }
+        int             numComponents,
+        bool            compressed,
+        GLenum          glFormat,
+        GLenum          glBaseFormat,
+        int             luminanceBits,
+        int             alphaBits,
+        int             redBits,
+        int             greenBits,
+        int             blueBits,
+        int             depthBits,
+        int             stencilBits,
+        int             hardwareBitsPerTexel,
+        int             packedBitsPerTexel,
+        bool            opaque,
+        bool            floatingPoint,
+        Code            code,
+        ColorSpace      colorSpace,
+        BayerPattern    bayerPattern = BAYER_PATTERN_NONE);
 
 public:
 
