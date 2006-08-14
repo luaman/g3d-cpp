@@ -119,6 +119,12 @@ public:
 
 typedef ReferenceCountedPointer<class ReliableConduit> ReliableConduitRef;
 
+#ifdef __GNUC__
+// Workaround for a known bug in gcc 4.x where htonl produces 
+// a spurrious warning.
+// http://gcc.gnu.org/ml/gcc-bugs/2005-10/msg03270.html
+uint32 gcchtonl(uint32);
+#endif
 
 // Messaging and stream APIs must be supported on a single class because
 // sometimes an application will switch modes on a single socket.  For
@@ -179,7 +185,9 @@ private:
                     const SOCKET& sock, 
                     const NetAddress& addr);
 
-    template<typename T> static void serializeMessage(uint32 t, const T& m, BinaryOutput& b) {
+    template<typename T> static void serializeMessage
+              (uint32 t, const T& m, BinaryOutput& b) {
+
         b.writeUInt32(t);
 
         // Reserve space for the 4 byte size header
@@ -199,16 +207,24 @@ private:
         // We send the length first to tell recv how much data to read.
         // Here we abuse BinaryOutput a bit and write directly into
         // its buffer, violating the abstraction.
-        ((uint32*)b.getCArray())[1] = htonl(len);
+        // Note that we write to the second set of 4 bytes, which is
+        // the size field.
+        uint32* lenPtr = ((uint32*)b.getCArray()) + 1;
+        #if defined(__GNUC__)
+            *lenPtr = gcchtonl(len);
+        #else
+            *lenPtr = htonl(len);
+        #endif
     }
 
 
     void sendBuffer(const BinaryOutput& b);
 
-    /** Accumulates whatever part of the message (not the header) is still waiting
-        on the socket into the receiveBuffer during state = RECEIVING mode.  
-        Closes the socket if anything goes wrong.
-        When receiveBufferUsedSize == messageSize, the entire message has arrived. */
+    /** Accumulates whatever part of the message (not the header) is
+        still waiting on the socket into the receiveBuffer during
+        state = RECEIVING mode.  Closes the socket if anything goes
+        wrong.  When receiveBufferUsedSize == messageSize, the entire
+        message has arrived. */
     void receiveIntoBuffer();
 
     /** Receives the messageType and messageSize from the socket. */
@@ -631,6 +647,29 @@ public:
      */
     NetListenerRef createListener(const uint16 port);
 };
+
+
+#ifdef __GNUC__
+inline uint32 gcchtonl(uint32 x) {
+    // This pragma fools gcc into surpressing all error messages,
+    // including the bogus one that it creates for htonl
+#   pragma GCC system_header
+    return htonl(x);
+    /*
+    static const int32 a = 1;
+    if (*(uint8*)&a == 1) {
+        // Little endian machine
+        for (int i = 0; i < 4; ++i) {
+            ((unsigned char*)lenPtr)[i] = 
+                ((unsigned char*)(&len))[3 - i];
+        }
+    } else {
+        // Big endian machine
+        *lenPtr = len;
+    }
+*/
+}
+#endif
 
 }
 

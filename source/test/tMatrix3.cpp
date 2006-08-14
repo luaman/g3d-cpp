@@ -63,7 +63,7 @@ void perfMatrix3() {
     uint64 raw, opt, overhead, naive;
 
     // 0.5 million operations
-    int n = 0.5 * 1024 * 1024;
+    int n = 1024 * 1024 / 2;
 
     // Use two copies to avoid nice cache behavior
     Matrix3 A = Matrix3::fromAxisAngle(Vector3(1, 2, 1), 1.2f);

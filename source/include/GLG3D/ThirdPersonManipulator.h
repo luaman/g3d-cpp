@@ -256,16 +256,19 @@ private:
         Could be a setting.*/
     int                     m_dragKey;
 
-    /** Enables dragging on multiple axes simultaneously, which is broken in this build. */
+    /** Enables dragging on multiple axes simultaneously, which is
+        broken in this build. */
     bool                    m_doubleAxisDrag;
 
     /** Index of the axis that is currently being dragged. */
     int                     m_dragAxis;
 
-    /** Index of the axis that the mouse is currently over.  NO_AXIS for none. */
+    /** Index of the axis that the mouse is currently over.  NO_AXIS
+        for none. */
     int                     m_overAxis;
 
-    /** When using a rotation drag, this is the tangent to the current circle. */
+    /** When using a rotation drag, this is the tangent to the current
+        circle. */
     Vector2                 m_dragTangent;
 
     float                   m_dragW;

@@ -163,7 +163,7 @@ public:
 	bool culledBy(
 		const Array<Plane>&		plane,
 		int32&					cullingPlaneIndex = dummy,
-		const uint32  			testMask		  = -1) const;
+		const uint32  			testMask		  = 0xFFFFFFFF) const;
 
     inline bool contains(
         const Vector3&      point) const {

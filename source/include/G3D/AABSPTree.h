@@ -92,11 +92,12 @@ namespace G3D {
  are copied interally. All AABSPTree iterators convert to pointers to constant
  values to reinforce this.
 
- If you want to mutate the objects you intend to store in a AABSPTree simply
- insert <I>pointers</I> to your objects instead of the objects themselves, and ensure
- that the above operations are defined. (And actually, because values are
- copied, if your values are large you may want to insert pointers anyway, to
- save space and make the balance operation faster.)
+ If you want to mutate the objects you intend to store in a AABSPTree
+ simply insert <I>pointers</I> to your objects instead of the objects
+ themselves, and ensure that the above operations are defined. (And
+ actually, because values are copied, if your values are large you may
+ want to insert pointers anyway, to save space and make the balance
+ operation faster.)
 
  <B>Dimensions</B>
  Although designed as a 3D-data structure, you can use the AABSPTree
@@ -857,8 +858,9 @@ public:
 
     /**
      C++ STL style iterator variable.  See beginBoxIntersection().
-     The iterator overloads the -> (dereference) operator, so this acts like a pointer
-     to the current member.
+
+     The iterator overloads the -> (dereference) operator, so this
+     acts like a pointer to the current member.
      */
     // This iterator turns Node::getIntersectingMembers into a
     // coroutine.  It first translates that method from recursive to
@@ -875,7 +877,8 @@ public:
         /** The box that we're testing against. */
         AABox           box;
 
-        /** Node that we're currently looking at.  Undefined if isEnd is true. */
+        /** Node that we're currently looking at.  Undefined if isEnd
+            is true. */
         Node*           node;
 
         /** Nodes waiting to be processed */
@@ -892,13 +895,14 @@ public:
         BoxIntersectionIterator() : isEnd(true) {}
         
         BoxIntersectionIterator(const AABox& b, const Node* root) : 
-           box(b), isEnd(root == NULL), nextValueArrayIndex(-1), node(const_cast<Node*>(root)) {
+           isEnd(root == NULL), box(b), 
+           node(const_cast<Node*>(root)), nextValueArrayIndex(-1) {
 
-           // We intentionally start at the "-1" index of the current node
-           // so we can use the preincrement operator to move ourselves to
-           // element 0 instead of repeating all of the code from the preincrement
-           // method.  Note that this might cause us to become the "end"
-           // instance.
+           // We intentionally start at the "-1" index of the current
+           // node so we can use the preincrement operator to move
+           // ourselves to element 0 instead of repeating all of the
+           // code from the preincrement method.  Note that this might
+           // cause us to become the "end" instance.
            ++(*this);
         }
 
