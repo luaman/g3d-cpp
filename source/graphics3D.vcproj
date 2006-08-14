@@ -32,6 +32,7 @@
 				ProgramDataBaseFileName=".\../temp/debug/g3d/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
+				DebugInformationFormat="3"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -1483,6 +1484,12 @@
 				RelativePath="include\G3D\format.h">
 			</File>
 			<File
+				RelativePath="include\G3D\G3D.h">
+			</File>
+			<File
+				RelativePath="include\G3D\G3DAll.h">
+			</File>
+			<File
 				RelativePath="include\G3D\g3derror.h">
 			</File>
 			<File
@@ -1499,9 +1506,6 @@
 			</File>
 			<File
 				RelativePath="include\G3D\GLight.h">
-			</File>
-			<File
-				RelativePath="include\graphics3D.h">
 			</File>
 			<File
 				RelativePath="include\G3D\GThread.h">

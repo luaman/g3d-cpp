@@ -65,7 +65,7 @@ LIB32=link.exe -lib
 # PROP Intermediate_Dir "../temp/debug/glg3d"
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /GR /GX /Od /I "include" /D "_DEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D "_CRT_SECURE_NO_DEPRECATE" /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /GR /GX /Zi /Od /I "include" /D "_DEBUG" /D "WIN32" /D "_MBCS" /D "_LIB" /D "_CRT_SECURE_NO_DEPRECATE" /FD /GZ /c
 # SUBTRACT CPP /Fr /YX
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
 # ADD RSC /l 0x409 /d "_DEBUG"
@@ -271,10 +271,6 @@ SOURCE=.\include\GLG3D\Framebuffer.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\include\G3DAll.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\include\GLG3D\GApp.h
 # End Source File
 # Begin Source File
@@ -299,7 +295,7 @@ SOURCE=.\include\GLG3D\glFormat.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\include\GLG3D.h
+SOURCE=.\include\GLG3D\GLG3D.h
 # End Source File
 # Begin Source File
 

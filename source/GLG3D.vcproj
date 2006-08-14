@@ -32,6 +32,7 @@
 				ProgramDataBaseFileName=".\../temp/debug/glg3d/"
 				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
+				DebugInformationFormat="3"
 				CompileAs="0"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
@@ -923,9 +924,6 @@
 				RelativePath="include\GLG3D\Framebuffer.h">
 			</File>
 			<File
-				RelativePath="include\G3DAll.h">
-			</File>
-			<File
 				RelativePath="include\GLG3D\GApp.h">
 			</File>
 			<File
@@ -944,7 +942,7 @@
 				RelativePath="include\GLG3D\glFormat.h">
 			</File>
 			<File
-				RelativePath="include\GLG3D.h">
+				RelativePath="include\GLG3D\GLG3D.h">
 			</File>
 			<File
 				RelativePath="include\GLG3D\glheaders.h">
