@@ -103,7 +103,7 @@ public:
 
     float volume() const;
 
-    inline float area() const;
+    float area() const;
 
     /**
      Uniformly distributed on the surface.
