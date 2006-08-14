@@ -237,6 +237,8 @@
 #           define __stdcall __attribute__((stdcall))
 #       endif
 
+        typedef int intptr_t;
+
 #   elif defined(__x86_64__)
 
 #       ifndef __cdecl
