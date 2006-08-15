@@ -238,10 +238,15 @@
 #       endif
 
 #       ifndef G3D_OSX
-            typedef int intptr_t;
+            typedef long intptr_t;
+#       else
+#           include <stdint.h>
 #       endif
 
 #   elif defined(__x86_64__)
+
+        // for intptr
+#       include <stdint.h>
 
 #       ifndef __cdecl
 #           define __cdecl

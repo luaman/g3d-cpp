@@ -13,7 +13,9 @@
  @edited  2006-08-14
  */
 
-#include "G3D/G3DAll.h"
+#include "G3D/G3D.h"
+#include "GLG3D/GLG3D.h"
+using namespace G3D;
 #include <iostream>
 
 using namespace G3D;
