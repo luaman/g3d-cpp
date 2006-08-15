@@ -32,9 +32,6 @@
 
 #ifdef _MSC_VER 
     #define G3D_WIN32
-#elif __MINGW32__
-    #define G3D_WIN32 
-    #define G3D_MINGW32 
 #elif __linux__ 
     #define G3D_LINUX
 #elif __APPLE__ 
@@ -101,7 +98,7 @@
 // Microsoft Visual C++ 5.0	_MSC_VER          = 1100
 
 #   if (_MSC_VER <= 1200)
-        typedef int intptr_t;
+        typedef long intptr_t;
 #   endif
 
     // Old versions of MSVC (6.0 and previous) don't
@@ -237,11 +234,10 @@
 #           define __stdcall __attribute__((stdcall))
 #       endif
 
-#       ifndef G3D_OSX
-            typedef long intptr_t;
-#       else
-#           include <stdint.h>
-#       endif
+
+//            typedef long intptr_t;
+// Works on OSX...what about Linux?
+#       include <stdint.h>
 
 #   elif defined(__x86_64__)
 
