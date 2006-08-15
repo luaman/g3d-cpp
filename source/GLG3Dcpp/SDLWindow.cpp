@@ -17,7 +17,7 @@
 #include "GLG3D/glcalls.h"
 #include "GLG3D/GLCaps.h"
 
-#ifdef G3D_WIN32
+#ifdef _MSC_VER
     // GetSystemMetrics parameters missing in header files
     #ifndef SM_XVIRTUALSCREEN
     #define SM_XVIRTUALSCREEN       76
@@ -104,7 +104,7 @@ static bool SDL_handleDebugAssert_(
     SDL_ShowCursor(SDL_ENABLE);
     SDL_WM_GrabInput(SDL_GRAB_OFF);
 	
-	return _internal::_handleDebugAssert_(expression, message, filename, lineNumber, ignoreAlways, useGuiPrompt);
+    return _internal::_handleDebugAssert_(expression, message, filename, lineNumber, ignoreAlways, useGuiPrompt);
 }
 
 /** Replacement for the default failure hook on Linux. */
@@ -119,7 +119,7 @@ static bool SDL_handleErrorCheck_(
     SDL_ShowCursor(SDL_ENABLE);
     SDL_WM_GrabInput(SDL_GRAB_OFF);
 
-	return _internal::_handleErrorCheck_(expression, message, filename, lineNumber, ignoreAlways, useGuiPrompt);
+    return _internal::_handleErrorCheck_(expression, message, filename, lineNumber, ignoreAlways, useGuiPrompt);
 }
 #endif
 
@@ -685,18 +685,18 @@ HWND SDLWindow::win32HWND() const {
 #endif
 
 void SDLWindow::reallyMakeCurrent() const {
-#   ifdef G3D_WIN32
-	    if (wglMakeCurrent(_Win32HDC, _glContext) == FALSE)	{
+#   ifdef _MSC_VER
+        if (wglMakeCurrent(_Win32HDC, _glContext) == FALSE)	{
             debugAssertM(false, "Failed to set context");
-	    }
-#   elif defined(G3D_LINUX)
+	}
+#   elif defined(__linux__)
         if (! glXMakeCurrent(_X11Display, _X11Window, _glContext)) {
             //debugAssertM(false, "Failed to set context");
             // only check OpenGL as False seems to be returned when
             // context is already current
             debugAssertGLOk();
         }
-#   elif defined(G3D_OSX)
+#   elif defined(__APPLE__)
         
 #   else
 #       error SDLWindow not implemented for this platform.

@@ -206,6 +206,8 @@ void GLCaps::init() {
 #undef DECLARE_EXT
 
 void GLCaps::loadExtensions(Log* debugLog) {
+    // This is here to prevent a spurrious warning under gcc
+    glIgnore(0);
 
     debugAssert(glGetString(GL_VENDOR) != NULL);
 

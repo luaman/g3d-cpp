@@ -100,8 +100,8 @@
 // Microsoft Visual C++ 6.0	_MSC_VER          = 1200
 // Microsoft Visual C++ 5.0	_MSC_VER          = 1100
 
-#	if (_MSC_VER <= 1200)
-		typedef int intptr_t;
+#   if (_MSC_VER <= 1200)
+        typedef int intptr_t;
 #   endif
 
     // Old versions of MSVC (6.0 and previous) don't
@@ -227,7 +227,7 @@
 #ifdef __GNUC__
 #   define G3D_DEPRECATED __attribute__((__deprecated__))
 
-#   ifdef __i386__
+#   if defined(__i386__) && ! defined(__x86_64__)
 
 #       ifndef __cdecl
 #           define __cdecl __attribute__((cdecl))
@@ -237,7 +237,9 @@
 #           define __stdcall __attribute__((stdcall))
 #       endif
 
-        typedef int intptr_t;
+#       ifndef G3D_OSX
+            typedef int intptr_t;
+#       endif
 
 #   elif defined(__x86_64__)
 
