@@ -64,7 +64,7 @@ public:
     MeshRef                 mesh;
     CoordinateFrame         cframe;
 
-    static EntityRef Entity::create(const MeshRef& m, const CoordinateFrame& c = CoordinateFrame());
+    static EntityRef create(const MeshRef& m, const CoordinateFrame& c = CoordinateFrame());
 
     void render(RenderDevice* rd);
 };
