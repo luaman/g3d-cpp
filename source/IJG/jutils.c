@@ -182,7 +182,7 @@ jzero_far (void FAR * target, size_t bytestozero)
 /** Used by robustTmpfile.  Returns nonzero if fread, fwrite, and fseek all
 succeed on the file.
   @author Morgan McGuire, morgan@graphics3d.com  */
-static int isFileGood(FILE* f) {
+static int _isFileGood(FILE* f) {
 
 	int x, n, result;
 
@@ -225,13 +225,13 @@ FILE* _robustTmpfile() {
 #endif
 	char name[256];
 
-    if (isFileGood(t)) {
+    if (_isFileGood(t)) {
 		return t;
 	}
 
     /* tmpfile failed; try the tmpnam routine */
     t = fopen(tmpnam(NULL), "w+");
-    if (isFileGood(t)) {
+    if (_isFileGood(t)) {
 		return t;
 	}
 
@@ -239,21 +239,21 @@ FILE* _robustTmpfile() {
 		n = _tempnam("c:/tmp/", "t");
         /* Try to create something in C:\tmp */
         t = fopen(n, "w+");
-		if (isFileGood(t)) {
+		if (_isFileGood(t)) {
 			return t;
 		}
 
         /* Try c:\temp */
 		n = _tempnam("c:/temp/", "t");
         t = fopen(n, "w+");
-	    if (isFileGood(t)) {
+	    if (_isFileGood(t)) {
 			return t;
 		}
 
         /* try the current directory */
 		n = _tempnam("./", "t");
         t = fopen(n, "w+");
-		if (isFileGood(t)) {
+		if (_isFileGood(t)) {
 			return t;
 		}
     #endif
@@ -261,25 +261,25 @@ FILE* _robustTmpfile() {
     /* Try some hardcoded paths */
     sprintf(name, "%s/tmp%d", "c:/tmp", rand());
     t = fopen(name, "w+");
-    if (isFileGood(t)) {
+    if (_isFileGood(t)) {
 		return t;
 	}
 
     sprintf(name, "%s/tmp%d", "/tmp", rand());
     t = fopen(name, "w+");
-    if (isFileGood(t)) {
+    if (_isFileGood(t)) {
 		return t;
 	}
 
     sprintf(name, "%s/tmp%d", "c:/temp", rand());
     t = fopen(name, "w+");
-    if (isFileGood(t)) {
+    if (_isFileGood(t)) {
 		return t;
 	}
 
     sprintf(name, "tmp%d", rand());
     t = fopen(name, "w+");
-    if (isFileGood(t)) {
+    if (_isFileGood(t)) {
 		return t;
 	}
 
