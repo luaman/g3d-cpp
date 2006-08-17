@@ -2306,19 +2306,6 @@ def setVariables(args):
         binaryType = EXE
         maybeWarn("This project has unknown extension '" + ext +
                   "' and will be compiled as an executable.")
-
-    # Choose target
-    if ('--opt' in args) or ('-O' in args):
-        if ("--debug" in args):
-            colorPrint("Cannot specify '--debug' and '--opt' at " +
-                       "the same time.", WARNING_COLOR)
-            sys.exit(-1)
-
-        target                 = RELEASE
-        d                      = ''
-    else:
-        target                 = DEBUG
-        d                      = 'd'
     
     # Binary name
     if (binaryType == EXE):
@@ -2522,6 +2509,19 @@ if __name__ == '__main__':
     # Load cached dependencies for this project
     cacheFilename = tempDir + '.icompile-cache'
     loadCache(cacheFilename)
+
+    # Choose target
+    if ('--opt' in args) or ('-O' in args):
+        if ("--debug" in args):
+            colorPrint("Cannot specify '--debug' and '--opt' at " +
+                       "the same time.", WARNING_COLOR)
+            sys.exit(-1)
+
+        target                 = RELEASE
+        d                      = ''
+    else:
+        target                 = DEBUG
+        d                      = 'd'
 
     configureCompiler()
 
