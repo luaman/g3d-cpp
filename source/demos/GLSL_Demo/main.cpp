@@ -8,7 +8,7 @@
 #include "header.h"
 
 int main(int argc, char** argv) {
-	GAppSettings settings;
+    GApp::Settings settings;
     settings.window.fsaaSamples = 4;
 	settings.window.width = 800;
 	settings.window.height = 600;
@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
 	return 0;
 }
 
-App::App(const GAppSettings& settings) : GApp(settings) {
+App::App(const GApp::Settings& settings) : GApp(settings) {
     window()->setCaption("GLSL Demo");
 }
 

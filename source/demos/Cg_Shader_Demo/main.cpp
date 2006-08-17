@@ -33,7 +33,7 @@ protected:
 public:
     SkyRef              sky;
 
-    App(const GAppSettings& settings);
+    App(const GApp::Settings& settings);
 };
 
 
@@ -182,7 +182,7 @@ void Demo::onGraphics(RenderDevice* rd) {
 
 void App::main() {
 	setDebugMode(true);
-	debugController.setActive(false);
+	debugController->setActive(false);
 
     // Load objects here
     sky = Sky::fromFile(dataDir + "sky/");
@@ -192,13 +192,13 @@ void App::main() {
 }
 
 
-App::App(const GAppSettings& settings) : GApp(settings) {
+App::App(const GApp::Settings& settings) : GApp(settings) {
     renderDevice->setCaption("Cg Demo");
 }
 
 
 int main(int argc, char** argv) {
-    GAppSettings settings;
+    GApp::Settings settings;
     settings.window.width = 800;
     settings.window.height = 600;
     App(settings).run();

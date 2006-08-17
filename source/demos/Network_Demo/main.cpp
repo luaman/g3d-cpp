@@ -56,7 +56,7 @@ void showError(const std::string& s1, const std::string& s2, RenderDevice* rd, G
 
 void App::main() {
 	setDebugMode(true);
-	debugController.setActive(false);
+	debugController->setActive(false);
 	debugShowRenderingStats = true;
 	debugShowText = true;
     debugQuitOnEscape = false;
@@ -107,7 +107,7 @@ void App::main() {
             client.run();
         }
 
-        debugController.setActive(false);
+        debugController->setActive(false);
 
         // If we were hosting, delete the server
         if (hostingServer) {

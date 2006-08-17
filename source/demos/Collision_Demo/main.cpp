@@ -38,7 +38,7 @@ class App : public GApp {
 protected:
     void main();
 public:
-    App(const GAppSettings& settings);
+    App(const GApp::Settings& settings);
 };
 
 
@@ -55,7 +55,7 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app), gameTime(0) {
 void Demo::onInit()  {
     app->debugCamera.setPosition(Vector3(15, 20, 15));
     app->debugCamera.lookAt(Vector3(-2,3,-5));
-    app->debugController.setActive(false);
+    app->debugController->setActive(false);
 
     debugAssertGLOk();
     buildScene();
@@ -108,12 +108,12 @@ void App::main() {
 }
 
 
-App::App(const GAppSettings& settings) : GApp(settings) {
+App::App(const GApp::Settings& settings) : GApp(settings) {
 }
 
 
 int main(int argc, char** argv) {
-    app = new App(GAppSettings());
+    app = new App(GApp::Settings());
     app->run();
     Model::freeModels();
     delete app;

@@ -140,7 +140,7 @@ void Client::onUserInput(UserInput* ui) {
     }
 
 
-    if (entityTable.containsKey(localID) && ! app->debugController.active() && app->window()->hasFocus()) {
+    if (entityTable.containsKey(localID) && ! app->debugController->active() && app->window()->hasFocus()) {
         Entity& entity = entityTable[localID];
         Controls newControls = entity.controls;
 
@@ -236,7 +236,7 @@ void Client::renderEntities() {
 
 void Client::onGraphics(RenderDevice* rd) {
 
-    const GCamera& cam = app->debugController.active() ? app->debugCamera : camera;
+    const GCamera& cam = app->debugController->active() ? app->debugCamera : camera;
 
     LightingParameters lighting(G3D::toSeconds(11, 00, 00, AM));
     app->renderDevice->setProjectionAndCameraMatrix(cam);

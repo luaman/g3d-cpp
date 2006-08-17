@@ -127,8 +127,8 @@ void Demo::onInit()  {
 
     sky          = Sky::fromFile(app->dataDir + "sky/");
 
-    app->debugController.setPosition(Vector3(-25, 2, 0));
-    app->debugController.lookAt(Vector3(-20, 2.5, 1));
+    app->debugController->setPosition(Vector3(-25, 2, 0));
+    app->debugController->lookAt(Vector3(-20, 2.5, 1));
 }
 
 
@@ -250,7 +250,7 @@ void Demo::onGraphics(RenderDevice* rd) {
 
 void App::main() {
 	setDebugMode(true);
-	debugController.setActive(true);
+	debugController->setActive(true);
 
     applet = new Demo(this);
 

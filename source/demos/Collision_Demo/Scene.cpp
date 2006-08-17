@@ -45,8 +45,13 @@ Scene::Scene() {
     sky = Sky::fromFile(app->dataDir + "sky/");
 
     if (GLCaps::supports_GL_ARB_shadow()) {
-        shadowMap = Texture::createEmpty(shadowMapSize, shadowMapSize, "Shadow map", TextureFormat::depth(),
-            Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, Texture::DEPTH_LEQUAL);
+        shadowMap = Texture::createEmpty(
+            "Shadow Map",
+            shadowMapSize, 
+            shadowMapSize, 
+            TextureFormat::depth(),
+            Texture::DIM_2D,
+            Texture::Settings::shadow());
     }
 }
 

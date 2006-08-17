@@ -14,7 +14,7 @@ public:
 
     virtual void main();
 
-    App(const GAppSettings& settings = GAppSettings());
+    App(const GApp::Settings& settings = GApp::Settings());
 };
 
 

@@ -99,10 +99,10 @@ void Demo::onInit() {
     
     model        = new Model(app->dataDir + "ifs/cow.ifs");
 
-    app->debugController.setMoveRate(1);
+    app->debugController->setMoveRate(1);
 
-    app->debugController.setPosition(Vector3(2, 0.2f, -2));
-    app->debugController.lookAt(Vector3(-2,0,2));
+    app->debugController->setPosition(Vector3(2, 0.2f, -2));
+    app->debugController->lookAt(Vector3(-2,0,2));
     app->renderDevice->setColorClearValue(Color3(.1f, .5f, 1));
 
     std::string p = "ASM_Shader_Demo/";
@@ -116,8 +116,8 @@ void Demo::onInit() {
 
 void Demo::onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
     // Simulation
-    app->debugController.doSimulation(max(0.1, min(0.0, rdt)));
-    app->debugCamera.setCoordinateFrame(app->debugController.frame());
+    app->debugController->onSimulation(max(0.1, min(0.0, rdt)), max(0.1, min(0.0, rdt)), max(0.1, min(0.0, rdt)));
+    app->debugCamera.setCoordinateFrame(app->debugController->frame());
 }
 
 
@@ -178,7 +178,7 @@ void App::main() {
     renderDevice->setCaption("G3D Vertex Program Demo");
 
 	setDebugMode(true);
-	debugController.setActive(true);
+	debugController->setActive(true);
 
     applet = new Demo(this);
 

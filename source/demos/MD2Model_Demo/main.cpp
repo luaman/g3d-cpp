@@ -118,15 +118,15 @@ void Demo::onInit() {
 void Demo::onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
     RealTime timeStep = sdt;
 
-    app->debugController.doSimulation(clamp(timeStep, 0.0, 0.1));
-    Vector3 v = app->debugController.position();
+    app->debugController->doSimulation(clamp(timeStep, 0.0, 0.1));
+    Vector3 v = app->debugController->position();
 
     // Keep the camera above the ground plane
     if (v.y < .1f) {
-        app->debugController.setPosition(Vector3(v.x, .1f, v.z));
+        app->debugController->setPosition(Vector3(v.x, .1f, v.z));
     }
 
-	app->debugCamera.setCoordinateFrame(app->debugController.frame());
+	app->debugCamera.setCoordinateFrame(app->debugController->frame());
 
     if (MD2Model::animationDeath(pose.animation)) {
         if (pose.time > 2) {
@@ -359,7 +359,7 @@ App::App(const GApp::Settings& settings): GApp(settings) {
 
 void App::main() {
     setDebugMode(true);
-    debugController.setActive(false);
+    debugController->setActive(false);
     debugShowRenderingStats = false;
     debugQuitOnEscape = true;
 
