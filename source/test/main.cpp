@@ -484,6 +484,8 @@ int main(int argc, char* argv[]) {
 #    ifndef _DEBUG
         printf("Performance analysis:\n\n");
 
+		perfCollisionDetection();
+
         perfArray();
 
         perfTable();
@@ -502,13 +504,11 @@ int main(int argc, char* argv[]) {
 
         perfAABSPTree();
 
-		perfCollisionDetection();
-
         measureMemsetPerformance();
         measureNormalizationPerformance();
 
 
-        GWindowSettings settings;
+		GWindow::Settings settings;
         settings.width = 800;
         settings.height = 600;
         settings.alphaBits = 0;
@@ -528,6 +528,8 @@ int main(int argc, char* argv[]) {
         }
 
         measureRDPushPopPerformance(renderDevice);
+
+		getch();
 
 #   else
 
