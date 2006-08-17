@@ -22,6 +22,8 @@ using namespace G3D;
 
 #ifdef G3D_WIN32
 	#include "conio.h"
+#else
+#    include <curses.h>
 #endif
 #include <string>
 
