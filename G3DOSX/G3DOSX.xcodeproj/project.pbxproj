@@ -41,7 +41,6 @@
 		0F5500C006DD5F29008DD4F8 /* Milestone.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F5500A106DD5F28008DD4F8 /* Milestone.cpp */; };
 		0F5500C106DD5F29008DD4F8 /* MD2Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F5500A206DD5F28008DD4F8 /* MD2Model.cpp */; };
 		0F5500C206DD5F29008DD4F8 /* MD2Model_load.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F5500A306DD5F28008DD4F8 /* MD2Model_load.cpp */; };
-		0F5500C306DD5F29008DD4F8 /* ManualCameraController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F5500A406DD5F28008DD4F8 /* ManualCameraController.cpp */; };
 		0F5500C406DD5F29008DD4F8 /* LightingParameters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F5500A506DD5F28008DD4F8 /* LightingParameters.cpp */; };
 		0F5500C506DD5F29008DD4F8 /* IFSModel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F5500A606DD5F28008DD4F8 /* IFSModel.cpp */; };
 		0F5500C606DD5F29008DD4F8 /* GPUProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F5500A706DD5F28008DD4F8 /* GPUProgram.cpp */; };
@@ -58,7 +57,6 @@
 		0F55013106DD5F77008DD4F8 /* VARArea.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F55010D06DD5F77008DD4F8 /* VARArea.h */; };
 		0F55013206DD5F77008DD4F8 /* VAR.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F55010E06DD5F77008DD4F8 /* VAR.h */; };
 		0F55013306DD5F77008DD4F8 /* UserInput.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F55010F06DD5F77008DD4F8 /* UserInput.h */; };
-		0F55013406DD5F77008DD4F8 /* TextureManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F55011006DD5F77008DD4F8 /* TextureManager.h */; };
 		0F55013506DD5F77008DD4F8 /* TextureFormat.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F55011106DD5F77008DD4F8 /* TextureFormat.h */; };
 		0F55013606DD5F77008DD4F8 /* Texture.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F55011206DD5F77008DD4F8 /* Texture.h */; };
 		0F55013706DD5F77008DD4F8 /* tesselate.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F55011306DD5F77008DD4F8 /* tesselate.h */; };
@@ -71,10 +69,8 @@
 		0F55013E06DD5F77008DD4F8 /* PixelProgram.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F55011A06DD5F77008DD4F8 /* PixelProgram.h */; };
 		0F55013F06DD5F77008DD4F8 /* Milestone.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F55011B06DD5F77008DD4F8 /* Milestone.h */; };
 		0F55014006DD5F77008DD4F8 /* MD2Model.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F55011C06DD5F77008DD4F8 /* MD2Model.h */; };
-		0F55014106DD5F77008DD4F8 /* ManualCameraController.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F55011D06DD5F77008DD4F8 /* ManualCameraController.h */; };
 		0F55014206DD5F77008DD4F8 /* LightingParameters.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F55011E06DD5F77008DD4F8 /* LightingParameters.h */; };
 		0F55014306DD5F77008DD4F8 /* IFSModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F55011F06DD5F77008DD4F8 /* IFSModel.h */; };
-		0F55014406DD5F77008DD4F8 /* GWindowSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F55012006DD5F77008DD4F8 /* GWindowSettings.h */; };
 		0F55014506DD5F77008DD4F8 /* GWindow.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F55012106DD5F77008DD4F8 /* GWindow.h */; };
 		0F55014606DD5F77008DD4F8 /* GPUProgram.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F55012206DD5F77008DD4F8 /* GPUProgram.h */; };
 		0F55014706DD5F77008DD4F8 /* glheaders.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F55012306DD5F77008DD4F8 /* glheaders.h */; };
@@ -135,8 +131,6 @@
 		0F55FF3806DCC59C008DD4F8 /* BinaryInput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F55FF0806DCC59C008DD4F8 /* BinaryInput.cpp */; };
 		0F55FF3906DCC59C008DD4F8 /* AABox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0F55FF0906DCC59C008DD4F8 /* AABox.cpp */; };
 		0F55FF8A06DCC61C008DD4F8 /* graphics3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F55FF8706DCC61C008DD4F8 /* graphics3D.h */; };
-		0F55FF8B06DCC61C008DD4F8 /* GLG3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F55FF8806DCC61C008DD4F8 /* GLG3D.h */; };
-		0F55FF8C06DCC61C008DD4F8 /* G3DAll.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F55FF8906DCC61C008DD4F8 /* G3DAll.h */; };
 		0F55FFCB06DCCB08008DD4F8 /* transupp.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F55FF8F06DCCB08008DD4F8 /* transupp.h */; };
 		0F55FFCC06DCCB08008DD4F8 /* jversion.h in Headers */ = {isa = PBXBuildFile; fileRef = 0F55FF9006DCCB08008DD4F8 /* jversion.h */; };
 		0F55FFCD06DCCB08008DD4F8 /* jutils.c in Sources */ = {isa = PBXBuildFile; fileRef = 0F55FF9106DCCB08008DD4F8 /* jutils.c */; };
@@ -254,6 +248,15 @@
 		5033822F093544F400C574FC /* Stopwatch.h in Headers */ = {isa = PBXBuildFile; fileRef = 5033822E093544F400C574FC /* Stopwatch.h */; };
 		5035CB05097A257A00A120E5 /* Framebuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5035CB04097A257A00A120E5 /* Framebuffer.cpp */; };
 		5035CB08097A258C00A120E5 /* Framebuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 5035CB01097A252500A120E5 /* Framebuffer.h */; };
+		505B6A5A0A95F598008D09AF /* G3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 505B6A580A95F598008D09AF /* G3D.h */; };
+		505B6A600A95F5E1008D09AF /* GLG3D.h in Headers */ = {isa = PBXBuildFile; fileRef = 505B6A5F0A95F5E1008D09AF /* GLG3D.h */; };
+		505B6A620A95F609008D09AF /* G3DAll.h in Headers */ = {isa = PBXBuildFile; fileRef = 505B6A610A95F609008D09AF /* G3DAll.h */; };
+		505B6A670A95F6A5008D09AF /* FirstPersonManipulator.h in Headers */ = {isa = PBXBuildFile; fileRef = 505B6A650A95F6A5008D09AF /* FirstPersonManipulator.h */; };
+		505B6A680A95F6A5008D09AF /* ThirdPersonManipulator.h in Headers */ = {isa = PBXBuildFile; fileRef = 505B6A660A95F6A5008D09AF /* ThirdPersonManipulator.h */; };
+		505B6A6B0A95F6BB008D09AF /* FirstPersonManipulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 505B6A690A95F6BB008D09AF /* FirstPersonManipulator.cpp */; };
+		505B6A6C0A95F6BB008D09AF /* ThirdPersonManipulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 505B6A6A0A95F6BB008D09AF /* ThirdPersonManipulator.cpp */; };
+		505B6C4A0A9615B9008D09AF /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 505B6B1C0A96159D008D09AF /* Carbon.framework */; };
+		505B6C4B0A9615BA008D09AF /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 505B6B1C0A96159D008D09AF /* Carbon.framework */; };
 		50C3DE1F0978085900757A38 /* GThread.h in Headers */ = {isa = PBXBuildFile; fileRef = 50C3DE1E0978085900757A38 /* GThread.h */; };
 		50C3DE210978087000757A38 /* GThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50C3DE200978087000757A38 /* GThread.cpp */; };
 		50F70A0C098138CB004BED35 /* tGThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50F70A0B098138CB004BED35 /* tGThread.cpp */; };
@@ -266,29 +269,6 @@
 		50F81C060A09D3CC001CBC38 /* GModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50F81C040A09D3CC001CBC38 /* GModule.cpp */; };
 		50F81C070A09D3CC001CBC38 /* Renderbuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50F81C050A09D3CC001CBC38 /* Renderbuffer.cpp */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXBuildStyle section */
-		0F55FEC206DCC4E6008DD4F8 /* Development */ = {
-			isa = PBXBuildStyle;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"__cdecl=",
-					"__stdcall=",
-					_DEBUG,
-				);
-			};
-			name = Development;
-		};
-		0F55FEC306DCC4E6008DD4F8 /* Deployment */ = {
-			isa = PBXBuildStyle;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-			};
-			name = Deployment;
-		};
-/* End PBXBuildStyle section */
 
 /* Begin PBXContainerItemProxy section */
 		0F0B7E2C06DEE3A5002E4048 /* PBXContainerItemProxy */ = {
@@ -343,7 +323,6 @@
 		0F5500A106DD5F28008DD4F8 /* Milestone.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Milestone.cpp; path = ../source/GLG3Dcpp/Milestone.cpp; sourceTree = SOURCE_ROOT; };
 		0F5500A206DD5F28008DD4F8 /* MD2Model.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MD2Model.cpp; path = ../source/GLG3Dcpp/MD2Model.cpp; sourceTree = SOURCE_ROOT; };
 		0F5500A306DD5F28008DD4F8 /* MD2Model_load.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MD2Model_load.cpp; path = ../source/GLG3Dcpp/MD2Model_load.cpp; sourceTree = SOURCE_ROOT; };
-		0F5500A406DD5F28008DD4F8 /* ManualCameraController.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ManualCameraController.cpp; path = ../source/GLG3Dcpp/ManualCameraController.cpp; sourceTree = SOURCE_ROOT; };
 		0F5500A506DD5F28008DD4F8 /* LightingParameters.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = LightingParameters.cpp; path = ../source/GLG3Dcpp/LightingParameters.cpp; sourceTree = SOURCE_ROOT; };
 		0F5500A606DD5F28008DD4F8 /* IFSModel.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IFSModel.cpp; path = ../source/GLG3Dcpp/IFSModel.cpp; sourceTree = SOURCE_ROOT; };
 		0F5500A706DD5F28008DD4F8 /* GPUProgram.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = GPUProgram.cpp; path = ../source/GLG3Dcpp/GPUProgram.cpp; sourceTree = SOURCE_ROOT; };
@@ -360,7 +339,6 @@
 		0F55010D06DD5F77008DD4F8 /* VARArea.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = VARArea.h; path = ../source/include/GLG3D/VARArea.h; sourceTree = SOURCE_ROOT; };
 		0F55010E06DD5F77008DD4F8 /* VAR.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = VAR.h; path = ../source/include/GLG3D/VAR.h; sourceTree = SOURCE_ROOT; };
 		0F55010F06DD5F77008DD4F8 /* UserInput.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = UserInput.h; path = ../source/include/GLG3D/UserInput.h; sourceTree = SOURCE_ROOT; };
-		0F55011006DD5F77008DD4F8 /* TextureManager.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TextureManager.h; path = ../source/include/GLG3D/TextureManager.h; sourceTree = SOURCE_ROOT; };
 		0F55011106DD5F77008DD4F8 /* TextureFormat.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TextureFormat.h; path = ../source/include/GLG3D/TextureFormat.h; sourceTree = SOURCE_ROOT; };
 		0F55011206DD5F77008DD4F8 /* Texture.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Texture.h; path = ../source/include/GLG3D/Texture.h; sourceTree = SOURCE_ROOT; };
 		0F55011306DD5F77008DD4F8 /* tesselate.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = tesselate.h; path = ../source/include/GLG3D/tesselate.h; sourceTree = SOURCE_ROOT; };
@@ -373,10 +351,8 @@
 		0F55011A06DD5F77008DD4F8 /* PixelProgram.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = PixelProgram.h; path = ../source/include/GLG3D/PixelProgram.h; sourceTree = SOURCE_ROOT; };
 		0F55011B06DD5F77008DD4F8 /* Milestone.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Milestone.h; path = ../source/include/GLG3D/Milestone.h; sourceTree = SOURCE_ROOT; };
 		0F55011C06DD5F77008DD4F8 /* MD2Model.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MD2Model.h; path = ../source/include/GLG3D/MD2Model.h; sourceTree = SOURCE_ROOT; };
-		0F55011D06DD5F77008DD4F8 /* ManualCameraController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ManualCameraController.h; path = ../source/include/GLG3D/ManualCameraController.h; sourceTree = SOURCE_ROOT; };
 		0F55011E06DD5F77008DD4F8 /* LightingParameters.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = LightingParameters.h; path = ../source/include/GLG3D/LightingParameters.h; sourceTree = SOURCE_ROOT; };
 		0F55011F06DD5F77008DD4F8 /* IFSModel.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = IFSModel.h; path = ../source/include/GLG3D/IFSModel.h; sourceTree = SOURCE_ROOT; };
-		0F55012006DD5F77008DD4F8 /* GWindowSettings.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = GWindowSettings.h; path = ../source/include/GLG3D/GWindowSettings.h; sourceTree = SOURCE_ROOT; };
 		0F55012106DD5F77008DD4F8 /* GWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = GWindow.h; path = ../source/include/GLG3D/GWindow.h; sourceTree = SOURCE_ROOT; };
 		0F55012206DD5F77008DD4F8 /* GPUProgram.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = GPUProgram.h; path = ../source/include/GLG3D/GPUProgram.h; sourceTree = SOURCE_ROOT; };
 		0F55012306DD5F77008DD4F8 /* glheaders.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = glheaders.h; path = ../source/include/GLG3D/glheaders.h; sourceTree = SOURCE_ROOT; };
@@ -438,13 +414,10 @@
 		0F55FF0806DCC59C008DD4F8 /* BinaryInput.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = BinaryInput.cpp; path = ../source/G3Dcpp/BinaryInput.cpp; sourceTree = SOURCE_ROOT; };
 		0F55FF0906DCC59C008DD4F8 /* AABox.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = AABox.cpp; path = ../source/G3Dcpp/AABox.cpp; sourceTree = SOURCE_ROOT; };
 		0F55FF3F06DCC5FE008DD4F8 /* vectorMath.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = vectorMath.h; path = ../source/include/G3D/vectorMath.h; sourceTree = SOURCE_ROOT; };
-		0F55FF4006DCC5FE008DD4F8 /* Vector4.inl */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = Vector4.inl; path = ../source/include/G3D/Vector4.inl; sourceTree = SOURCE_ROOT; };
 		0F55FF4106DCC5FE008DD4F8 /* Vector4.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Vector4.h; path = ../source/include/G3D/Vector4.h; sourceTree = SOURCE_ROOT; };
 		0F55FF4206DCC5FE008DD4F8 /* Vector3int16.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Vector3int16.h; path = ../source/include/G3D/Vector3int16.h; sourceTree = SOURCE_ROOT; };
-		0F55FF4306DCC5FE008DD4F8 /* Vector3.inl */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = Vector3.inl; path = ../source/include/G3D/Vector3.inl; sourceTree = SOURCE_ROOT; };
 		0F55FF4406DCC5FE008DD4F8 /* Vector3.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Vector3.h; path = ../source/include/G3D/Vector3.h; sourceTree = SOURCE_ROOT; };
 		0F55FF4506DCC5FE008DD4F8 /* Vector2int16.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Vector2int16.h; path = ../source/include/G3D/Vector2int16.h; sourceTree = SOURCE_ROOT; };
-		0F55FF4606DCC5FE008DD4F8 /* Vector2.inl */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = Vector2.inl; path = ../source/include/G3D/Vector2.inl; sourceTree = SOURCE_ROOT; };
 		0F55FF4706DCC5FE008DD4F8 /* Vector2.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Vector2.h; path = ../source/include/G3D/Vector2.h; sourceTree = SOURCE_ROOT; };
 		0F55FF4806DCC5FE008DD4F8 /* Triangle.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Triangle.h; path = ../source/include/G3D/Triangle.h; sourceTree = SOURCE_ROOT; };
 		0F55FF4906DCC5FE008DD4F8 /* TextOutput.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TextOutput.h; path = ../source/include/G3D/TextOutput.h; sourceTree = SOURCE_ROOT; };
@@ -459,7 +432,6 @@
 		0F55FF5206DCC5FE008DD4F8 /* Rect2D.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Rect2D.h; path = ../source/include/G3D/Rect2D.h; sourceTree = SOURCE_ROOT; };
 		0F55FF5306DCC5FE008DD4F8 /* Ray.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Ray.h; path = ../source/include/G3D/Ray.h; sourceTree = SOURCE_ROOT; };
 		0F55FF5406DCC5FE008DD4F8 /* Queue.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Queue.h; path = ../source/include/G3D/Queue.h; sourceTree = SOURCE_ROOT; };
-		0F55FF5506DCC5FE008DD4F8 /* Quat.inl */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = Quat.inl; path = ../source/include/G3D/Quat.inl; sourceTree = SOURCE_ROOT; };
 		0F55FF5606DCC5FE008DD4F8 /* Quat.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Quat.h; path = ../source/include/G3D/Quat.h; sourceTree = SOURCE_ROOT; };
 		0F55FF5706DCC5FE008DD4F8 /* prompt.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = prompt.h; path = ../source/include/G3D/prompt.h; sourceTree = SOURCE_ROOT; };
 		0F55FF5806DCC5FE008DD4F8 /* platform.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = platform.h; path = ../source/include/G3D/platform.h; sourceTree = SOURCE_ROOT; };
@@ -475,7 +447,6 @@
 		0F55FF6406DCC5FE008DD4F8 /* GLight.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = GLight.h; path = ../source/include/G3D/GLight.h; sourceTree = SOURCE_ROOT; };
 		0F55FF6506DCC5FE008DD4F8 /* GImage.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = GImage.h; path = ../source/include/G3D/GImage.h; sourceTree = SOURCE_ROOT; };
 		0F55FF6606DCC5FE008DD4F8 /* GCamera.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = GCamera.h; path = ../source/include/G3D/GCamera.h; sourceTree = SOURCE_ROOT; };
-		0F55FF6706DCC5FE008DD4F8 /* g3dmath.inl */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = g3dmath.inl; path = ../source/include/G3D/g3dmath.inl; sourceTree = SOURCE_ROOT; };
 		0F55FF6806DCC5FE008DD4F8 /* g3dmath.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = g3dmath.h; path = ../source/include/G3D/g3dmath.h; sourceTree = SOURCE_ROOT; };
 		0F55FF6906DCC5FE008DD4F8 /* G3DGameUnits.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = G3DGameUnits.h; path = ../source/include/G3D/G3DGameUnits.h; sourceTree = SOURCE_ROOT; };
 		0F55FF6A06DCC5FE008DD4F8 /* g3derror.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = g3derror.h; path = ../source/include/G3D/g3derror.h; sourceTree = SOURCE_ROOT; };
@@ -489,10 +460,8 @@
 		0F55FF7606DCC5FE008DD4F8 /* ConvexPolyhedron.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ConvexPolyhedron.h; path = ../source/include/G3D/ConvexPolyhedron.h; sourceTree = SOURCE_ROOT; };
 		0F55FF7706DCC5FE008DD4F8 /* Cone.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Cone.h; path = ../source/include/G3D/Cone.h; sourceTree = SOURCE_ROOT; };
 		0F55FF7806DCC5FE008DD4F8 /* Color4uint8.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Color4uint8.h; path = ../source/include/G3D/Color4uint8.h; sourceTree = SOURCE_ROOT; };
-		0F55FF7906DCC5FE008DD4F8 /* Color4.inl */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = Color4.inl; path = ../source/include/G3D/Color4.inl; sourceTree = SOURCE_ROOT; };
 		0F55FF7A06DCC5FE008DD4F8 /* Color4.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Color4.h; path = ../source/include/G3D/Color4.h; sourceTree = SOURCE_ROOT; };
 		0F55FF7B06DCC5FE008DD4F8 /* Color3uint8.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Color3uint8.h; path = ../source/include/G3D/Color3uint8.h; sourceTree = SOURCE_ROOT; };
-		0F55FF7C06DCC5FE008DD4F8 /* Color3.inl */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = Color3.inl; path = ../source/include/G3D/Color3.inl; sourceTree = SOURCE_ROOT; };
 		0F55FF7D06DCC5FE008DD4F8 /* Color3.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Color3.h; path = ../source/include/G3D/Color3.h; sourceTree = SOURCE_ROOT; };
 		0F55FF7E06DCC5FE008DD4F8 /* CollisionDetection.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CollisionDetection.h; path = ../source/include/G3D/CollisionDetection.h; sourceTree = SOURCE_ROOT; };
 		0F55FF7F06DCC5FE008DD4F8 /* Capsule.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Capsule.h; path = ../source/include/G3D/Capsule.h; sourceTree = SOURCE_ROOT; };
@@ -502,8 +471,6 @@
 		0F55FF8306DCC5FE008DD4F8 /* Array.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Array.h; path = ../source/include/G3D/Array.h; sourceTree = SOURCE_ROOT; };
 		0F55FF8406DCC5FE008DD4F8 /* AABox.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = AABox.h; path = ../source/include/G3D/AABox.h; sourceTree = SOURCE_ROOT; };
 		0F55FF8706DCC61C008DD4F8 /* graphics3D.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = graphics3D.h; path = ../source/include/graphics3D.h; sourceTree = SOURCE_ROOT; };
-		0F55FF8806DCC61C008DD4F8 /* GLG3D.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = GLG3D.h; path = ../source/include/GLG3D.h; sourceTree = SOURCE_ROOT; };
-		0F55FF8906DCC61C008DD4F8 /* G3DAll.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = G3DAll.h; path = ../source/include/G3DAll.h; sourceTree = SOURCE_ROOT; };
 		0F55FF8F06DCCB08008DD4F8 /* transupp.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = transupp.h; path = ../source/IJG/transupp.h; sourceTree = SOURCE_ROOT; };
 		0F55FF9006DCCB08008DD4F8 /* jversion.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = jversion.h; path = ../source/IJG/jversion.h; sourceTree = SOURCE_ROOT; };
 		0F55FF9106DCCB08008DD4F8 /* jutils.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = jutils.c; path = ../source/IJG/jutils.c; sourceTree = SOURCE_ROOT; };
@@ -628,6 +595,14 @@
 		5033822E093544F400C574FC /* Stopwatch.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Stopwatch.h; path = ../source/include/G3D/Stopwatch.h; sourceTree = SOURCE_ROOT; };
 		5035CB01097A252500A120E5 /* Framebuffer.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Framebuffer.h; path = ../source/include/GLG3D/Framebuffer.h; sourceTree = SOURCE_ROOT; };
 		5035CB04097A257A00A120E5 /* Framebuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Framebuffer.cpp; path = ../source/GLG3Dcpp/Framebuffer.cpp; sourceTree = SOURCE_ROOT; };
+		505B6A580A95F598008D09AF /* G3D.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = G3D.h; path = ../source/include/G3D/G3D.h; sourceTree = SOURCE_ROOT; };
+		505B6A5F0A95F5E1008D09AF /* GLG3D.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = GLG3D.h; path = ../source/include/GLG3D/GLG3D.h; sourceTree = SOURCE_ROOT; };
+		505B6A610A95F609008D09AF /* G3DAll.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = G3DAll.h; path = ../source/include/G3D/G3DAll.h; sourceTree = SOURCE_ROOT; };
+		505B6A650A95F6A5008D09AF /* FirstPersonManipulator.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = FirstPersonManipulator.h; path = ../source/include/GLG3D/FirstPersonManipulator.h; sourceTree = SOURCE_ROOT; };
+		505B6A660A95F6A5008D09AF /* ThirdPersonManipulator.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ThirdPersonManipulator.h; path = ../source/include/GLG3D/ThirdPersonManipulator.h; sourceTree = SOURCE_ROOT; };
+		505B6A690A95F6BB008D09AF /* FirstPersonManipulator.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = FirstPersonManipulator.cpp; path = ../source/GLG3Dcpp/FirstPersonManipulator.cpp; sourceTree = SOURCE_ROOT; };
+		505B6A6A0A95F6BB008D09AF /* ThirdPersonManipulator.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ThirdPersonManipulator.cpp; path = ../source/GLG3Dcpp/ThirdPersonManipulator.cpp; sourceTree = SOURCE_ROOT; };
+		505B6B1C0A96159D008D09AF /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		50C3DE1E0978085900757A38 /* GThread.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = GThread.h; path = ../source/include/G3D/GThread.h; sourceTree = SOURCE_ROOT; };
 		50C3DE200978087000757A38 /* GThread.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = GThread.cpp; path = ../source/G3Dcpp/GThread.cpp; sourceTree = SOURCE_ROOT; };
 		50F70A0B098138CB004BED35 /* tGThread.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = tGThread.cpp; path = ../source/test/tGThread.cpp; sourceTree = SOURCE_ROOT; };
@@ -652,6 +627,7 @@
 				0FCB73F706DF6354001A7213 /* libz.dylib in Frameworks */,
 				3EDE8579071BDA660008417F /* SDL.framework in Frameworks */,
 				3E66D9EF07F04B2700FFE893 /* OpenGL.framework in Frameworks */,
+				505B6C4A0A9615B9008D09AF /* Carbon.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -660,6 +636,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3E2E5B150800138A00EEBE06 /* CoreServices.framework in Frameworks */,
+				505B6C4B0A9615BA008D09AF /* Carbon.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -761,6 +738,8 @@
 		0F5500FC06DD5F56008DD4F8 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				505B6A690A95F6BB008D09AF /* FirstPersonManipulator.cpp */,
+				505B6A6A0A95F6BB008D09AF /* ThirdPersonManipulator.cpp */,
 				50F81C040A09D3CC001CBC38 /* GModule.cpp */,
 				50F81C050A09D3CC001CBC38 /* Renderbuffer.cpp */,
 				5035CB04097A257A00A120E5 /* Framebuffer.cpp */,
@@ -782,7 +761,6 @@
 				0F5500A106DD5F28008DD4F8 /* Milestone.cpp */,
 				0F5500A206DD5F28008DD4F8 /* MD2Model.cpp */,
 				0F5500A306DD5F28008DD4F8 /* MD2Model_load.cpp */,
-				0F5500A406DD5F28008DD4F8 /* ManualCameraController.cpp */,
 				0F5500A506DD5F28008DD4F8 /* LightingParameters.cpp */,
 				0F5500A606DD5F28008DD4F8 /* IFSModel.cpp */,
 				0F5500A706DD5F28008DD4F8 /* GPUProgram.cpp */,
@@ -804,6 +782,8 @@
 		0F55010106DD5F5D008DD4F8 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				505B6A650A95F6A5008D09AF /* FirstPersonManipulator.h */,
+				505B6A660A95F6A5008D09AF /* ThirdPersonManipulator.h */,
 				50F81C000A09D3AB001CBC38 /* GModule.h */,
 				50F81C010A09D3AB001CBC38 /* Renderbuffer.h */,
 				5035CB01097A252500A120E5 /* Framebuffer.h */,
@@ -812,7 +792,6 @@
 				0F55010D06DD5F77008DD4F8 /* VARArea.h */,
 				0F55010E06DD5F77008DD4F8 /* VAR.h */,
 				0F55010F06DD5F77008DD4F8 /* UserInput.h */,
-				0F55011006DD5F77008DD4F8 /* TextureManager.h */,
 				0F55011106DD5F77008DD4F8 /* TextureFormat.h */,
 				0F55011206DD5F77008DD4F8 /* Texture.h */,
 				0F55011306DD5F77008DD4F8 /* tesselate.h */,
@@ -825,10 +804,8 @@
 				0F55011A06DD5F77008DD4F8 /* PixelProgram.h */,
 				0F55011B06DD5F77008DD4F8 /* Milestone.h */,
 				0F55011C06DD5F77008DD4F8 /* MD2Model.h */,
-				0F55011D06DD5F77008DD4F8 /* ManualCameraController.h */,
 				0F55011E06DD5F77008DD4F8 /* LightingParameters.h */,
 				0F55011F06DD5F77008DD4F8 /* IFSModel.h */,
-				0F55012006DD5F77008DD4F8 /* GWindowSettings.h */,
 				0F55012106DD5F77008DD4F8 /* GWindow.h */,
 				0F55012206DD5F77008DD4F8 /* GPUProgram.h */,
 				0F55012306DD5F77008DD4F8 /* glheaders.h */,
@@ -850,8 +827,9 @@
 				0F55FF3A06DCC5A6008DD4F8 /* G3D */,
 				0F5500F106DD5F48008DD4F8 /* GLG3D */,
 				0F55FF8706DCC61C008DD4F8 /* graphics3D.h */,
-				0F55FF8806DCC61C008DD4F8 /* GLG3D.h */,
-				0F55FF8906DCC61C008DD4F8 /* G3DAll.h */,
+				505B6A580A95F598008D09AF /* G3D.h */,
+				505B6A5F0A95F5E1008D09AF /* GLG3D.h */,
+				505B6A610A95F609008D09AF /* G3DAll.h */,
 				0F55FECF06DCC502008DD4F8 /* Products */,
 				0FCB740406DF63EA001A7213 /* G3D Test */,
 				0FCB73EE06DF62E3001A7213 /* SDL Support Files */,
@@ -964,13 +942,10 @@
 				3ED14F8807C1DE3700FA7AE0 /* AABSPTree.h */,
 				3ED14F8907C1DE3700FA7AE0 /* MeshBuilder.h */,
 				0F55FF3F06DCC5FE008DD4F8 /* vectorMath.h */,
-				0F55FF4006DCC5FE008DD4F8 /* Vector4.inl */,
 				0F55FF4106DCC5FE008DD4F8 /* Vector4.h */,
 				0F55FF4206DCC5FE008DD4F8 /* Vector3int16.h */,
-				0F55FF4306DCC5FE008DD4F8 /* Vector3.inl */,
 				0F55FF4406DCC5FE008DD4F8 /* Vector3.h */,
 				0F55FF4506DCC5FE008DD4F8 /* Vector2int16.h */,
-				0F55FF4606DCC5FE008DD4F8 /* Vector2.inl */,
 				0F55FF4706DCC5FE008DD4F8 /* Vector2.h */,
 				0F55FF4806DCC5FE008DD4F8 /* Triangle.h */,
 				0F55FF4906DCC5FE008DD4F8 /* TextOutput.h */,
@@ -985,7 +960,6 @@
 				0F55FF5206DCC5FE008DD4F8 /* Rect2D.h */,
 				0F55FF5306DCC5FE008DD4F8 /* Ray.h */,
 				0F55FF5406DCC5FE008DD4F8 /* Queue.h */,
-				0F55FF5506DCC5FE008DD4F8 /* Quat.inl */,
 				0F55FF5606DCC5FE008DD4F8 /* Quat.h */,
 				0F55FF5706DCC5FE008DD4F8 /* prompt.h */,
 				0F55FF5806DCC5FE008DD4F8 /* platform.h */,
@@ -1001,7 +975,6 @@
 				0F55FF6406DCC5FE008DD4F8 /* GLight.h */,
 				0F55FF6506DCC5FE008DD4F8 /* GImage.h */,
 				0F55FF6606DCC5FE008DD4F8 /* GCamera.h */,
-				0F55FF6706DCC5FE008DD4F8 /* g3dmath.inl */,
 				0F55FF6806DCC5FE008DD4F8 /* g3dmath.h */,
 				0F55FF6906DCC5FE008DD4F8 /* G3DGameUnits.h */,
 				0F55FF6A06DCC5FE008DD4F8 /* g3derror.h */,
@@ -1015,10 +988,8 @@
 				0F55FF7606DCC5FE008DD4F8 /* ConvexPolyhedron.h */,
 				0F55FF7706DCC5FE008DD4F8 /* Cone.h */,
 				0F55FF7806DCC5FE008DD4F8 /* Color4uint8.h */,
-				0F55FF7906DCC5FE008DD4F8 /* Color4.inl */,
 				0F55FF7A06DCC5FE008DD4F8 /* Color4.h */,
 				0F55FF7B06DCC5FE008DD4F8 /* Color3uint8.h */,
-				0F55FF7C06DCC5FE008DD4F8 /* Color3.inl */,
 				0F55FF7D06DCC5FE008DD4F8 /* Color3.h */,
 				0F55FF7E06DCC5FE008DD4F8 /* CollisionDetection.h */,
 				0F55FF7F06DCC5FE008DD4F8 /* Capsule.h */,
@@ -1034,6 +1005,7 @@
 		0FCB73D406DF6223001A7213 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				505B6B1C0A96159D008D09AF /* Carbon.framework */,
 				3E66D9EE07F04B2700FFE893 /* OpenGL.framework */,
 				3EDE8578071BDA660008417F /* SDL.framework */,
 				0FCB73F606DF6354001A7213 /* libz.dylib */,
@@ -1120,7 +1092,6 @@
 				0F55013106DD5F77008DD4F8 /* VARArea.h in Headers */,
 				0F55013206DD5F77008DD4F8 /* VAR.h in Headers */,
 				0F55013306DD5F77008DD4F8 /* UserInput.h in Headers */,
-				0F55013406DD5F77008DD4F8 /* TextureManager.h in Headers */,
 				0F55013506DD5F77008DD4F8 /* TextureFormat.h in Headers */,
 				0F55013606DD5F77008DD4F8 /* Texture.h in Headers */,
 				0F55013706DD5F77008DD4F8 /* tesselate.h in Headers */,
@@ -1133,10 +1104,8 @@
 				0F55013E06DD5F77008DD4F8 /* PixelProgram.h in Headers */,
 				0F55013F06DD5F77008DD4F8 /* Milestone.h in Headers */,
 				0F55014006DD5F77008DD4F8 /* MD2Model.h in Headers */,
-				0F55014106DD5F77008DD4F8 /* ManualCameraController.h in Headers */,
 				0F55014206DD5F77008DD4F8 /* LightingParameters.h in Headers */,
 				0F55014306DD5F77008DD4F8 /* IFSModel.h in Headers */,
-				0F55014406DD5F77008DD4F8 /* GWindowSettings.h in Headers */,
 				0F55014506DD5F77008DD4F8 /* GWindow.h in Headers */,
 				0F55014606DD5F77008DD4F8 /* GPUProgram.h in Headers */,
 				0F55014706DD5F77008DD4F8 /* glheaders.h in Headers */,
@@ -1152,6 +1121,10 @@
 				5035CB08097A258C00A120E5 /* Framebuffer.h in Headers */,
 				50F81C020A09D3AB001CBC38 /* GModule.h in Headers */,
 				50F81C030A09D3AC001CBC38 /* Renderbuffer.h in Headers */,
+				505B6A600A95F5E1008D09AF /* GLG3D.h in Headers */,
+				505B6A620A95F609008D09AF /* G3DAll.h in Headers */,
+				505B6A670A95F6A5008D09AF /* FirstPersonManipulator.h in Headers */,
+				505B6A680A95F6A5008D09AF /* ThirdPersonManipulator.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1160,8 +1133,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0F55FF8A06DCC61C008DD4F8 /* graphics3D.h in Headers */,
-				0F55FF8B06DCC61C008DD4F8 /* GLG3D.h in Headers */,
-				0F55FF8C06DCC61C008DD4F8 /* G3DAll.h in Headers */,
 				0F55FFCB06DCCB08008DD4F8 /* transupp.h in Headers */,
 				0F55FFCC06DCCB08008DD4F8 /* jversion.h in Headers */,
 				0F55FFD006DCCB08008DD4F8 /* jpeglib.h in Headers */,
@@ -1188,6 +1159,7 @@
 				50C3DE1F0978085900757A38 /* GThread.h in Headers */,
 				04E8193A09EA7F370015B5ED /* RegistryUtil.h in Headers */,
 				04E8193D09EA82260015B5ED /* Crypto.h in Headers */,
+				505B6A5A0A95F598008D09AF /* G3D.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1203,25 +1175,6 @@
 			);
 			buildRules = (
 			);
-			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = "$(HOME)/Library/Frameworks";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"__stdcall=",
-					"__cdecl=",
-				);
-				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
-				GCC_WARN_UNKNOWN_PRAGMAS = NO;
-				HEADER_SEARCH_PATHS = ../source/include;
-				INSTALL_PATH = /usr/local/lib;
-				LIBRARY_STYLE = STATIC;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PREBINDING = NO;
-				PRODUCT_NAME = GLG3D;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = "-Wmost";
-			};
 			dependencies = (
 				0F0B7E2D06DEE3A5002E4048 /* PBXTargetDependency */,
 			);
@@ -1240,23 +1193,6 @@
 			);
 			buildRules = (
 			);
-			buildSettings = {
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"__cdecl=",
-					"__stdcall=",
-				);
-				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
-				GCC_WARN_UNKNOWN_PRAGMAS = NO;
-				HEADER_SEARCH_PATHS = ../source/include;
-				INSTALL_PATH = /usr/local/lib;
-				LIBRARY_STYLE = STATIC;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = G3D;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = "-Wmost";
-			};
 			dependencies = (
 			);
 			name = G3D;
@@ -1273,21 +1209,6 @@
 			);
 			buildRules = (
 			);
-			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = "\"$(HOME)/Library/Frameworks\"";
-				HEADER_SEARCH_PATHS = ../source/include;
-				INSTALL_PATH = /usr/local/bin;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = G3DTest;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-			};
 			dependencies = (
 				0FCB73BD06DF610C001A7213 /* PBXTargetDependency */,
 				3EE3201F07F4E2DB0026E211 /* PBXTargetDependency */,
@@ -1303,12 +1224,6 @@
 		0F55FEC406DCC4E6008DD4F8 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 3E659E9808DC17DA00E47E2E /* Build configuration list for PBXProject "G3DOSX" */;
-			buildSettings = {
-			};
-			buildStyles = (
-				0F55FEC206DCC4E6008DD4F8 /* Development */,
-				0F55FEC306DCC4E6008DD4F8 /* Deployment */,
-			);
 			hasScannedForEncodings = 1;
 			mainGroup = 0F55FEC006DCC4E6008DD4F8;
 			productRefGroup = 0F55FECF06DCC502008DD4F8 /* Products */;
@@ -1342,7 +1257,6 @@
 				0F5500C006DD5F29008DD4F8 /* Milestone.cpp in Sources */,
 				0F5500C106DD5F29008DD4F8 /* MD2Model.cpp in Sources */,
 				0F5500C206DD5F29008DD4F8 /* MD2Model_load.cpp in Sources */,
-				0F5500C306DD5F29008DD4F8 /* ManualCameraController.cpp in Sources */,
 				0F5500C406DD5F29008DD4F8 /* LightingParameters.cpp in Sources */,
 				0F5500C506DD5F29008DD4F8 /* IFSModel.cpp in Sources */,
 				0F5500C606DD5F29008DD4F8 /* GPUProgram.cpp in Sources */,
@@ -1362,6 +1276,8 @@
 				5035CB05097A257A00A120E5 /* Framebuffer.cpp in Sources */,
 				50F81C060A09D3CC001CBC38 /* GModule.cpp in Sources */,
 				50F81C070A09D3CC001CBC38 /* Renderbuffer.cpp in Sources */,
+				505B6A6B0A95F6BB008D09AF /* FirstPersonManipulator.cpp in Sources */,
+				505B6A6C0A95F6BB008D09AF /* ThirdPersonManipulator.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
