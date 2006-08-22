@@ -270,6 +270,23 @@
 		50F81C070A09D3CC001CBC38 /* Renderbuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50F81C050A09D3CC001CBC38 /* Renderbuffer.cpp */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXBuildStyle section */
+		90DB2D920A9B929800950CF1 /* Development */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Development;
+		};
+		90DB2D930A9B929800950CF1 /* Deployment */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+			};
+			name = Deployment;
+		};
+/* End PBXBuildStyle section */
+
 /* Begin PBXContainerItemProxy section */
 		0F0B7E2C06DEE3A5002E4048 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -531,7 +548,7 @@
 		0F55FFC806DCCB08008DD4F8 /* jcapimin.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = jcapimin.c; path = ../source/IJG/jcapimin.c; sourceTree = SOURCE_ROOT; };
 		0F55FFC906DCCB08008DD4F8 /* cdjpeg.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = cdjpeg.h; path = ../source/IJG/cdjpeg.h; sourceTree = SOURCE_ROOT; };
 		0F55FFCA06DCCB08008DD4F8 /* cderror.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = cderror.h; path = ../source/IJG/cderror.h; sourceTree = SOURCE_ROOT; };
-		0FCB73B806DF60D7001A7213 /* G3DTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = G3DTest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0FCB73B806DF60D7001A7213 /* G3DTest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = G3DTest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0FCB73C006DF611E001A7213 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../source/test/main.cpp; sourceTree = SOURCE_ROOT; };
 		0FCB73D006DF6202001A7213 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		0FCB73E906DF62C0001A7213 /* SDLMain.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SDLMain.h; sourceTree = SOURCE_ROOT; };
@@ -1224,6 +1241,12 @@
 		0F55FEC406DCC4E6008DD4F8 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 3E659E9808DC17DA00E47E2E /* Build configuration list for PBXProject "G3DOSX" */;
+			buildSettings = {
+			};
+			buildStyles = (
+				90DB2D920A9B929800950CF1 /* Development */,
+				90DB2D930A9B929800950CF1 /* Deployment */,
+			);
 			hasScannedForEncodings = 1;
 			mainGroup = 0F55FEC006DCC4E6008DD4F8;
 			productRefGroup = 0F55FECF06DCC502008DD4F8 /* Products */;
