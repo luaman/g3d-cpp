@@ -93,7 +93,7 @@ MD5Hash Crypto::md5(const void* data, size_t n) {
   ghost@aladdin.com
 
  */
-/* $Id: Crypto_md5.cpp,v 1.7 2006/08/22 21:11:38 morgan3d Exp $ */
+/* $Id: Crypto_md5.cpp,v 1.8 2006/08/23 16:42:37 morgan3d Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
 
@@ -139,7 +139,9 @@ MD5Hash Crypto::md5(const void* data, size_t n) {
 #     include <ppc/endian.h>
 #   elif defined(G3D_OSX_INTEL)
 #     include <i386/endian.h>
-#   elif defined(G3D_LINUX)
+#   elif defined(__linux__)
+#     include <endian.h>
+#   elif defined(__FreeBSD__)
 #     include <sys/endian.h>
 #   endif
 #else
