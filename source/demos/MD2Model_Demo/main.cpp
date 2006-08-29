@@ -118,7 +118,7 @@ void Demo::onInit() {
 void Demo::onSimulation(RealTime rdt, SimTime sdt, SimTime idt) {
     RealTime timeStep = sdt;
 
-    app->debugController->doSimulation(clamp(timeStep, 0.0, 0.1));
+    app->debugController->onSimulation(rdt, clamp(timeStep, 0.0, 0.1), idt);
     Vector3 v = app->debugController->position();
 
     // Keep the camera above the ground plane
