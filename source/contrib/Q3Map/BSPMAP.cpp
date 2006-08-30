@@ -14,6 +14,27 @@ extern GFont* font;
 
 namespace BSPMAP {
 
+BitSet::BitSet(): bits(NULL), size(0) {
+}
+
+BitSet::~BitSet() {
+    System::alignedFree(bits);
+}
+
+void BitSet::resize(int count) {
+    size = 0;
+    // Delete any previous bits
+    System::alignedFree(bits);
+
+    size = iCeil(count / 32.0);
+
+    bits = (G3D::uint32*)System::alignedMalloc(sizeof(G3D::uint32) * size, 16);
+    clearAll();
+}
+
+
+
+
 Map::Map(): 
 	lightVolumesCount(0),
 	lightVolumes(NULL) {
@@ -61,44 +82,33 @@ int Map::findLeaf(const Vector3& pt) const {
 	return -(index + 1);
 }
 
+void Map::render(RenderDevice* renderDevice, const GCamera& worldCamera) {
+    renderDevice->pushState();
 
-bool Map::isClusterVisible(int visCluster, int testCluster) const {
+    renderDevice->resetTextureUnit(0);
+    renderDevice->resetTextureUnit(1);
 
-	if ((visData.bitsets == NULL) || (visCluster < 0)) {
-		return true;
-	}
+    // Move the camera to object space
+    GCamera camera = worldCamera;
+    camera.setCoordinateFrame(renderDevice->getObjectToWorldMatrix().toObjectSpace(worldCamera.getCoordinateFrame()));
 
-	// Note: testCluster >> 3 == testCluster / 8
-	int i = (visCluster * visData.bytesPerCluster) + (testCluster >> 3);
-	uint8 visSet = visData.bitsets[i];
-
-	return (visSet & (1 << (testCluster & 7))) != 0;
-}
-
-
-void Map::initRender(GCamera& camera) {
-
-	for (int ct = 1; ct < 8; ++ct) {
-		glDisable(GL_LIGHT0 + ct);
-	}
-
-	glEnable(GL_LIGHT0);
-	glLighti(GL_LIGHT0,GL_SPOT_CUTOFF,180);
-	glLightf(GL_LIGHT0,GL_SPOT_EXPONENT,0);
-}
-
-
-void Map::render(RenderDevice* renderDevice, const GCamera& camera) {
     // Adjust intensity for tone mapping
-    float adjustBrightness = 1;//0.4; // TODO
+    float adjustBrightness = 1;//0.4; // TODO: make into a rendering/loading parameter
 
-	Array<FaceSet*> opaqueFaceArray;
-	Array<FaceSet*> translucentFaceArray;
-
-	getVisibleFaces(renderDevice, camera, translucentFaceArray, opaqueFaceArray);
 
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 	glPushClientAttrib(GL_ALL_CLIENT_ATTRIB_BITS);
+
+	    static Array<FaceSet*> opaqueFaceArray;
+	    static Array<FaceSet*> translucentFaceArray;
+
+        bool first = true;
+        if(first) {
+        opaqueFaceArray.fastClear();
+        translucentFaceArray.fastClear();
+
+	    getVisibleFaces(renderDevice, camera, translucentFaceArray, opaqueFaceArray);
+        }
 
 		// Opaque
 		glCullFace(GL_FRONT);
@@ -117,9 +127,9 @@ void Map::render(RenderDevice* renderDevice, const GCamera& camera) {
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 		glColor(Color3::white() * adjustBrightness);
-		renderFaces(renderDevice, camera, opaqueFaceArray);
+ 		renderFaces(renderDevice, camera, opaqueFaceArray);
 
-		// Translucent
+        // Translucent
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glAlphaFunc(GL_GREATER, 0.2f);
@@ -150,23 +160,10 @@ void Map::render(RenderDevice* renderDevice, const GCamera& camera) {
 
 		renderDevice->debugDrawBox(leafArray[2802].bounds);
 
-	renderDevice->popState();
-
-	
-/*
-	renderDevice->push2D();
-
-	for (i = 0; i < debugString.size(); ++i) {
-		Vector3 pos = camera.project(debugString[i].pos, renderDevice->getWidth(), renderDevice->getHeight());
-		font->draw2DString(debugString[i].s, pos.x, pos.y, 15, Color3::WHITE, Color3::BLACK);
-	}
-
-	font->draw2DString(format("%g %g %g", camera.getCoordinateFrame().translation.x, camera.getCoordinateFrame().translation.y, camera.getCoordinateFrame().translation.z),
-		200, 10, 15, Color3::WHITE, Color3::BLACK);
-
-	renderDevice->pop2D();
-    */
+	renderDevice->popState();	
 #endif
+
+    renderDevice->popState();
 }
 
 
@@ -192,26 +189,27 @@ void Map::getVisibleFaces(
 	Array<FaceSet*>&            translucentFaceArray,
 	Array<FaceSet*>&            opaqueFaceArray) {
 
-	debugLine.clear();
-	debugString.clear();
+	debugLine.fastClear();
+	debugString.fastClear();
 
 	// Find the camera's cluster
-	int leafIndex = findLeaf(camera.getCoordinateFrame().translation);
+	Vector3 zAxis, origin;
+	{
+		CoordinateFrame cameraFrame;
+		camera.getCoordinateFrame(cameraFrame);
+		zAxis  = cameraFrame.getLookVector();
+		origin = cameraFrame.translation;
+	}
+
+	int leafIndex = findLeaf(origin);
 	int visCluster = leafArray[leafIndex].cluster;
 		
-	Array<Plane> frustum;
-	camera.getClipPlanes(renderDevice->getViewport(), frustum);
+	static Array<Plane> frustum;
+    camera.getClipPlanes(renderDevice->getViewport(), frustum);
 
 	facesDrawn.clearAll();
 
-	Vector3 zAxis, origin;
-	{
-		CoordinateFrame cframe;
-		camera.getCoordinateFrame(cframe);
-		zAxis  = cframe.getLookVector();
-		origin = cframe.translation;
-	}
-
+    // This loop is the performance bottleneck
 	for (int ct = 0; ct < leafArray.size(); ++ct) {
 		const BSPLeaf& leaf = leafArray[ct];
 	
@@ -222,12 +220,12 @@ void Map::getVisibleFaces(
 			continue;
 		}
 
-		// Frustum cull
-		if (leaf.bounds.culledBy(frustum)) {
+        // Frustum cull
+        if (leaf.bounds.culledBy(frustum)) {
 			continue;
 		}
 
-		Vector3 center = leaf.bounds.getCenter();
+		const Vector3& center = leaf.center;
 
 		// Draw all of the faceArray in the leaf
 		for (int f = leaf.facesCount - 1; f >= 0; --f) {
@@ -247,7 +245,7 @@ void Map::getVisibleFaces(
 				}
 
 				face->updateSortKey(this, zAxis, origin);
-				if ((texture.isNull()) || texture->opaque()) {
+				if (texture.isNull() || (texture->opaque())) {
 					opaqueFaceArray.append(face);
 				} else {
 					translucentFaceArray.append(face);
@@ -282,18 +280,21 @@ void Map::getVisibleFaces(
 		}
 	}
 
-	//get faces of dynamic models
-	//models are not in the BSP tree, so it's not worth it to do visibility testing on so few faces
-	for (int i = 0; i < dynamicModels.size(); ++i) {
-		BSPModel currentModel = dynamicModels[i];
+    // Faces of dynamic models.
+	// Models are not in the BSP tree, we don't perform visibility testing on them
+    for (int i = 0; i < dynamicModels.size(); ++i) {
+		const BSPModel& currentModel = dynamicModels[i];
 		for(int f = 0; f < currentModel.numOfFaces; ++f){
-			FaceSet* face = faceArray[currentModel.faceIndex + f];
-			// Ignore untextured faces
+			
+            FaceSet* face = faceArray[currentModel.faceIndex + f];
+			
 			TextureRef texture = textures[face->textureID];
 			if ((face->lightmapID < 0) && texture.isNull()) {
+                // Ignore untextured faces
 				continue;
 			}
 			face->updateSortKey(this, zAxis, origin);
+
 			if (texture.isNull() || texture->opaque()) {
 				opaqueFaceArray.append(face);
 			} else {
@@ -326,15 +327,11 @@ void Map::renderFaces(
 
 				if (texture.isNull()) {
 					texture = defaultTexture;
-				}
-
-				if (texture.notNull()) {
+				} else {
 					glEnable(GL_TEXTURE_2D);
 					glClientActiveTextureARB(GL_TEXTURE0_ARB);
 					glBindTexture(GL_TEXTURE_2D, texture->getOpenGLID());
 					glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);  
-				} else {
-					glDisable(GL_TEXTURE_2D);
 				}
 
 				lastTextureID = theFace->textureID;
@@ -961,6 +958,7 @@ void Map::getTriangles(
     Array<Vector3>&     outNormalArray,
     Array<int>&         outIndexArray,
     Array<Vector2>&     outTexCoordArray,
+    Array<int>&         outTextureMapIndexArray,
     Array<Vector2>&     outLightCoordArray,
     Array<int>&         outLightMapIndexArray,
     Array<int>&         outTexCoordIndexArray,
@@ -998,6 +996,7 @@ void Map::getTriangles(
 					const Mesh* mesh = dynamic_cast<const Mesh*>(faceArray[f]);
 					for (int t = 0; t < mesh->meshVertexesCount / 3; ++t) {
                         outLightMapIndexArray.append(mesh->lightmapID);
+                        outTextureMapIndexArray.append(mesh->textureID);
 						debugAssert(mesh->lightmapID >= 0);
 
 						for (int v = 0; v < 3; ++v) {
@@ -1017,12 +1016,24 @@ void Map::getTriangles(
 				break;
 
 			case FaceSet::PATCH:
-                // TODO: Morgan add these vertices at the end of the array
-				/*
+                // Add new vertices at the end of the array
                 {
+
 					const Patch* patch = dynamic_cast<const Patch*>(faceArray[f]);
 					for (int b = 0; b < patch->bezierArray.size(); ++b) {
 						const Patch::Bezier2D& bezier = patch->bezierArray[b];
+
+                        // Offet for bezier vertex indices
+                        int index0 = outVertexArray.size();
+
+                        // Append bezier's vertices to the array
+                        for (int v = 0; v < bezier.vertex.size(); ++v) {
+                            const Vertex& vertex = bezier.vertex[v];
+                            outVertexArray.append(vertex.position);
+                            outNormalArray.append(vertex.normal);
+                            outLightCoordArray.append(vertex.lightmapCoord);
+                            outTexCoordArray.append(vertex.textureCoord);
+                        }
 
 						for (int row = 0; row < bezier.level; ++row) {
 							// This is a triangle strip.  Track every three vertices
@@ -1032,29 +1043,14 @@ void Map::getTriangles(
 							for (int v = 2; v < bezier.trianglesPerRow[row]; ++v) {
 								int v2 = bezier.rowIndexes[row][v];
 
-								MatrianceTri& tri = triArray.next();
-								tri.color = Color3uint8(Color3::WHITE);
-								tri.lightMapIndex = patch->lightmapID;
+                                outLightMapIndexArray.append(patch->lightmapID);
+                                outTextureMapIndexArray.append(patch->textureID);
 
 								if (isOdd(v)) {
-									tri.vertex[0].position   = bezier.vertex[v0].position;
-									tri.vertex[0].lightCoord = bezier.vertex[v0].lightmapCoord;
-
-									tri.vertex[1].position   = bezier.vertex[v1].position;
-									tri.vertex[1].lightCoord = bezier.vertex[v1].lightmapCoord;
-
-									tri.vertex[2].position   = bezier.vertex[v2].position;
-									tri.vertex[2].lightCoord = bezier.vertex[v2].lightmapCoord;
-								} else {
-									tri.vertex[2].position   = bezier.vertex[v0].position;
-									tri.vertex[2].lightCoord = bezier.vertex[v0].lightmapCoord;
-
-									tri.vertex[1].position   = bezier.vertex[v1].position;
-									tri.vertex[1].lightCoord = bezier.vertex[v1].lightmapCoord;
-
-									tri.vertex[0].position   = bezier.vertex[v2].position;
-									tri.vertex[0].lightCoord = bezier.vertex[v2].lightmapCoord;
-								}
+                                    outIndexArray.append(v0 + index0, v1 + index0, v2 + index0);
+                                } else {
+                                    outIndexArray.append(v2 + index0, v1 + index0, v0 + index0);
+                                }
 
 								// Shift
 								v0 = v1;
@@ -1063,7 +1059,6 @@ void Map::getTriangles(
 						}
 					}
 				}
-                */
 				break;
 
 			default:

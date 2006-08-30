@@ -16,7 +16,7 @@
 #ifndef BSPMAP_H
 #define BSPMAP_H
 
-#include <G3DAll.h>
+#include <G3D/G3DAll.h>
 #include <stdlib.h>
 #include <memory.h>
 #include <math.h>
@@ -44,23 +44,11 @@ private:
 
 public:
 
-    BitSet::BitSet(): bits(NULL), size(0) {
-    }
+    BitSet::BitSet();
 
-    BitSet::~BitSet() {
-        delete bits;
-    }
+    BitSet::~BitSet();
 
-    inline void resize(int count) {
-        size = 0;
-        // Delete any previous bits
-        delete bits;
-
-        size = iCeil(count / 32.0);
-
-        bits = new G3D::uint32[size];
-        clearAll();
-    }
+    void resize(int count);
 
     /**
      Enable the ith bit.
@@ -87,7 +75,7 @@ public:
     }
 
     void clearAll()	{
-        memset(bits, 0, sizeof(G3D::uint32) * size);
+        System::memset(bits, 0, sizeof(G3D::uint32) * size);
     }
 };
 
@@ -195,7 +183,10 @@ public:
      Bounding box on the leaf itself.  The faces referenced by a leaf
      may extend well beyond this box.
      */
-    Box                 bounds;
+    AABox               bounds;
+
+    /** Redundant with bounds, but faster to read than compute during culling.*/
+    Vector3             center;
 
     /**
      Index into BSP::faceArray of the first face in this leaf.
@@ -230,6 +221,7 @@ public:
     int                 numOfBrushes;
 };
 
+/** e.g., a platform, a trigger */
 class BSPEntity {
 public:
     Vector3             position;
@@ -237,6 +229,8 @@ public:
 	int					spawnflags;
 	std::string         targetName;
 	std::string         target;
+	
+	/** Index into dynamicModels array */
 	int                 modelNum;
 	std::string         otherInfo;
 };
@@ -451,8 +445,10 @@ private:
     TextureRef          defaultTexture;
     TextureRef          defaultLightmap;
 
+public:
 	Array<BSPEntity>	entityArray;
     Vector3             startingPosition;
+private:
 
     /**
      filename has no extension.  JPG and TGA files are sought.
@@ -515,7 +511,20 @@ private:
      Returns true if testCluster is potentially visible to a viewer within
      visCluster.
      */
-    bool isClusterVisible(int visCluster, int testCluster) const;
+    inline bool isClusterVisible(int visCluster, int testCluster) const {
+
+	    if ((visData.bitsets == NULL) || (visCluster < 0)) {
+		    return true;
+	    }
+
+	    // Note: testCluster >> 3 == testCluster / 8
+	    int i = (visCluster * visData.bytesPerCluster) + (testCluster >> 3);
+
+        // uint8 in original implementation; believe uint32 will be faster.
+        G3D::uint32 visSet = visData.bitsets[i];
+
+	    return (visSet & (1 << (testCluster & 7))) != 0;
+    }
     
     int findLeaf(const Vector3& pos) const;
     
@@ -588,7 +597,6 @@ public:
      Draws the scene from the perspective of the camera.
      */
     void render(RenderDevice* renderDevice, const GCamera& camera);
-    void initRender(GCamera& camera);
     void render(GCamera& camera, void* object);
 
     /** Returns the triangles in the map for use outside of this class.
@@ -598,6 +606,7 @@ public:
         Array<Vector3>&     outNormalArray,
         Array<int>&         outIndexArray,
         Array<Vector2>&     outTexCoordArray,
+        Array<int>&         outTextureMapIndexArray,
         Array<Vector2>&     outLightCoordArray,
         Array<int>&         outLightMapIndexArray,
         Array<int>&         outTexCoordIndexArray,

@@ -173,8 +173,10 @@ bool Map::load(
     const std::string&  filename) {
 
     int supportedVersion[NUM_FILE_FORMATS + 1];
-    supportedVersion[Q3] = 46;
+//    supportedVersion[Q1] = 23;
+//    supportedVersion[Q2] = 38;
     supportedVersion[HL] = 30;
+    supportedVersion[Q3] = 46;
     supportedVersion[NUM_FILE_FORMATS] = 0;
 
     std::string full = resPath + "maps/" + filename;
@@ -503,7 +505,7 @@ void Map::loadFaces(
  load multiple times-- the previously loaded model will be freed correctly.
 */
 static TextureRef loadBrightTexture(const std::string& filename, double brighten = 1.0) {
-    debugAssert(fileExists(filename));
+    //debugAssert(fileExists(filename));
     return Texture::fromFile(filename, TextureFormat::AUTO, Texture::TILE, Texture::TRILINEAR_MIPMAP, Texture::DIM_2D, brighten);
 }
 
@@ -659,7 +661,7 @@ void Map::loadHLLeaves(
         swizzle(b);
         b *= LOAD_SCALE;
 
-        leafArray[ct].bounds        = Box(a.min(b), a.max(b));
+        leafArray[ct].bounds        = AABox(a.min(b), a.max(b));
 
         leafArray[ct].firstFace     = bi.readInt32();
         leafArray[ct].facesCount    = bi.readInt32();
@@ -701,7 +703,8 @@ void Map::loadQ3Leaves(
         swizzle(b);
         b *= LOAD_SCALE;
 
-        leafArray[ct].bounds        = Box(a.min(b), a.max(b));
+        leafArray[ct].bounds        = AABox(a.min(b), a.max(b));
+        leafArray[ct].center        = (a + b) / 2;
 
         leafArray[ct].firstFace     = bi.readInt32();
         leafArray[ct].facesCount    = bi.readInt32();
