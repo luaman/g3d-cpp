@@ -240,6 +240,8 @@
 		3EF42A8F077978740047B13F /* GWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3EF42A8E077978740047B13F /* GWindow.cpp */; };
 		3EFE6A250735D82A00E12815 /* VARArea.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3EFE6A240735D82A00E12815 /* VARArea.cpp */; };
 		3EFE6A2D0735E0C400E12815 /* MeshBuilder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3EFE6A2C0735E0C400E12815 /* MeshBuilder.cpp */; };
+		50077A170AA75D4200E930E1 /* NSAutoreleasePoolWrapper.h in Headers */ = {isa = PBXBuildFile; fileRef = 50077A160AA75D4200E930E1 /* NSAutoreleasePoolWrapper.h */; };
+		50077A190AA75D5800E930E1 /* NSAutoreleasePoolWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 50077A180AA75D5800E930E1 /* NSAutoreleasePoolWrapper.mm */; };
 		503382290935445000C574FC /* tAtomicInt32.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 503382280935445000C574FC /* tAtomicInt32.cpp */; };
 		5033822B0935449400C574FC /* Stopwatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5033822A0935449400C574FC /* Stopwatch.cpp */; };
 		5033822D093544D900C574FC /* AtomicInt32.h in Headers */ = {isa = PBXBuildFile; fileRef = 5033822C093544D900C574FC /* AtomicInt32.h */; };
@@ -269,6 +271,23 @@
 		50F81C060A09D3CC001CBC38 /* GModule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50F81C040A09D3CC001CBC38 /* GModule.cpp */; };
 		50F81C070A09D3CC001CBC38 /* Renderbuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50F81C050A09D3CC001CBC38 /* Renderbuffer.cpp */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXBuildStyle section */
+		500779F60AA74A2F00E930E1 /* Development */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Development;
+		};
+		500779F70AA74A2F00E930E1 /* Deployment */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+			};
+			name = Deployment;
+		};
+/* End PBXBuildStyle section */
 
 /* Begin PBXContainerItemProxy section */
 		0F0B7E2C06DEE3A5002E4048 /* PBXContainerItemProxy */ = {
@@ -589,6 +608,8 @@
 		3EF42A8E077978740047B13F /* GWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = GWindow.cpp; path = ../source/GLG3Dcpp/GWindow.cpp; sourceTree = "<group>"; };
 		3EFE6A240735D82A00E12815 /* VARArea.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = VARArea.cpp; path = ../source/GLG3Dcpp/VARArea.cpp; sourceTree = "<group>"; };
 		3EFE6A2C0735E0C400E12815 /* MeshBuilder.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MeshBuilder.cpp; path = ../source/G3Dcpp/MeshBuilder.cpp; sourceTree = "<group>"; };
+		50077A160AA75D4200E930E1 /* NSAutoreleasePoolWrapper.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = NSAutoreleasePoolWrapper.h; path = ../source/include/GLG3D/NSAutoreleasePoolWrapper.h; sourceTree = SOURCE_ROOT; };
+		50077A180AA75D5800E930E1 /* NSAutoreleasePoolWrapper.mm */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.objcpp; name = NSAutoreleasePoolWrapper.mm; path = ../source/GLG3Dcpp/NSAutoreleasePoolWrapper.mm; sourceTree = SOURCE_ROOT; };
 		503382280935445000C574FC /* tAtomicInt32.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = tAtomicInt32.cpp; path = ../source/test/tAtomicInt32.cpp; sourceTree = SOURCE_ROOT; };
 		5033822A0935449400C574FC /* Stopwatch.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Stopwatch.cpp; path = ../source/G3Dcpp/Stopwatch.cpp; sourceTree = SOURCE_ROOT; };
 		5033822C093544D900C574FC /* AtomicInt32.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = AtomicInt32.h; path = ../source/include/G3D/AtomicInt32.h; sourceTree = SOURCE_ROOT; };
@@ -739,6 +760,7 @@
 		0F5500FC06DD5F56008DD4F8 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				50077A180AA75D5800E930E1 /* NSAutoreleasePoolWrapper.mm */,
 				505B6A690A95F6BB008D09AF /* FirstPersonManipulator.cpp */,
 				505B6A6A0A95F6BB008D09AF /* ThirdPersonManipulator.cpp */,
 				50F81C040A09D3CC001CBC38 /* GModule.cpp */,
@@ -783,6 +805,7 @@
 		0F55010106DD5F5D008DD4F8 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				50077A160AA75D4200E930E1 /* NSAutoreleasePoolWrapper.h */,
 				505B6A650A95F6A5008D09AF /* FirstPersonManipulator.h */,
 				505B6A660A95F6A5008D09AF /* ThirdPersonManipulator.h */,
 				50F81C000A09D3AB001CBC38 /* GModule.h */,
@@ -1126,6 +1149,7 @@
 				505B6A620A95F609008D09AF /* G3DAll.h in Headers */,
 				505B6A670A95F6A5008D09AF /* FirstPersonManipulator.h in Headers */,
 				505B6A680A95F6A5008D09AF /* ThirdPersonManipulator.h in Headers */,
+				50077A170AA75D4200E930E1 /* NSAutoreleasePoolWrapper.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1225,6 +1249,12 @@
 		0F55FEC406DCC4E6008DD4F8 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 3E659E9808DC17DA00E47E2E /* Build configuration list for PBXProject "G3DOSX" */;
+			buildSettings = {
+			};
+			buildStyles = (
+				500779F60AA74A2F00E930E1 /* Development */,
+				500779F70AA74A2F00E930E1 /* Deployment */,
+			);
 			hasScannedForEncodings = 1;
 			mainGroup = 0F55FEC006DCC4E6008DD4F8;
 			productRefGroup = 0F55FECF06DCC502008DD4F8 /* Products */;
@@ -1279,6 +1309,7 @@
 				50F81C070A09D3CC001CBC38 /* Renderbuffer.cpp in Sources */,
 				505B6A6B0A95F6BB008D09AF /* FirstPersonManipulator.cpp in Sources */,
 				505B6A6C0A95F6BB008D09AF /* ThirdPersonManipulator.cpp in Sources */,
+				50077A190AA75D5800E930E1 /* NSAutoreleasePoolWrapper.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
