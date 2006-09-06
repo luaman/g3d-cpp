@@ -550,7 +550,7 @@
 		0F55FFC806DCCB08008DD4F8 /* jcapimin.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = jcapimin.c; path = ../source/IJG/jcapimin.c; sourceTree = SOURCE_ROOT; };
 		0F55FFC906DCCB08008DD4F8 /* cdjpeg.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = cdjpeg.h; path = ../source/IJG/cdjpeg.h; sourceTree = SOURCE_ROOT; };
 		0F55FFCA06DCCB08008DD4F8 /* cderror.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = cderror.h; path = ../source/IJG/cderror.h; sourceTree = SOURCE_ROOT; };
-		0FCB73B806DF60D7001A7213 /* G3DTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = G3DTest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0FCB73B806DF60D7001A7213 /* G3DTest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "compiled.mach-o.executable"; path = G3DTest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0FCB73C006DF611E001A7213 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../source/test/main.cpp; sourceTree = SOURCE_ROOT; };
 		0FCB73D006DF6202001A7213 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		0FCB73E906DF62C0001A7213 /* SDLMain.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SDLMain.h; sourceTree = SOURCE_ROOT; };
