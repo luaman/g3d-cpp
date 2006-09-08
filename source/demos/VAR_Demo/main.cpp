@@ -9,7 +9,7 @@
  @edited  2006-01-29
  */
 
-#include <G3DAll.h>
+#include <G3D/G3DAll.h>
   
 /**
  Number of planes
