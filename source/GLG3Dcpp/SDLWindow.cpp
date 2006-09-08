@@ -132,11 +132,7 @@ static bool SDL_handleErrorCheck_(
 SDLWindow::SDLWindow(const GWindow::Settings& settings) {
 
 #if defined(G3D_OSX)
-	void* cocoa_lib; 
-	cocoa_lib = dlopen( "/System/Library/Frameworks/Cocoa.framework/Cocoa", RTLD_LAZY ); 
-	void (*nsappload)(void); 
-	nsappload = (void(*)()) dlsym( cocoa_lib, "NSApplicationLoad"); 
-	nsappload(); 
+	NSApplicationWrapper wrapper;
 	_pool = new NSAutoreleasePoolWrapper();
 #endif
 
