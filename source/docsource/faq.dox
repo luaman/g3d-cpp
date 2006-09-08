@@ -24,6 +24,7 @@ There are several reoccuring questions that appear at the <A HREF="http://source
 17. <a href="#buildsystem">Why does the source distribution not include the build system?</a><BR>
 18. <a href="#precision">Float / Double precision errors. Warnings in truncation, or overload errors with argument types</a><BR>
 19. <a href="#join">How can I join the G3D Core Dev team</a><BR>
+20. <a href="#glheaders">Why does G3D come with its own OpenGL headers?</a><BR>
 
 <a NAME="graphicscard"></a>
 <B>What graphics hardware does G3D support?</B><P>
@@ -192,16 +193,16 @@ E.g., <PRE>max(1.0, 2.0f) -> max(1.0f, 2.0f).</PRE>
 
 <a NAME="join"></a>
 <P><B>How can I Join the G3D Core Dev Team?</B><P>
-We also always need help with documentation.  If you would
+We  always need help with documentation.  If you would
 like to submit new documentation for a class or for part of
 the manual, that is another good way to demonstrate your
 skills.
 
 After someone has contributed for a few months and
 demonstrated both their abilities and commitment to the
-project, I will invite them to join the core team.
+project, we will invite them to join the core team.
 
-In core team members, I value most:
+In core team members, we value most:
 
 - Reliability
   - Complete tasks you've committed to
@@ -211,9 +212,32 @@ In core team members, I value most:
   - Test changes carefully
   - Embrace the whole role: documentation, testing, advocacy
 - Enthusiasm!
-.
+
 Note that we don't need the most *skilled* C++ developers in
 the world--we need the most reliabile, professional, and
 enthusiastic developers.
+
+<a NAME="glheaders"></a>
+<P><B>Why does G3D come with its own OpenGL headers?</B><P>
+OpenGL has a plugin architecture.  There is the base OpenGL, which is statically linked.
+Then there are OpenGL extensions, which are loaded at runtime manually.  On Windows you use DLLOpen and wglGetFunction; other operating systems have some equivalent calls.
+
+The idea is that your operating system ships with a version of OpenGL,
+but new features come out after the operating system has shipped.  So
+OpenGL programs load the OpenGL dynamic libary (which comes with the
+graphics card driver) manually to get the latest version.  Then they
+load all of the extension functions which came in with system updates
+or graphics divers.  There are two gotchas in this plan:
+
+1. Different operating systems come with different base versions of OpenGL.  OSX ships with GL 2.0, Windows with 1.3, and Linux is all over the map.
+
+2. The system headers don't have function prototypes for those new functions.  So you have to roll your own OpenGL headers.
+
+In theory, you could update your system headers every time you
+installed a new graphics driver.  In practice, you can't.  There isn't
+a canonical set of up-to-date OpenGL headers and on many systems
+(e.g., students in a computer lab) you don't even have permission to
+upgrade them.  So G3D gives you a set of the latest GL headers that 
+we maintain by hand.
 
 */
