@@ -24,7 +24,7 @@ using namespace G3D;
 
 using namespace G3D;
 
-#ifdef MSC_VER
+#ifdef WIN32
 #    include "conio.h"
 #else
 #    include <curses.h>
@@ -490,7 +490,7 @@ int main(int argc, char* argv[]) {
 #    ifndef _DEBUG
         printf("Performance analysis:\n\n");
 
-		perfCollisionDetection();
+	perfCollisionDetection();
 
         perfArray();
 
@@ -513,8 +513,7 @@ int main(int argc, char* argv[]) {
         measureMemsetPerformance();
         measureNormalizationPerformance();
 
-
-		GWindow::Settings settings;
+	GWindow::Settings settings;
         settings.width = 800;
         settings.height = 600;
         settings.alphaBits = 0;
@@ -535,7 +534,7 @@ int main(int argc, char* argv[]) {
 
         measureRDPushPopPerformance(renderDevice);
 
-		getch();
+	getch();
 
 #   else
 
