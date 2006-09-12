@@ -30,6 +30,7 @@
    <P>
    Changes in 7.00:
    <ul>
+	 <li> Added large file (>2GB) support to BinaryInput [Peter]
      <li> Renamed graphics3d.h to G3D/G3D.h
      <li> Renamed GLG3D.h to GLG3D/GLG3D.h
      <li> Renamed G3DAll.h to G3D/G3DAll.h
