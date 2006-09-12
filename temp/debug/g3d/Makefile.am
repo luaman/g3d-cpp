@@ -82,5 +82,6 @@ libG3D_debug_a_SOURCES= ../../../source/G3Dcpp/AABox.cpp \
                         ../../../source/png/pngwtran.c \
                         ../../../source/png/pngwutil.c
 
-libG3D_debug_a_CPPFLAGS=-I../../../source/include -Wall -D_DEBUG
+libG3D_debug_a_CPPFLAGS=-I../../../source/include -Wall -D_DEBUG -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
+
 

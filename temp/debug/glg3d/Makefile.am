@@ -41,4 +41,5 @@ libGLG3D_debug_a_SOURCES= ../../../source/GLG3Dcpp/DDSTexture.cpp \
                         ../../../source/GLG3Dcpp/shadowVolume.cpp \
                         ../../../source/GLG3Dcpp/tesselate.cpp
 
-libGLG3D_debug_a_CPPFLAGS=-I../../../source/include -Wall $(SDL_CFLAGS) -D_DEBUG
+libGLG3D_debug_a_CPPFLAGS=-I../../../source/include -Wall $(SDL_CFLAGS) -D_DEBUG -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
+
