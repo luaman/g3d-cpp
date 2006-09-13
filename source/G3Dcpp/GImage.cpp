@@ -745,8 +745,19 @@ int GImage::sizeInMemory() const {
 void GImage::computeNormalMap(
     const GImage&       bump,
     GImage&             normal,
+    float               whiteHeightInPixels,
     bool                lowPassBump,
     bool                scaleHeightByNz) {
+
+    if (whiteHeightInPixels == -1.0f) {
+        // Default setting scales so that a gradient ramp
+        // over the whole image becomes a 45-degree angle
+        
+        // Account for potentially non-square aspect ratios
+        whiteHeightInPixels = max(normal.width, normal.height);
+    }
+
+    debugAssert(whiteHeightInPixels >= 0);
 
     const int w = bump.width;
     const int h = bump.height;
@@ -765,13 +776,12 @@ void GImage::computeNormalMap(
             // Index into bump map *byte*
             int j = stride * i;
 
-
             Vector3 delta;
 
             // Get a value from B (with wrapping lookup) relative to (x, y)
             // and divide by 255
-            #define height(DX, DY) ((B[(((DX + x + w) % w) + \
-                                        ((DY + y + h) % h) * w) * stride]) / 255.0)
+            #define height(DX, DY)  ((int)B[(((DX + x + w) % w) + \
+                                            ((DY + y + h) % h) * w) * stride])
 
 
             // Sobel filter to compute the normal.  
@@ -790,9 +800,11 @@ void GImage::computeNormalMap(
                         height(-1,  0) * -2 + height( 1,  0) * 2 + 
                         height(-1,  1) * -1 + height( 1,  1) * 1);
 
-            delta.z = 1.0;
+            // The scale of each filter row is 4, the filter width is two pixels,
+            // and the "normal" range is 0-255.
+            delta.z = 4 * 2 * (whiteHeightInPixels / 255.0f);
 
-
+            // Delta is now scaled in pixels; normalize 
             delta = delta.direction();
 
             // Copy over the bump value into the alpha channel.
@@ -801,7 +813,7 @@ void GImage::computeNormalMap(
             if (lowPassBump) {
                 H = (height(-1, -1) + height( 0, -1) + height(1, -1) +
                         height(-1,  0) + height( 0,  0) + height(1,  0) +
-                        height(-1,  1) + height( 0,  1) + height(1,  1)) / 9.0;
+                        height(-1,  1) + height( 0,  1) + height(1,  1)) / (255.0f * 9.0f);
             }
             #undef height
 
@@ -821,7 +833,6 @@ void GImage::computeNormalMap(
         }
     }
 }
-
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

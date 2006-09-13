@@ -30,6 +30,8 @@
    <P>
    Changes in 7.00:
    <ul>
+     <li> G3D::GImage::computeNormalMap now accepts a scale factor indicating how steep the input bump map is
+     <li> Optimized G3D::GImage::computeNormalMap to use primarily integer math
 	 <li> Added large file (>2GB) support to BinaryInput [Peter]
      <li> Renamed graphics3d.h to G3D/G3D.h
      <li> Renamed GLG3D.h to GLG3D/GLG3D.h
