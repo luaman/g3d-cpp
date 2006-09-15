@@ -202,7 +202,7 @@ BinaryInput::BinaryInput(
 
     this->fileEndian = dataEndian;
     this->filename = "<memory>";
-	pos = 0;
+    pos = 0;
     swapBytes = needSwapBytes(fileEndian);
 
     if (compressed) {
@@ -220,15 +220,15 @@ BinaryInput::BinaryInput(
         debugAssert(result == Z_OK); (void)result;
 
     } else {
-	    length = dataLen;
+	length = dataLen;
         bufferLength = length;
         if (! copyMemory) {
- 			debugAssert(!freeBuffer);
+ 	    debugAssert(!freeBuffer);
             buffer = const_cast<uint8*>(data);
         } else {
-			debugAssert(freeBuffer);
+	    debugAssert(freeBuffer);
             buffer = (uint8*)System::malloc(length);
-            memcpy(buffer, data, dataLen);
+            System::memcpy(buffer, data, dataLen);
         }
     }
 }
