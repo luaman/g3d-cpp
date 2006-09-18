@@ -8,7 +8,7 @@
   @edited  2005-02-24
 */
 
-#include "GLG3D/TextureManager.h"
+#include "TextureManager.h"
 
 namespace G3D {
 
@@ -118,13 +118,18 @@ TextureRef TextureManager::loadTexture(
         // Not in the cache, so we must load it        
         TextureRef texture = NULL;
 
+		Texture::Settings settings;
+		Texture::PreProcess preprocess;
+		preprocess.brighten = brighten;
+		settings.wrapMode = wrap;
+		settings.interpolateMode = interpolate;
+
         texture = Texture::fromFile(
             filename,
             desiredFormat,  
-            wrap,
-            interpolate,
-            dimension,
-            brighten);
+			dimension,
+			settings,
+			preprocess);
 
         alwaysAssertM(texture != NULL, std::string("Texture not found ") + filename); 
         cache.set(args, texture);

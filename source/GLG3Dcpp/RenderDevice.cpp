@@ -2325,7 +2325,7 @@ void RenderDevice::forceSetTextureMatrix(int unit, const float* m) {
 
         float ymax = 1.0;
     
-        if (texture->dimensions() == Texture::DIM_2D_RECT) {
+        if (texture->dimension() == Texture::DIM_2D_RECT) {
             ymax = texture->texelHeight();
         }
 
@@ -3126,7 +3126,7 @@ void RenderDevice::configureReflectionMap(
     uint                textureUnit,
     TextureRef          reflectionTexture) {
 
-    debugAssert(reflectionTexture->dimensions() == Texture::DIM_CUBE_MAP);
+    debugAssert(reflectionTexture->dimension() == Texture::DIM_CUBE_MAP);
 
     // Texture coordinates will be generated in object space.
     // Set the texture matrix to transform them into camera space.

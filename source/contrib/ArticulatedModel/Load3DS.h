@@ -1,7 +1,7 @@
 #ifndef LOAD3DS_H
 #define LOAD3DS_H
 
-#include <G3DAll.h>
+#include <G3D/G3DAll.h>
 
 
 // TODO: Create two polygons when MATTWOSIDE is detected?
@@ -239,7 +239,7 @@ public:
         /** Mapping of face indices to materials */
         Array<FaceMat>              faceMatArray;
 
-        Object() : pivot(Vector3::ZERO), keyframe(Matrix4::identity()) {
+        Object() : pivot(Vector3::zero()), keyframe(Matrix4::identity()) {
         }
     };
 
@@ -335,7 +335,7 @@ public:
 	 */
     void load(const std::string& filename) {
         b = new BinaryInput(filename, G3D_LITTLE_ENDIAN);
-        currentRotation= Matrix3::IDENTITY;
+        currentRotation= Matrix3::identity();
 
         fileVersion     = 0;
         meshVersion     = 0;
@@ -730,9 +730,9 @@ void Load3DS::processChunk(const Load3DS::ChunkHeader& parentChunkHeader) {
                 break;
 
             case KFMESHINFO:
-                currentRotation = Matrix3::IDENTITY;
+                currentRotation = Matrix3::identity();
                 currentScale = Vector3(1,1,1);
-                currentTranslation = Vector3::ZERO;
+                currentTranslation = Vector3::zero();
 
                 processChunk(curChunkHeader);
 

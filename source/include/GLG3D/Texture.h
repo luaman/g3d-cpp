@@ -510,7 +510,7 @@ public:
         return _format;
     }
     
-    inline Dimension dimensions() const {
+    inline Dimension dimension() const {
         return _dimension;
     }
 

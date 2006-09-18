@@ -1,7 +1,7 @@
 #ifndef APP_H
 #define APP_H
 
-#include <G3DAll.h>
+#include <G3D/G3DAll.h>
 #include "../ArticulatedModel.h"
 
 typedef ReferenceCountedPointer<class Entity> EntityRef;
@@ -44,7 +44,7 @@ public:
     Array<EntityRef>            entityArray;
     TextureRef                  texture;
 
-    App(const GAppSettings& settings);
+    App(const GApp::Settings& settings);
 
     void loadScene();
 

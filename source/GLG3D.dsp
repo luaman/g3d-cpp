@@ -74,7 +74,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo /o"..\temp/GLG3D-debug.bsc"
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"..\temp\win32-lib\GLG3D-debug.lib"
+# ADD LIB32 /nologo /out:"..\temp\win32-lib\GLG3Dd.lib"
 
 !ENDIF 
 

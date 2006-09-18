@@ -162,7 +162,8 @@ void ArticulatedModel::renderNonShadowed(
         const bool ps20 = ArticulatedModel::profile() == ArticulatedModel::PS20;
 
         for (int p = 0; p < posedArray.size(); ++p) {
-            const PosedArticulatedModel* posed = dynamic_cast<const PosedArticulatedModel*>(posedArray[p].getPointer());
+            const PosedArticulatedModel* posed = 
+				dynamic_cast<const PosedArticulatedModel*>(posedArray[p].pointer());
             debugAssertM(posed != NULL,
                 "Cannot pass PosedModels not produced by ArticulatedModel to optimized routines.");
 
@@ -240,7 +241,7 @@ void ArticulatedModel::renderShadowMappedLightPass(
         rd->setAlphaTest(RenderDevice::ALPHA_GREATER, 0.5);
 
         for (int i = 0; i < posedArray.size(); ++i) {
-            const PosedArticulatedModel* posed = dynamic_cast<const PosedArticulatedModel*>(posedArray[i].getPointer());
+            const PosedArticulatedModel* posed = dynamic_cast<const PosedArticulatedModel*>(posedArray[i].pointer());
             debugAssertM(posed != NULL,
                 "Cannot pass PosedModels not produced by ArticulatedModel to optimized routines.");
 
@@ -309,7 +310,8 @@ void ArticulatedModel::extractOpaquePosedAModels(
     Array<PosedModelRef>&   opaqueAmodels) {
     
     for (int i = 0; i < all.size(); ++i) {
-        ReferenceCountedPointer<PosedArticulatedModel> m = all[i].downcast<PosedArticulatedModel>();
+        ReferenceCountedPointer<PosedArticulatedModel> m = 
+			dynamic_cast<PosedArticulatedModel*>(all[i].pointer());
 
         if (m.notNull() && ! m->hasTransparency()) {
             // This is a most-derived subclass and is opaque
@@ -538,7 +540,7 @@ bool PosedArticulatedModel::renderFFNonShadowedOpaqueTerms(
             if (lighting->environmentMap.isNull()) {
                 rd->setTexture(1, NULL);
             } else if (GLCaps::supports_GL_ARB_texture_cube_map() &&
-                (lighting->environmentMap->getDimension() == Texture::DIM_CUBE_MAP)) {
+                (lighting->environmentMap->dimension() == Texture::DIM_CUBE_MAP)) {
                 rd->configureReflectionMap(1, lighting->environmentMap);
             } else {
                 // Use the top texture as a sphere map
@@ -699,7 +701,7 @@ bool PosedArticulatedModel::renderPS14NonShadowedOpaqueTerms(
             // have taken this branch.
 
             if (GLCaps::supports_GL_ARB_texture_cube_map() &&
-                (lighting->environmentMap->getDimension() == Texture::DIM_CUBE_MAP)) {
+                (lighting->environmentMap->dimension() == Texture::DIM_CUBE_MAP)) {
                 rd->configureReflectionMap(nextUnit, lighting->environmentMap);
             } else {
                 // Use the top texture as a sphere map

@@ -7,11 +7,8 @@
   @author Morgan McGuire, matrix@graphics3d.com
  */
 
-#include <G3DAll.h>
+#include <G3D/G3DAll.h>
 
-#if G3D_VER < 60900
-    #error Requires G3D 6.09
-#endif
 
 #include "App.h"
 
@@ -50,7 +47,7 @@ public:
 
     virtual void onInit();
 
-    virtual void doSimulation(RealTime dt);
+    virtual void doSimulation(RealTime rdt, SimTime sdt, SimTime idt);
 
     virtual void onUserInput(UserInput* ui);
 
@@ -73,11 +70,16 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
     }
 
     if (GLCaps::supports_GL_ARB_shadow()) {        
-        shadowMap = Texture::createEmpty(shadowMapSize, shadowMapSize, "Shadow map", TextureFormat::depth(),
-            Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, Texture::DEPTH_LEQUAL, 1);  
+        shadowMap = Texture::createEmpty(
+			"Shadow Map",
+			shadowMapSize, shadowMapSize,
+			TextureFormat::depth(),
+			Texture::DIM_2D, Texture::Settings::shadow());
     }
 
-    logo = Texture::fromFile("G3D-logo-tiny-alpha.tga", TextureFormat::AUTO, Texture::CLAMP);
+	Texture::Settings settings;
+	settings.wrapMode = Texture::CLAMP;
+    logo = Texture::fromFile("G3D-logo-tiny-alpha.tga", TextureFormat::AUTO, Texture::DIM_2D, settings);
 }
 
 
@@ -88,11 +90,13 @@ void Demo::onInit()  {
 }
 
 
-void Demo::doSimulation(RealTime dt) {
+void Demo::doSimulation(RealTime dt, RealTime rdt, RealTime idt) {
 }
 
 
 void Demo::onUserInput(UserInput* ui) {
+	GApplet::onUserInput(ui);
+
     if (ui->keyPressed(SDLK_ESCAPE)) {
         // Even when we aren't in debug mode, quit on escape.
         endApplet = true;
@@ -131,8 +135,8 @@ void Demo::generateShadowMap(const GLight& light, const Array<PosedModelRef>& sh
         // The light will never be along the z-axis
         lightCFrame.lookAt(Vector3::zero(), Vector3::unitZ());
 
-        debugAssert(shadowMapSize < app->renderDevice->getHeight());
-        debugAssert(shadowMapSize < app->renderDevice->getWidth());
+        debugAssert(shadowMapSize < app->renderDevice->height());
+        debugAssert(shadowMapSize < app->renderDevice->width());
 
         app->renderDevice->setColorClearValue(Color3::white());
         app->renderDevice->clear(debugShadows, true, false);
@@ -228,7 +232,7 @@ void Demo::onGraphics(RenderDevice* rd) {
 
     rd->clear(app->sky.notNull(), true, true);
     if (app->sky.notNull()) {
-        app->sky->render(skyParameters);
+        app->sky->render(rd, skyParameters);
     }
 
     // Opaque unshadowed
@@ -254,7 +258,7 @@ void Demo::onGraphics(RenderDevice* rd) {
     }
 
     if (app->sky.notNull()) {
-        app->sky->renderLensFlare(skyParameters);
+        app->sky->renderLensFlare(rd, skyParameters);
     }
 
     toneMap.endFrame(rd);
@@ -275,7 +279,7 @@ void Demo::onGraphics(RenderDevice* rd) {
         rd->setTexture(0, logo);
         rd->setBlendFunc(RenderDevice::BLEND_SRC_ALPHA, RenderDevice::BLEND_ONE_MINUS_SRC_ALPHA);
         Draw::rect2D(
-            Rect2D::xywh(rd->getWidth() - 96,rd->getHeight() - 96, 64, 64), 
+            Rect2D::xywh(rd->width() - 96,rd->height() - 96, 64, 64), 
             rd, Color4(1,1,1,0.7f));
         rd->pop2D();
     }
@@ -293,7 +297,7 @@ void Demo::onGraphics(RenderDevice* rd) {
 
 void App::main() {
 	setDebugMode(true);
-	debugController.setActive(false);
+	debugController->setActive(false);
 
     loadScene();
 
@@ -301,18 +305,18 @@ void App::main() {
 }
 
 
-App::App(const GAppSettings& settings) : GApp(settings) {
+App::App(const GApp::Settings& settings) : GApp(settings) {
     ::app = this;
     debugShowRenderingStats = true;
 
     window()->setCaption("ArticulatedModel & SuperShader Demo");
 
-    sky = Sky::create(renderDevice, dataDir + "sky/");//"D:/games/data/sky/", "majestic/majestic512_*.jpg");
+    sky = Sky::fromFile(dataDir + "sky/");//"D:/games/data/sky/", "majestic/majestic512_*.jpg");
 }
 
 
 int main(int argc, char** argv) {
-    GAppSettings settings;
+	GApp::Settings settings;
     settings.window.depthBits = 16;
     settings.window.stencilBits = 8;
     settings.window.alphaBits = 0;

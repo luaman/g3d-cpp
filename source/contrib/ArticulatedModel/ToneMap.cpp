@@ -226,9 +226,7 @@ void ToneMap::makeGammaCorrectionTextures() {
     }
     
     // MIP-mapping causes bad interpolation for some reason
-    RG = Texture::fromGImage("RG Gamma", data, TextureFormat::RGB8, 
-        Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, 
-        Texture::DEPTH_NORMAL, 1.0);
+	RG = Texture::fromGImage("RG Gamma", data, TextureFormat::RGB8, Texture::DIM_2D, Texture::Settings::video());
     
     if (profile != PS20) {
         // On PS20 we can re-use the original RG texture
@@ -240,9 +238,7 @@ void ToneMap::makeGammaCorrectionTextures() {
             p.b = ramp[b];
         }
     
-        B = Texture::fromGImage("B Gamma", data, TextureFormat::RGB8, 
-            Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D, 
-            Texture::DEPTH_NORMAL, 1.0);
+        B = Texture::fromGImage("B Gamma", data, TextureFormat::RGB8, Texture::DIM_2D, Texture::Settings::video());
     }
 }
 
@@ -450,20 +446,20 @@ ToneMap::ToneMap() : mEnabled(true) {
 
 void ToneMap::resizeImages(RenderDevice* rd) {
     
-    const Rect2D viewport = rd->getViewport();
+    const Rect2D viewport = rd->viewport();
     
     if (screenImage.isNull() ||
         (viewport.wh() != screenImage->vector2Bounds())) {
 
-        screenImage = Texture::createEmpty(viewport.width(), viewport.height(), 
-            "Copied Screen Image", TextureFormat::RGB8,
-            Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_NPOT,
-            Texture::DEPTH_NORMAL, 1.0);
+        screenImage = Texture::createEmpty(
+			"Copied Screen Image",
+			viewport.width(), viewport.height(), 
+            TextureFormat::RGB8,Texture::DIM_2D_NPOT, Texture::Settings::video());
 
-        bloomMapIntermediate = Texture::createEmpty(viewport.width() / 4, viewport.height(), 
-            "Bloom map intermediate", TextureFormat::RGB8,
-            Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_NPOT, 
-            Texture::DEPTH_NORMAL, 1.0);
+        bloomMapIntermediate = Texture::createEmpty(
+			"Bloom map intermediate",
+			viewport.width() / 4, viewport.height(), 
+            TextureFormat::RGB8, Texture::DIM_2D_NPOT, Texture::Settings::video());
 
         resizeBloomMap(viewport.width() / 4, viewport.height() / 4);
     }
@@ -474,10 +470,10 @@ void ToneMap::resizeBloomMap(int w, int h) {
     stereo = glGetBoolean(GL_STEREO) != 0;
     
     for (int i = 0; i < (stereo ? 2 : 1); ++i) {
-        stereoBloomMap[i] = Texture::createEmpty(w, h, 
-            "Bloom map", TextureFormat::RGB8,
-            Texture::CLAMP, Texture::BILINEAR_NO_MIPMAP, Texture::DIM_2D_NPOT, 
-            Texture::DEPTH_NORMAL, 1.0);
+        stereoBloomMap[i] = Texture::createEmpty(
+			"Bloom map", w, h, 
+            TextureFormat::RGB8, Texture::DIM_2D_NPOT, 
+			Texture::Settings::video());
     }
 }
 

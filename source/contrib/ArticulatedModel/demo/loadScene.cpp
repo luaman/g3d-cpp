@@ -82,7 +82,7 @@ void App::loadScene() {
             part.texCoordArray.resize(part.geometry.normalArray.size());
             for (int i = 0; i < part.geometry.normalArray.size(); ++i) {
                 const Vector3& N = part.geometry.normalArray[i];
-                part.texCoordArray[i].x = 0.5 + atan2(N.x, N.z) / G3D_TWO_PI;
+                part.texCoordArray[i].x = 0.5 + atan2(N.x, N.z) / twoPi();
                 part.texCoordArray[i].y = 0.5 - N.y / 2.0;
             }
 
@@ -105,7 +105,7 @@ void App::loadScene() {
             part.texCoordArray.resize(part.geometry.normalArray.size());
             for (int i = 0; i < part.geometry.normalArray.size(); ++i) {
                 const Vector3& N = part.geometry.normalArray[i];
-                part.texCoordArray[i].x = 0.5 + atan2(N.x, N.z) / G3D_TWO_PI;
+                part.texCoordArray[i].x = 0.5 + atan2(N.x, N.z) / twoPi();
                 part.texCoordArray[i].y = 0.5 - N.y / 2.0;
             }
 
@@ -343,21 +343,25 @@ void App::loadScene() {
         triList.material.diffuse.constant = Color3::white() * 0.05f;
 
         GImage normalBumpMap;
-        computeNormalMap(GImage("stained-glass-bump.png"), normalBumpMap, false, true);
+		GImage::computeNormalMap(GImage("stained-glass-bump.png"), normalBumpMap, false, true);
+		Texture::Settings settings;
+		settings.wrapMode = Texture::CLAMP;
         triList.material.normalBumpMap =         
-            Texture::fromGImage("Bump Map", normalBumpMap, TextureFormat::AUTO, Texture::CLAMP);
+            Texture::fromGImage("Bump Map", normalBumpMap, TextureFormat::AUTO, Texture::DIM_2D, settings);
 
         triList.material.bumpMapScale = 0.02f;
 
+		settings.wrapMode = Texture::CLAMP;
+
         triList.material.specular.constant = Color3::white() * 0.4f;
-        triList.material.specular.map = Texture::fromFile("stained-glass-mask.png", TextureFormat::AUTO, Texture::CLAMP);
+        triList.material.specular.map = Texture::fromFile("stained-glass-mask.png", TextureFormat::AUTO, Texture::DIM_2D, settings);
         triList.material.specularExponent.constant = Color3::white() * 60;
 
         triList.material.reflect.constant = Color3::white() * 0.2f;
-        triList.material.reflect.map = Texture::fromFile("stained-glass-mask.png", TextureFormat::AUTO, Texture::CLAMP);
+        triList.material.reflect.map = Texture::fromFile("stained-glass-mask.png", TextureFormat::AUTO,Texture::DIM_2D, settings);
 
         triList.material.transmit.constant = Color3::white();
-        triList.material.transmit.map = Texture::fromFile("stained-glass-transmit.png", TextureFormat::AUTO, Texture::CLAMP);
+        triList.material.transmit.map = Texture::fromFile("stained-glass-transmit.png", TextureFormat::AUTO,Texture::DIM_2D, settings);
 
         triList.computeBounds(part);
 
@@ -462,14 +466,11 @@ void App::loadScene() {
         triList.material.reflect.constant = Color3::black();
 
         triList.material.diffuse.constant = Color3::white() * 0.8f;
-        triList.material.diffuse.map = Texture::fromFile("stone.jpg", TextureFormat::AUTO, Texture::TILE,
-            Texture::TRILINEAR_MIPMAP, Texture::DIM_2D, 1.0f, Texture::DEPTH_NORMAL, 4.0f);
+        triList.material.diffuse.map = Texture::fromFile("stone.jpg");
 
         GImage normalBumpMap;
-        computeNormalMap(GImage("stone-bump.png"), normalBumpMap, false, true);
-        triList.material.normalBumpMap =         
-            Texture::fromGImage("Bump Map", normalBumpMap, TextureFormat::AUTO, Texture::TILE,
-            Texture::TRILINEAR_MIPMAP, Texture::DIM_2D, Texture::DEPTH_NORMAL, 1.0f);
+		GImage::computeNormalMap(GImage("stone-bump.png"), normalBumpMap, false, true);
+        triList.material.normalBumpMap = Texture::fromGImage("Bump Map", normalBumpMap);
 
         triList.material.bumpMapScale = 0.04f;
 

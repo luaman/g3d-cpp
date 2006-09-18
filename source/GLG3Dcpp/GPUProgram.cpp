@@ -32,7 +32,7 @@ void GPUProgram::ArgList::set(const std::string& var, const TextureRef& val) {
 
     Arg arg;
 
-	switch (val->dimensions()) {
+	switch (val->dimension()) {
     case Texture::DIM_2D_NPOT:
 	case Texture::DIM_2D:
 	    arg.type = SAMPLER2D;
