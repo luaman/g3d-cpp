@@ -40,6 +40,7 @@
 #else
   #include <zlib.h>
 #endif
+#include <stdio.h>
 
 namespace G3D {
 
@@ -147,16 +148,30 @@ void BinaryInput::loadIntoMemory(int64 startPosition, int64 minLength) {
 
     alreadyRead = startPosition;
 
-    FILE* file = fopen(filename.c_str(), "rb");
-    debugAssert(file);
 
-    int ret = fseeko(file, (off_t)alreadyRead, SEEK_SET);
-    debugAssert(ret == 0);
-    int64 toRead = G3D::min(bufferLength, length - alreadyRead);
-    ret = fread(buffer, 1, toRead, file);
-    debugAssert(ret == toRead);
-    fclose(file);
-    file = NULL;
+	#ifdef G3D_WIN32
+		// TODO: large file support
+	    FILE* file = fopen(filename.c_str(), "rb");
+		debugAssert(file);
+		int ret = fseek(file, (off_t)alreadyRead, SEEK_SET);
+		debugAssert(ret == 0);
+		int64 toRead = G3D::iMin(bufferLength, length - alreadyRead);
+		ret = fread(buffer, 1, toRead, file);
+		debugAssert(ret == toRead);
+		fclose(file);
+		file = NULL;
+	
+	#else
+	    FILE* file = fopen(filename.c_str(), "rb");
+		debugAssert(file);
+		int ret = fseeko(file, (off_t)alreadyRead, SEEK_SET);
+		debugAssert(ret == 0);
+		int64 toRead = G3D::iMin(bufferLength, length - alreadyRead);
+		ret = fread(buffer, 1, toRead, file);
+		debugAssert(ret == toRead);
+		fclose(file);
+		file = NULL;
+	#endif
 
 
     pos = absPos - alreadyRead;
