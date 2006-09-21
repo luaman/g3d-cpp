@@ -155,7 +155,7 @@ void BinaryInput::loadIntoMemory(int64 startPosition, int64 minLength) {
 		debugAssert(file);
 		int ret = fseek(file, (off_t)alreadyRead, SEEK_SET);
 		debugAssert(ret == 0);
-		int64 toRead = G3D::iMin(bufferLength, length - alreadyRead);
+		size_t toRead = (size_t)G3D::min<int64>((int64)bufferLength, (int64)(length - alreadyRead));
 		ret = fread(buffer, 1, toRead, file);
 		debugAssert(ret == toRead);
 		fclose(file);
@@ -166,9 +166,9 @@ void BinaryInput::loadIntoMemory(int64 startPosition, int64 minLength) {
 		debugAssert(file);
 		int ret = fseeko(file, (off_t)alreadyRead, SEEK_SET);
 		debugAssert(ret == 0);
-		int64 toRead = G3D::iMin(bufferLength, length - alreadyRead);
+		size_t toRead = (size_t)G3D::min<int64>((int64)bufferLength, (int64)(length - alreadyRead));
 		ret = fread(buffer, 1, toRead, file);
-		debugAssert(ret == toRead);
+		debugAssert((size_t)ret == (size_t)toRead);
 		fclose(file);
 		file = NULL;
 	#endif
