@@ -109,6 +109,9 @@ void Demo::onUserInput(UserInput* ui) {
     }
 
 	// Add other key handling here
+	
+	//must call GApplet::onUserInput
+	GApplet::onUserInput(ui);
 }
 
 
