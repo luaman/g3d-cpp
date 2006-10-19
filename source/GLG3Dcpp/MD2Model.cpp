@@ -127,7 +127,7 @@ void MD2Model::computeFrameNumbers(const MD2Model::Pose& pose, int& kf0, int& kf
     }
 
 
-	debugAssert(pose.time > 0.0);
+	debugAssert(pose.time >= 0.0);
 
     // Assume time is positive
     if (pose.animation == JUMP) {
