@@ -29,14 +29,11 @@ public:
     // state, put it in the App.
 
     class App*          app;
-
-    ThirdPersonManipulatorRef manipulator;
-
     float               angle;
     GameTime            gameTime;
 
-    IFSModelRef         ifsModel;
     MD2ModelRef         md2Model;
+    ThirdPersonManipulatorRef manipulator;
 
     Array<PosedModelRef>    models;
 
@@ -82,7 +79,10 @@ Demo::Demo(App* _app) : GApplet(_app), app(_app) {
 }
 
 void Demo::onInit()  {
-    ifsModel = IFSModel::create("c:/projects/cpp/source/data/ifs/p51-mustang.ifs");
+    md2Model = MD2Model::fromFile("d:/games/data/quake2/players/pknight/tris.md2");
+    
+    GMaterial material;
+    material.texture.append(MD2Model::textureFromFile("d:/games/data/quake2/players/pknight/ctf_b.pcx"));
 
     CoordinateFrame obj = CoordinateFrame(Matrix3::fromAxisAngle(Vector3::unitY(), toRadians(30)), Vector3(2, 0, 0));
     
@@ -94,8 +94,7 @@ void Demo::onInit()  {
 //    manipulator->setFrame(obj);
 //    manipulator->setControlFrame(CoordinateFrame());
 
-    models.append(IFSModel::create("c:/projects/data/ifs/square.ifs")->pose());
-    models.append(IFSModel::create("c:/projects/cpp/source/data/ifs/p51-mustang.ifs")->pose(Vector3(0,2,0)));
+    models.append(md2Model->pose(CoordinateFrame(), MD2Model::Pose(), material));
 
     // Local control
     manipulator->setFrame(obj);
@@ -136,29 +135,6 @@ void Demo::onUserInput(UserInput* ui) {
         app->endProgram = true;
     }
 
-    if (ui->keyPressed(SDLK_EQUALS)) {
-        angle += 5;
-    }
-    if (ui->keyPressed(SDLK_MINUS)) {
-        angle -= 5;
-    }
-	// Add other key handling here
-
-    if (ui->keyDown(SDLK_LALT)) {
-        app->debugPrintf("ALT PRESSED");
-    }
-    
-    if (ui->keyDown(SDLK_LCTRL)) {
-        app->debugPrintf("CTRL PRESSED");
-    }
-
-    if (ui->keyDown(SDLK_F10)) {
-        app->debugPrintf("F10 PRESSED");
-    }
-
-    if (ui->keyDown(SDLK_F11)) {
-        app->debugPrintf("F11 PRESSED");
-    }
 }
 
 
@@ -167,7 +143,6 @@ void Demo::onGraphics(RenderDevice* rd) {
     debugAssert(GLCaps::supports_two_sided_stencil());
 
 	app->renderDevice->setProjectionAndCameraMatrix(app->debugCamera);
-debugAssert(isFinite(app->debugCamera.getCoordinateFrame().rotation[0][0]));
 
 	// Can now render from the texture
     
@@ -189,13 +164,7 @@ debugAssert(isFinite(app->debugCamera.getCoordinateFrame().rotation[0][0]));
     }
 
     GLight light = GLight::directional(Vector3(0,1,0), Color3::white() * 0.5);
-    rd->disableDepthWrite();    
-    beginMarkShadows(rd);
-        for (int m = 0; m < models.size(); ++m) {
-            markShadows(rd, models[m], light.position);
-        }
-    endMarkShadows(rd);
-
+  
     rd->setBlendFunc(RenderDevice::BLEND_ONE, RenderDevice::BLEND_ONE);
     rd->setStencilTest(RenderDevice::STENCIL_EQUAL);
     rd->setStencilConstant(0);

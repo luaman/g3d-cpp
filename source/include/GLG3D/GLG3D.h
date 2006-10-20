@@ -31,6 +31,7 @@
     #pragma comment(lib, "opengl32.lib")
     #pragma comment(lib, "glu32.lib")
 
+    #pragma comment(lib, "ole32.lib") // For DXCaps
     #pragma comment(lib, "sdl.lib")
 
     #if !defined(NO_SDL_MAIN) && !defined(_CONSOLE)
