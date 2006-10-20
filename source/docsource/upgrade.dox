@@ -13,6 +13,13 @@ You will see errors like:
 
 
 <hr noshade>
+<p><b>Can't find X11/Xlib.h</b></p>
+<p>
+Delete your ~/.icompile file; the newest version of iCompile (0.5.0) is not compatible with
+the old files.
+</p>
+
+<hr noshade>
 <p><b>ALL CAPS Vector, Color, Matrix constants</b></p>
 <p>
 The all-caps constants have been renamed to lower-case static functions.
