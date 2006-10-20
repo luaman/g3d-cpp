@@ -1,0 +1,3 @@
+The 'cpp' module contains the G3D 6.xx series interfaces.  Active
+development from 7.xx and beyond is in the 'G3D' module in CVS because
+it has a new directory structure.

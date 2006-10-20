@@ -12,6 +12,8 @@
 #ifndef G3D_PLATFORM_H
 #define G3D_PLATFORM_H
 
+#error This code from the G3D 'cpp' module is deprecated.  Use the 'G3D' module from CVS instead.
+
 /**
  The version number of G3D in the form: MmmBB -> 
  version M.mm [beta BB]
